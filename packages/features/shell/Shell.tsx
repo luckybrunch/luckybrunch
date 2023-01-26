@@ -50,18 +50,14 @@ import {
   FiDownload,
   FiLogOut,
   FiCalendar,
-  FiClock,
   FiUsers,
-  FiGrid,
   FiMoreHorizontal,
-  FiFileText,
-  FiZap,
   FiSettings,
   FiArrowRight,
   FiArrowLeft,
+  FiTrello,
+  FiUser,
 } from "@calcom/ui/components/icon";
-
-import { TeamInviteBadge } from "./TeamInviteBadge";
 
 /* TODO: Migate this */
 
@@ -452,9 +448,9 @@ const MORE_SEPARATOR_NAME = "more";
 
 const navigation: NavigationItemType[] = [
   {
-    name: "event_types_page_title",
-    href: "/event-types",
-    icon: FiLink,
+    name: "Dashboard" /* TODO: localize */,
+    href: "/dashboard",
+    icon: FiTrello,
   },
   {
     name: "bookings",
@@ -467,69 +463,28 @@ const navigation: NavigationItemType[] = [
     },
   },
   {
-    name: "availability",
-    href: "/availability",
-    icon: FiClock,
-  },
-  {
-    name: "teams",
-    href: "/teams",
+    name: "Customers",
+    href: "/customers",
     icon: FiUsers,
-    onlyDesktop: true,
-    badge: <TeamInviteBadge />,
   },
   {
-    name: "apps",
-    href: "/apps",
-    icon: FiGrid,
-    isCurrent: ({ router, item }) => {
+    name: "Profile",
+    href: "profile/information",
+    icon: FiUser,
+    isCurrent: ({ router }) => {
       const path = router.asPath.split("?")[0];
-      // During Server rendering path is /v2/apps but on client it becomes /apps(weird..)
-      return (
-        (path.startsWith(item.href) || path.startsWith("/v2" + item.href)) && !path.includes("routing-forms/")
-      );
+      return path.startsWith("/profile");
     },
     child: [
-      {
-        name: "app_store",
-        href: "/apps",
-        isCurrent: ({ router, item }) => {
-          const path = router.asPath.split("?")[0];
-          // During Server rendering path is /v2/apps but on client it becomes /apps(weird..)
-          return (
-            (path.startsWith(item.href) || path.startsWith("/v2" + item.href)) &&
-            !path.includes("routing-forms/") &&
-            !path.includes("/installed")
-          );
-        },
-      },
-      {
-        name: "installed_apps",
-        href: "/apps/installed/calendar",
-        isCurrent: ({ router }) => {
-          const path = router.asPath;
-          return path.startsWith("/apps/installed/") || path.startsWith("/v2/apps/installed/");
-        },
-      },
+      { name: "Information", href: "/profile/information" },
+      { name: "Certificates", href: "/profile/certificates" },
+      { name: "Services", href: "/profile/services" },
     ],
   },
   {
     name: MORE_SEPARATOR_NAME,
     href: "/more",
     icon: FiMoreHorizontal,
-  },
-  {
-    name: "Routing Forms",
-    href: "/apps/routing-forms/forms",
-    icon: FiFileText,
-    isCurrent: ({ router }) => {
-      return router.asPath.startsWith("/apps/routing-forms/");
-    },
-  },
-  {
-    name: "workflows",
-    href: "/workflows",
-    icon: FiZap,
   },
   {
     name: "settings",
