@@ -1,8 +1,18 @@
+import { ClockIcon, DesktopComputerIcon } from "@heroicons/react/outline";
 import { useEffect, useState } from "react";
 
 import Shell from "@calcom/features/shell/Shell";
-import { Button, List, ListItem, ListItemText, ListItemTitle, Divider } from "@calcom/ui";
-import { FiCheck, FiClock, FiFile, FiInfo, FiPlus } from "@calcom/ui/components/icon";
+import { useLocale } from "@calcom/lib/hooks/useLocale";
+import { Button, Divider, EmptyScreen, List, ListItem, ListItemText, ListItemTitle } from "@calcom/ui";
+import {
+  FiCheck,
+  FiClock,
+  FiExternalLink,
+  FiFile,
+  FiInfo,
+  FiPlus,
+  FiUpload,
+} from "@calcom/ui/components/icon";
 
 export type InfoList = {
   title: string;
@@ -35,7 +45,8 @@ const apps: InfoList = [
     isDone: true,
   },
 ];
-export default function DashboardPage() {
+
+function UnpublishedDashboard() {
   const [isDone, setIsDone] = useState<InfoList>();
   const [isNotDone, setIsNotDone] = useState<InfoList>();
 
@@ -49,7 +60,7 @@ export default function DashboardPage() {
   }, []);
 
   return (
-    <Shell heading="Dashboard" subtitle="Manage settings for your nutritionist profile">
+    <>
       <Divider />
       <div className="mb-6 mt-6 flex items-center text-sm">
         <div>
@@ -136,6 +147,57 @@ export default function DashboardPage() {
               ))}
         </List>
       </div>
+    </>
+  );
+}
+
+function InReview() {
+  const { t } = useLocale();
+  return (
+    <EmptyScreen
+      Icon={ClockIcon}
+      headline={t("lb_profile_in_review_header", {
+        category: t("calendar").toLowerCase(),
+      })}
+      description={t("lb_profile_in_review_subtitle")}
+      buttonRaw={
+        <Button color="primary" href="#" StartIcon={FiUpload}>
+          {t("lb_remove_from_review")}
+        </Button>
+        //check icon insertion on button
+      }
+    />
+  );
+}
+
+function Published() {
+  const { t } = useLocale();
+  return (
+    <EmptyScreen
+      Icon={DesktopComputerIcon}
+      headline={t("lb_profile_published_header", {
+        category: t("calendar").toLowerCase(),
+      })}
+      description={t("lb_profile_published_subtitle")}
+      buttonRaw={
+        <Button color="primary" href="#" StartIcon={FiExternalLink}>
+          {t("view_public_page")}
+        </Button>
+      }
+    />
+  );
+}
+
+export default function DashboardPage() {
+  const status: "unpublished" | "in_review" | "published" = "published";
+
+  return (
+    <Shell heading="Dashboard" subtitle="Manage settings for your nutritionist profile">
+      {{
+        unpublished: () => <UnpublishedDashboard />,
+        in_review: () => <InReview />,
+        published: () => <Published />,
+      }[status]()}
     </Shell>
   );
 }
