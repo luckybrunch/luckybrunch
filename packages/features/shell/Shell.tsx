@@ -470,7 +470,7 @@ const navigation: NavigationItemType[] = [
   },
   {
     name: "Profile",
-    href: "profile/information",
+    href: "/profile/information",
     icon: FiUser,
     isCurrent: ({ router }) => {
       const path = router.asPath.split("?")[0];
