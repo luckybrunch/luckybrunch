@@ -3,8 +3,6 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 
-import LicenseRequired from "@calcom/features/ee/common/components/v2/LicenseRequired";
-import { isSAMLLoginEnabled } from "@calcom/features/ee/sso/lib/saml";
 import { WEBAPP_URL } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { collectPageParameters, telemetryEventTypes, useTelemetry } from "@calcom/lib/telemetry";
@@ -70,7 +68,7 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
   };
 
   return (
-    <LicenseRequired>
+    <>
       <div
         className="flex min-h-screen flex-col justify-center bg-gray-50 py-12 sm:px-6 lg:px-8"
         aria-labelledby="modal-title"
@@ -135,7 +133,7 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
           </div>
         </div>
       </div>
-    </LicenseRequired>
+    </>
   );
 }
 
@@ -145,7 +143,7 @@ export const getServerSideProps = async (ctx: GetServerSidePropsContext) => {
 
   const props = {
     isGoogleLoginEnabled: IS_GOOGLE_LOGIN_ENABLED,
-    isSAMLLoginEnabled,
+    isSAMLLoginEnabled: false,
     trpcState: ssr.dehydrate(),
     prepopulateFormValues: undefined,
   };
