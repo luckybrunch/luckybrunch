@@ -42,6 +42,7 @@ import { authRouter } from "./viewer/auth";
 import { availabilityRouter } from "./viewer/availability";
 import { bookingsRouter } from "./viewer/bookings";
 import { eventTypesRouter } from "./viewer/eventTypes";
+import { profileRouter } from "./viewer/profile";
 import { slotsRouter } from "./viewer/slots";
 import { ssoRouter } from "./viewer/sso";
 import { viewerTeamsRouter } from "./viewer/teams";
@@ -1164,5 +1165,7 @@ export const viewerRouter = mergeRouters(
     appRoutingForms: app_RoutingForms,
     eth: ethRouter,
     appsRouter,
+    // LuckyBrunch
+    profile: profileRouter,
   })
 );

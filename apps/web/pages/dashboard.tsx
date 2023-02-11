@@ -1,9 +1,19 @@
 import { ClockIcon, DesktopComputerIcon } from "@heroicons/react/outline";
-import { useEffect, useState } from "react";
+import { useMemo } from "react";
 
 import Shell from "@calcom/features/shell/Shell";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { Button, Divider, EmptyScreen, List, ListItem, ListItemText, ListItemTitle } from "@calcom/ui";
+import { trpc } from "@calcom/trpc/react";
+import {
+  Button,
+  Divider,
+  EmptyScreen,
+  List,
+  ListItem,
+  ListItemText,
+  ListItemTitle,
+  SkeletonLoader,
+} from "@calcom/ui";
 import {
   FiCheck,
   FiClock,
@@ -14,50 +24,74 @@ import {
   FiUpload,
 } from "@calcom/ui/components/icon";
 
-export type InfoList = {
-  title: string;
-  name: string;
-  description: string;
-  icon: () => JSX.Element;
-  isDone: boolean;
-}[];
-
-const apps: InfoList = [
-  {
-    title: "Add your information",
-    name: "Test",
-    description: "You need to upload your certification to get the access to the platform",
-    icon: () => <FiInfo />,
-    isDone: false,
-  },
-  {
-    title: "Add your certificates",
-    name: "Test",
-    description: "You need to upload your certification to get the access to the platform",
-    icon: () => <FiFile />,
-    isDone: false,
-  },
-  {
-    title: "Add your services",
-    name: "Test",
-    description: "You need to upload your certification to get the access to the platform",
-    icon: () => <FiClock />,
-    isDone: true,
-  },
-];
+import { withQuery } from "@lib/QueryCell";
 
 function UnpublishedDashboard() {
-  const [isDone, setIsDone] = useState<InfoList>();
-  const [isNotDone, setIsNotDone] = useState<InfoList>();
+  const { data } = trpc.viewer.profile.getOnboardingFlags.useQuery();
 
-  useEffect(() => {
-    const isDone = apps.filter((value) => value.isDone == true);
-    console.log("isDone: ", isDone);
-    setIsDone(isDone);
-    const isNotDone = apps.filter((value) => value.isDone == false);
-    console.log("isNotDone: ", isNotDone);
-    setIsNotDone(isNotDone);
-  }, []);
+  type Item = {
+    title: string;
+    description: string;
+    icon: () => JSX.Element;
+    href: string;
+    isDone: boolean;
+  };
+  type Items = readonly [Item[], Item[]];
+  const [doneSteps, undoneSteps] = useMemo<Items>(() => {
+    if (!data) {
+      return [[], []];
+    }
+    return [
+      {
+        title: "Add your information",
+        description: "You need to upload your certification to get the access to the platform",
+        icon: () => <FiInfo />,
+        href: "/profile/information",
+        isDone: data.completedProfileInformations,
+      },
+      {
+        title: "Add your certificates",
+        description: "You need to upload your certification to get the access to the platform",
+        icon: () => <FiFile />,
+        href: "/profile/certificates",
+        isDone: data.completedProfileCertificates,
+      },
+      {
+        title: "Add your services",
+        description: "You need to upload your certification to get the access to the platform",
+        icon: () => <FiClock />,
+        href: "/profile/services",
+        isDone: data.completedProfileServices,
+      },
+    ].reduce((acc, item) => (item.isDone ? acc[0].push(item) : acc[1].push(item), acc), [[], []] as Items);
+  }, [data]);
+
+  const renderItem = ({ title, description, icon, href, isDone }: Item) => (
+    <ListItem rounded={false} className="flex-col border-0 md:border-0" key={title}>
+      <div className="flex w-full flex-1 items-center space-x-2 rtl:space-x-reverse lg:p-2">
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">{icon()}</div>
+        <div className="flex-grow truncate pl-2">
+          <ListItemTitle
+            component="h3"
+            className="mb-1 space-x-2 truncate text-sm font-medium text-neutral-900">
+            {title}
+          </ListItemTitle>
+          <ListItemText component="p">{description}</ListItemText>
+        </div>
+        <div>
+          {isDone ? (
+            <Button color="secondary" StartIcon={FiCheck} disabled>
+              Done
+            </Button>
+          ) : (
+            <Button color="primary" StartIcon={FiPlus} href={href}>
+              Add
+            </Button>
+          )}
+        </div>
+      </div>
+    </ListItem>
+  );
 
   return (
     <>
@@ -71,81 +105,9 @@ function UnpublishedDashboard() {
         </div>
       </div>
       <div className="w-full bg-white sm:mx-0 xl:mt-0">
-        <List>
-          {isNotDone &&
-            isNotDone
-              .map((isNotDone) => ({ ...isNotDone, title: isNotDone.title || isNotDone.name }))
-              .map((isNotDone) => (
-                <ListItem className="flex-col border-0" key={isNotDone.title}>
-                  <div className="flex w-full flex-1 items-center space-x-2 p-4 rtl:space-x-reverse">
-                    {isNotDone.icon && (
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
-                        {isNotDone.icon()}
-                      </div>
-                    )}
-                    <div className="flex-grow truncate pl-2">
-                      <ListItemTitle
-                        component="h3"
-                        className="mb-1 space-x-2 truncate text-sm font-medium text-neutral-900">
-                        {isNotDone.title}
-                      </ListItemTitle>
-                      <ListItemText component="p">{isNotDone.description}</ListItemText>
-                    </div>
-                    <div>
-                      <Button
-                        color="primary"
-                        StartIcon={FiPlus}
-                        // disabled={app.isGlobal}
-                        // onClick={() => {
-                        //   setDeleteCredentialId(app.credentialIds[0]);
-                        //   setDeleteAppModal(true);
-                        // }}
-                      >
-                        Add
-                      </Button>
-                    </div>
-                  </div>
-                </ListItem>
-              ))}
-        </List>
-        {isDone && isNotDone && <Divider className="mt-8 mb-8" />}
-        <List>
-          {isDone &&
-            isDone
-              .map((isDone) => ({ ...isDone, title: isDone.title || isDone.name }))
-              .map((isDone) => (
-                <ListItem className="flex-col border-0" key={isDone.title}>
-                  <div className="flex w-full flex-1 items-center space-x-2 p-4 rtl:space-x-reverse">
-                    {isDone.icon && (
-                      <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">
-                        {isDone.icon()}
-                      </div>
-                    )}
-                    <div className="flex-grow truncate pl-2">
-                      <ListItemTitle
-                        component="h3"
-                        className="mb-1 space-x-2 truncate text-sm font-medium text-neutral-900">
-                        {isDone.title}
-                      </ListItemTitle>
-                      <ListItemText component="p">{isDone.description}</ListItemText>
-                    </div>
-                    <div>
-                      <Button
-                        color="secondary"
-                        StartIcon={FiCheck}
-                        // disabled={app.isGlobal}
-                        // onClick={() => {
-                        //   setDeleteCredentialId(app.credentialIds[0]);
-                        //   setDeleteAppModal(true);
-                        // }}
-                      >
-                        Done
-                      </Button>
-                    </div>
-                  </div>
-                </ListItem>
-              ))}
-        </List>
+        {undoneSteps.length > 0 && <List roundContainer>{undoneSteps.map(renderItem)}</List>}
+        {doneSteps.length > 0 && undoneSteps.length > 0 && <Divider className="mt-8 mb-8" />}
+        {doneSteps.length > 0 && <List roundContainer>{doneSteps.map(renderItem)}</List>}
       </div>
     </>
   );
@@ -189,15 +151,28 @@ function Published() {
 }
 
 export default function DashboardPage() {
-  const status: "unpublished" | "in_review" | "published" = "published";
+  const WithQuery = withQuery(trpc.viewer.profile.getOnboardingFlags);
 
   return (
     <Shell heading="Dashboard" subtitle="Manage settings for your nutritionist profile">
-      {{
-        unpublished: () => <UnpublishedDashboard />,
-        in_review: () => <InReview />,
-        published: () => <Published />,
-      }[status]()}
+      <WithQuery
+        customLoader={<SkeletonLoader />}
+        success={({ data }) => {
+          if (
+            data.requestedReviewAt &&
+            data.reviewedAt &&
+            data.reviewedAt.getTime() > data.requestedReviewAt.getTime()
+          ) {
+            return <Published />;
+          }
+
+          if (data.requestedReviewAt) {
+            return <InReview />;
+          }
+
+          return <UnpublishedDashboard />;
+        }}
+      />
     </Shell>
   );
 }

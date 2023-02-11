@@ -199,6 +199,13 @@ model User {
   verifiedNumbers      VerifiedNumber[]
   hosts                Host[]
 
+  // LuckyBrunch
+  completedProfileInformations Boolean   @default(false)
+  completedProfileCertificates Boolean   @default(false)
+  completedProfileServices     Boolean   @default(false)
+  requestedReviewAt            DateTime?
+  reviewedAt                   DateTime?
+
   @@map(name: "users")
 }
 
