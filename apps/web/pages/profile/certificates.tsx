@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
-
-import { NewCertificateButton } from "@calcom/features/certificates";
+import { NewCertificateButton, SubmitForReviewButton } from "@calcom/features/certificates";
 import Shell from "@calcom/features/shell/Shell";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
+import { trpc } from "@calcom/trpc/react";
 import {
   Button,
   List,
@@ -15,6 +14,8 @@ import {
 } from "@calcom/ui";
 import { FiDownload, FiEdit, FiFile, FiTrash2, FiUpload } from "@calcom/ui/components/icon";
 
+import { withQuery } from "@lib/QueryCell";
+
 export type List =
   | {
       title: string;
@@ -23,51 +24,31 @@ export type List =
     }[]
   | undefined;
 
-const certificatesInfo: List = [
-  {
-    title: "Certificate #1",
-    name: "Test",
-    description: "Here you can see all your active certificates",
-  },
-  {
-    title: "Certificate #2",
-    name: "Test",
-    description: "Here you can see all your active certificates",
-  },
-  {
-    title: "Certificate #3",
-    name: "Test",
-    description: "Here you can see all your active certificates",
-  },
-];
-
 export default function CertificatesPage() {
   const { t } = useLocale();
-  const [certificates, setCertificates] = useState<List>();
-
-  useEffect(() => {
-    // setCertificates(certificatesInfo);
-  }, []);
+  const WithQuery = withQuery(trpc.viewer.profile.getCertificates);
 
   return (
     <Shell
       heading={t("lb_certificate_heading")}
       subtitle={t("lb_certificate_subtitle")}
       CTA={<NewCertificateButton />}>
-      {/* EMPTY STATE */}
-      {!certificates ? (
-        <EmptyScreen
-          Icon={FiFile}
-          headline={t("lb_certificate_empty_state_heading")}
-          description={t("lb_certificate_empty_state_desc")}
-          buttonRaw={<NewCertificateButton />}
-        />
-      ) : (
-        // LIST STATE
-        <List>
-          {certificates &&
-            certificates
-              .map((certificate) => ({ ...certificate, title: certificate.title || certificate.name }))
+      <WithQuery
+        empty={() => (
+          <EmptyScreen
+            Icon={FiFile}
+            headline={t("lb_certificate_empty_state_heading")}
+            description={t("lb_certificate_empty_state_desc")}
+            buttonRaw={<NewCertificateButton />}
+          />
+        )}
+        success={({ data }) => (
+          <List>
+            {data
+              .map((certificate) => ({
+                ...certificate,
+                title: certificate.name || certificate.name,
+              }))
               .map((certificate) => (
                 <ListItem className="flex-col border-0" key={certificate.title}>
                   <div className="flex w-full flex-1 items-center space-x-2 p-4 rtl:space-x-reverse">
@@ -95,22 +76,10 @@ export default function CertificatesPage() {
                   </div>
                 </ListItem>
               ))}
-        </List>
-      )}
-      {/* SUBMIT FOR REVIEW BUTTON */}
-      {certificates && (
-        <div className="flex grow justify-end">
-          <Button
-            // disabled={isDisabled}
-            type="submit"
-            // loading={mutation.isLoading}
-            color="primary"
-            className="mt-12"
-            StartIcon={FiUpload}>
-            {t("lb_submit_for_review")}
-          </Button>
-        </div>
-      )}
+          </List>
+        )}
+      />
+      <SubmitForReviewButton />
     </Shell>
   );
 }
