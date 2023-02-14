@@ -11,7 +11,11 @@ import { RRule } from "rrule";
 import { z } from "zod";
 
 import BookingPageTagManager from "@calcom/app-store/BookingPageTagManager";
-import { getEventLocationValue, getSuccessPageLocationMessage } from "@calcom/app-store/locations";
+import {
+  getEventLocationValue,
+  getSuccessPageLocationMessage,
+  guessEventLocationType,
+} from "@calcom/app-store/locations";
 import { getEventTypeAppData } from "@calcom/app-store/utils";
 import { getEventName } from "@calcom/core/event";
 import dayjs, { ConfigType } from "@calcom/dayjs";
@@ -37,7 +41,7 @@ import { Prisma } from "@calcom/prisma/client";
 import { bookingMetadataSchema } from "@calcom/prisma/zod-utils";
 import { customInputSchema, EventTypeMetaDataSchema } from "@calcom/prisma/zod-utils";
 import { Button, EmailInput, HeadSeo } from "@calcom/ui";
-import { FiX, FiChevronLeft, FiCheck, FiCalendar } from "@calcom/ui/components/icon";
+import { FiX, FiExternalLink, FiChevronLeft, FiCheck, FiCalendar } from "@calcom/ui/components/icon";
 
 import { timeZone } from "@lib/clock";
 import { inferSSRProps } from "@lib/types/inferSSRProps";
@@ -204,7 +208,7 @@ export default function Success(props: SuccessProps) {
   }
   const status = props.bookingInfo?.status;
   const reschedule = props.bookingInfo.status === BookingStatus.ACCEPTED;
-  const cancellationReason = props.bookingInfo.cancellationReason;
+  const cancellationReason = props.bookingInfo.cancellationReason || props.bookingInfo.rejectionReason;
 
   const attendeeName =
     typeof props?.bookingInfo?.attendees?.[0]?.name === "string"
@@ -346,6 +350,7 @@ export default function Success(props: SuccessProps) {
     eventType.workflows.find((workflowEventType) =>
       workflowEventType.workflow.steps.find((step) => step.action === WorkflowActions.SMS_ATTENDEE)
     ) !== undefined;
+  const providerName = guessEventLocationType(location)?.label;
 
   return (
     <div className={isEmbed ? "" : "h-screen"} data-testid="success-page">
@@ -435,6 +440,17 @@ export default function Success(props: SuccessProps) {
                   <div className="mt-3">
                     <p className="text-gray-600 dark:text-gray-300">{getTitle()}</p>
                   </div>
+                  {props.paymentStatus && (
+                    <h4>
+                      {!props.paymentStatus.success &&
+                        !props.paymentStatus.refunded &&
+                        t("booking_with_payment_cancelled")}
+                      {props.paymentStatus.success &&
+                        !props.paymentStatus.refunded &&
+                        t("booking_with_payment_cancelled_already_paid")}
+                      {props.paymentStatus.refunded && t("booking_with_payment_cancelled_refunded")}
+                    </h4>
+                  )}
 
                   <div className="border-bookinglightest text-bookingdark dark:border-darkgray-200 mt-8 grid grid-cols-3 border-t pt-8 text-left dark:text-gray-300">
                     {(isCancelled || reschedule) && cancellationReason && (
@@ -498,8 +514,14 @@ export default function Success(props: SuccessProps) {
                         <div className="mt-3 font-medium">{t("where")}</div>
                         <div className="col-span-2 mt-3">
                           {locationToDisplay.startsWith("http") ? (
-                            <a title="Meeting Link" href={locationToDisplay}>
-                              {locationToDisplay}
+                            <a
+                              href={locationToDisplay}
+                              target="_blank"
+                              title={locationToDisplay}
+                              className="flex items-center gap-2 text-gray-700 underline dark:text-gray-50"
+                              rel="noreferrer">
+                              {providerName || "Link"}
+                              <FiExternalLink className="inline h-4 w-4 text-gray-700 dark:text-white" />
                             </a>
                           ) : (
                             locationToDisplay
@@ -1002,6 +1024,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       status: true,
       metadata: true,
       cancellationReason: true,
+      rejectionReason: true,
       user: {
         select: {
           id: true,
@@ -1104,6 +1127,20 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
     });
   }
 
+  const payment = await prisma.payment.findFirst({
+    where: {
+      bookingId: bookingInfo.id,
+    },
+    select: {
+      success: true,
+      refunded: true,
+    },
+  });
+  const paymentStatus = {
+    success: payment?.success,
+    refunded: payment?.refunded,
+  };
+
   return {
     props: {
       hideBranding: eventType.team ? eventType.team.hideBranding : eventType.users[0].hideBranding,
@@ -1113,6 +1150,7 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       trpcState: ssr.dehydrate(),
       dynamicEventName: bookingInfo?.eventType?.eventName || "",
       bookingInfo,
+      paymentStatus: payment ? paymentStatus : null,
     },
   };
 }
