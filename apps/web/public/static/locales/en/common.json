@@ -1595,7 +1595,7 @@
   "booking_with_payment_cancelled": "Paying for this event is no longer possible",
   "booking_with_payment_cancelled_already_paid": "A refund for this booking payment it's on the way.",
   "booking_with_payment_cancelled_refunded": "This booking payment has been refunded.",
-  "booking_confirmation_failed": "Booking confirmation failed"
+  "booking_confirmation_failed": "Booking confirmation failed",
   "lb_information_title": "Information",
   "lb_information_subtitle": "Here you can input your information data",
   "lb_first_name": "First Name",

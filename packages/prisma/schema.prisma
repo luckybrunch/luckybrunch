@@ -207,6 +207,13 @@ model User {
   requestedReviewAt            DateTime?
   reviewedAt                   DateTime?
 
+  companyName  String?
+  addressLine1 String?
+  addressLine2 String?
+  zip          String?
+  city         String?
+  country      String? // ISO 3166 codes
+
   @@map(name: "users")
 }
 
