@@ -137,6 +137,14 @@ enum UserPermissionRole {
   ADMIN
 }
 
+model Specialization {
+  id    Int     @id @default(autoincrement())
+  label String
+  icon  String?
+
+  users User[]
+}
+
 model User {
   id                   Int                     @id @default(autoincrement())
   username             String?                 @unique
@@ -201,11 +209,12 @@ model User {
   certificates         Certificate[]
 
   // LuckyBrunch
-  completedProfileInformations Boolean   @default(false)
-  completedProfileCertificates Boolean   @default(false)
-  completedProfileServices     Boolean   @default(false)
+  completedProfileInformations Boolean          @default(false)
+  completedProfileCertificates Boolean          @default(false)
+  completedProfileServices     Boolean          @default(false)
   requestedReviewAt            DateTime?
   reviewedAt                   DateTime?
+  specializations              Specialization[]
 
   companyName  String?
   addressLine1 String?
