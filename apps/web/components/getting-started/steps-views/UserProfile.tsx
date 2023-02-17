@@ -63,6 +63,16 @@ const UserProfile = (props: IUserProfileProps) => {
       showToast(t("problem_saving_user_profile"), "error");
     },
   });
+
+  const mutation2 = trpc.viewer.profile.setCompletedProfileServices.useMutation({
+    onSuccess: () => {
+      console.log("success");
+    },
+    onError: () => {
+      throw Error;
+    },
+  });
+
   const onSubmit = handleSubmit((data: { bio: string }) => {
     const { bio } = data;
 
@@ -72,6 +82,7 @@ const UserProfile = (props: IUserProfileProps) => {
       bio,
       completedOnboarding: true,
     });
+    mutation2.mutate({ completedProfileServices: true });
   });
 
   async function updateProfileHandler(event: FormEvent<HTMLFormElement>) {
@@ -83,21 +94,55 @@ const UserProfile = (props: IUserProfileProps) => {
   }
 
   const DEFAULT_EVENT_TYPES = [
+    // {
+    //   title: t("15min_meeting"),
+    //   slug: "15min",
+    //   length: 15,
+    // },
+    // {
+    //   title: t("30min_meeting"),
+    //   slug: "30min",
+    //   length: 30,
+    // },
+    // {
+    //   title: t("secret_meeting"),
+    //   slug: "30min",
+    //   length: 30,
+    // },
     {
-      title: t("15min_meeting"),
-      slug: "15min",
-      length: 15,
-    },
-    {
-      title: t("30min_meeting"),
-      slug: "30min",
+      title: "Unverbindliches Erstgespräch",
+      slug: "erstgespraech",
       length: 30,
     },
     {
-      title: t("secret_meeting"),
-      slug: "secret",
-      length: 15,
-      hidden: true,
+      title: "Erstberatung / Kennenlerngespräch",
+      slug: "erstberatung",
+      length: 30,
+    },
+    {
+      title: "Beratungsstunde (Zeiteinheit Vorgabe Berater)",
+      slug: "beratungsstunde",
+      length: 30,
+    },
+    {
+      title: "Ganzheitliche Ernähgrungscoaching (Zeiteinheit Vorgabe Berater)",
+      slug: "ernaehrungscoaching",
+      length: 30,
+    },
+    {
+      title: "Einkaufscoaching (Zeiteinheit Vorgabe Berater)",
+      slug: "einkaufscoaching",
+      length: 30,
+    },
+    {
+      title: "Erstellen eines individuellen Ernährungsplanes",
+      slug: "ernaehrungsplaene",
+      length: 30,
+    },
+    {
+      title: "Ernährungskurse, Seminare, Workshops in Unternehmen",
+      slug: "ernaehrungskurse",
+      length: 30,
     },
   ];
 

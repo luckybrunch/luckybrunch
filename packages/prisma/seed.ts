@@ -522,7 +522,43 @@ async function main() {
       name: "Admin Example",
       role: "ADMIN",
     },
-    eventTypes: [],
+    eventTypes: [
+      {
+        title: "Unverbindliches Erstgespräch",
+        slug: "erstgespraech",
+        length: 30,
+      },
+      {
+        title: "Erstberatung / Kennenlerngespräch",
+        slug: "erstberatung",
+        length: 30,
+      },
+      {
+        title: "Beratungsstunde (Zeiteinheit Vorgabe Berater)",
+        slug: "beratungsstunde",
+        length: 30,
+      },
+      {
+        title: "Ganzheitliche Ernähgrungscoaching (Zeiteinheit Vorgabe Berater)",
+        slug: "ernaehrungscoaching",
+        length: 30,
+      },
+      {
+        title: "Einkaufscoaching (Zeiteinheit Vorgabe Berater)",
+        slug: "einkaufscoaching",
+        length: 30,
+      },
+      {
+        title: "Erstellen eines individuellen Ernährungsplanes",
+        slug: "ernaehrungsplaene",
+        length: 30,
+      },
+      {
+        title: "Ernährungskurse, Seminare, Workshops in Unternehmen",
+        slug: "ernaehrungskurse",
+        length: 30,
+      },
+    ],
   });
 
   const pro2UserTeam = await createUserAndEventType({

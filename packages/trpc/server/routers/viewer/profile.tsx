@@ -68,4 +68,21 @@ export const profileRouter = router({
         },
       });
     }),
+  setCompletedProfileServices: authedProcedure
+    .input(
+      z.object({
+        completedProfileServices: z.boolean(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { prisma, user } = ctx;
+      const completedProfileServices = await ctx.prisma.user.update({
+        where: {
+          id: ctx.user.id,
+        },
+        data: {
+          completedProfileServices: input.completedProfileServices,
+        },
+      });
+    }),
 });

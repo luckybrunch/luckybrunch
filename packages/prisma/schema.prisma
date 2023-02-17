@@ -95,6 +95,10 @@ model EventType {
   /// @zod.custom(imports.bookingLimitsType)
   bookingLimits           Json?
 
+  // LUCKYBRUNCH
+  serviceType   ServiceType? @relation(fields: [serviceTypeId], references: [id])
+  serviceTypeId Int?
+
   @@unique([userId, slug])
   @@unique([teamId, slug])
 }
@@ -166,6 +170,7 @@ model User {
   theme                String?
   createdDate          DateTime                @default(now()) @map(name: "created")
   trialEndsAt          DateTime?
+  // What does this relation mean
   eventTypes           EventType[]             @relation("user_eventtype")
   credentials          Credential[]
   teams                Membership[]
@@ -703,4 +708,11 @@ model CertificateType {
   id           Int           @id @default(autoincrement())
   name         String
   certificates Certificate[]
+}
+
+model ServiceType {
+  id          Int         @id @default(autoincrement())
+  name        String
+  description String?
+  services    EventType[]
 }
