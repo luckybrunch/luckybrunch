@@ -1,11 +1,10 @@
-import { DesktopComputerIcon, HomeIcon, CheckIcon } from "@heroicons/react/solid";
-import { IdentityProvider } from "@prisma/client";
+import { DesktopComputerIcon, HomeIcon } from "@heroicons/react/solid";
 import crypto from "crypto";
 import MarkdownIt from "markdown-it";
-import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import Shell from "@calcom/features/shell/Shell";
+import classNames from "@calcom/lib/classNames";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import turndown from "@calcom/lib/turndownService";
 import { trpc } from "@calcom/trpc/react";
@@ -15,12 +14,12 @@ import {
   Form,
   ImageUploader,
   Label,
-  Meta,
   showToast,
   SkeletonAvatar,
   SkeletonButton,
   SkeletonContainer,
   SkeletonText,
+  Select,
   TextField,
   Editor,
   Checkbox,
@@ -207,6 +206,20 @@ const ProfileForm = ({
       <div className="mt-8">
         <h4 className="text-lg font-bold">{t("lb_specialities")}</h4>
         <h6 className="text-sm text-gray-700">{t("lb_specialities_hint")}</h6>
+      </div>
+
+      <div className="mt-5">
+        <Select
+          placeholder={t("select")}
+          //options={options}
+          isSearchable={false}
+          //onChange={props.onChange}
+          className={classNames("block w-full min-w-0 flex-1 rounded-sm text-sm")}
+          //value={value}
+          //components={{ Option, SingleValue }}
+          isMulti={true}
+          //check code above for options
+        />
       </div>
 
       <div className="mt-8">
