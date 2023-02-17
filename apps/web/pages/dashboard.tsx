@@ -31,7 +31,7 @@ function UnpublishedDashboard() {
 
   type Item = {
     title: string;
-    description: string;
+    description: string | (() => JSX.Element);
     icon: () => JSX.Element;
     href: string;
     isDone: boolean;
@@ -43,8 +43,17 @@ function UnpublishedDashboard() {
     }
     return [
       {
-        title: "Add your information",
-        description: "You need to upload your certification to get the access to the platform",
+        title: "Complete your information",
+        description: () => (
+          <ListItemText component="div">
+            <p>You need to add the following parameters to your profile to submit it to review:</p>
+            <ul className="ml-5 list-disc">
+              <li>Name & Bio</li>
+              <li>Profile image</li>
+              <li>Specializations</li>
+            </ul>
+          </ListItemText>
+        ),
         icon: () => <FiInfo />,
         href: "/profile/information",
         isDone: data.completedProfileInformations,
@@ -69,14 +78,18 @@ function UnpublishedDashboard() {
   const renderItem = ({ title, description, icon, href, isDone }: Item) => (
     <ListItem rounded={false} className="flex-col border-0 md:border-0" key={title}>
       <div className="flex w-full flex-1 items-center space-x-2 rtl:space-x-reverse lg:p-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200">{icon()}</div>
+        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 ">{icon()}</div>
         <div className="flex-grow truncate pl-2">
           <ListItemTitle
             component="h3"
             className="mb-1 space-x-2 truncate text-sm font-medium text-neutral-900">
             {title}
           </ListItemTitle>
-          <ListItemText component="p">{description}</ListItemText>
+          {typeof description === "string" ? (
+            <ListItemText component="p">{description}</ListItemText>
+          ) : (
+            description()
+          )}
         </div>
         <div>
           {isDone ? (
