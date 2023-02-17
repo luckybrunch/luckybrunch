@@ -1,7 +1,72 @@
-import Shell from "@calcom/features/shell/Shell";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
+import { GetServerSidePropsContext } from "next";
+import Link from "next/link";
+import { useRouter } from "next/router";
+import { FC, useEffect, useState, memo } from "react";
+import { z } from "zod";
 
-export default function ServicesPage() {
-  return <Shell>Services</Shell>;
+import {
+  CreateEventTypeButton,
+  EventTypeDescriptionLazy as EventTypeDescription,
+} from "@calcom/features/eventtypes/components";
+import Shell from "@calcom/features/shell/Shell";
+import { APP_NAME, CAL_URL, WEBAPP_URL } from "@calcom/lib/constants";
+import { useLocale } from "@calcom/lib/hooks/useLocale";
+import useMediaQuery from "@calcom/lib/hooks/useMediaQuery";
+import { useTypedQuery } from "@calcom/lib/hooks/useTypedQuery";
+import { RouterOutputs, trpc, TRPCClientError } from "@calcom/trpc/react";
+import {
+  Avatar,
+  AvatarGroup,
+  Badge,
+  Button,
+  ButtonGroup,
+  ConfirmationDialogContent,
+  Dialog,
+  Dropdown,
+  DropdownItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuPortal,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+  EmptyScreen,
+  showToast,
+  Switch,
+  Tooltip,
+  HorizontalTabs,
+} from "@calcom/ui";
+import {
+  FiArrowDown,
+  FiArrowUp,
+  FiClipboard,
+  FiCode,
+  FiCopy,
+  FiEdit,
+  FiEdit2,
+  FiExternalLink,
+  FiLink,
+  FiMoreHorizontal,
+  FiTrash,
+  FiUpload,
+  FiUsers,
+} from "@calcom/ui/components/icon";
+
+import { withQuery } from "@lib/QueryCell";
+import { HttpError } from "@lib/core/http/error";
+
+import { EmbedButton, EmbedDialog } from "@components/Embed";
+import SkeletonLoader from "@components/eventtype/SkeletonLoader";
+
+import { ssrInit } from "@server/lib/ssr";
+
+type EventTypeGroups = RouterOutputs["viewer"]["eventTypes"]["getByViewer"]["eventTypeGroups"];
+type EventTypeGroupProfile = EventTypeGroups[number]["profile"];
+
+interface EventTypeListHeadingProps {
+  profile: EventTypeGroupProfile;
+  membershipCount: number;
+  teamId?: number | null;
 }
 
 type EventTypeGroup = EventTypeGroups[number];
