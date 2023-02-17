@@ -1,8 +1,8 @@
-import { useState } from "react";
-import { FormEvent } from "react";
+import { useState, FormEvent } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
+import { trpc } from "@calcom/trpc/react";
 import {
   Button,
   Dialog,
@@ -15,6 +15,7 @@ import {
   Label,
   Select,
   TextArea,
+  showToast,
 } from "@calcom/ui";
 import { FiAlertTriangle, FiPlus } from "@calcom/ui/components/icon";
 
@@ -22,23 +23,27 @@ export function NewCertificateButton() {
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File[] | null>(null);
+  const { reset } = useForm();
 
-  const documentTypeOptions = [
-    { value: "JPG", label: "JPG" },
-    { value: "PDF", label: "PDF" },
-    { value: "PNG", label: "PNG" },
-  ];
+  const { data: certificateTypes } = trpc.viewer.profile.getCertificateTypes.useQuery();
+  const ctx = trpc.useContext();
+  const certificateTypeOptions = certificateTypes?.map((item) => ({ label: item.name, value: item.id }));
+
+  type CertificateTypeOption = {
+    value: number;
+    label: string;
+  };
 
   type FormValues = {
     certificate_name: string;
-    document_type: string;
-    description: string;
+    certificate_type: CertificateTypeOption | null;
+    certificate_desc: string;
   };
 
   const defaultValues = {
     certificate_name: "",
-    document_type: "",
-    description: "",
+    certificate_type: null,
+    certificate_desc: "",
   };
 
   const formMethods = useForm<FormValues>({
@@ -51,58 +56,31 @@ export function NewCertificateButton() {
 
   const isDisabled = isSubmitting || !isDirty;
 
-  // FILE UPLOAD ⬇ ️
+  const mutation = trpc.viewer.profile.addCertificate.useMutation({
+    onSuccess: () => {
+      showToast(t("settings_updated_successfully"), "success");
+      ctx.viewer.profile.getCertificates.invalidate();
+      setOpen(false);
+    },
+    onError: () => {
+      showToast(t("error_updating_settings"), "error");
+    },
+  });
 
-  // WHAT IS THE useFileReader FOR? for the actual upload?
+  const onSubmit = (input: FormValues) => {
+    console.log(input);
+    if (input.certificate_type === null) throw Error("No certificate selected");
 
-  //   type ReadAsMethod = "readAsText" | "readAsDataURL" | "readAsArrayBuffer" | "readAsBinaryString";
-  //   interface FileEvent<T = Element> extends FormEvent<T> {
-  //     target: EventTarget & T;
-  //   }
+    const certificate = {
+      name: input.certificate_name,
+      description: input.certificate_desc,
+      typeId: input.certificate_type.value,
+      fileUrl: "implement later",
+    };
 
-  //   type UseFileReaderProps = {
-  //     method: ReadAsMethod;
-  //     onLoad?: (result: unknown) => void;
-  //   };
-
-  //   const useFileReader = (options: UseFileReaderProps) => {
-  //     const { method = "readAsText", onLoad } = options;
-  //     const [loading, setLoading] = useState<boolean>(false);
-  //     const [error, setError] = useState<DOMException | null>(null);
-  //     const [result, setResult] = useState<string | ArrayBuffer | null>(null);
-
-  //     useEffect(() => {
-  //       console.log(file?.name);
-  //       if (!file && result) {
-  //         setResult(null);
-  //       }
-  //     }, [file, result]);
-
-  //     useEffect(() => {
-  //       if (!file) {
-  //         return;
-  //       }
-
-  //       const reader = new FileReader();
-  //       reader.onloadstart = () => setLoading(true);
-  //       reader.onloadend = () => setLoading(false);
-  //       reader.onerror = () => setError(reader.error);
-
-  //       reader.onload = (e: ProgressEvent<FileReader>) => {
-  //         setResult(e.target?.result ?? null);
-  //         if (onLoad) {
-  //           onLoad(e.target?.result ?? null);
-  //         }
-  //       };
-  //       reader[method](file);
-  //     }, [file, method, onLoad]);
-
-  //     return [{ result, error, file, loading }, setFile] as const;
-  //   };
-
-  //   const [{ result }, setFile] = useFileReader({
-  //     method: "readAsDataURL",
-  //   });
+    mutation.mutate(certificate);
+    reset(input);
+  };
 
   const onInputFile = (e: FormEvent<HTMLInputElement>) => {
     if (!e.currentTarget.files?.length) {
@@ -136,7 +114,7 @@ export function NewCertificateButton() {
       </DialogTrigger>
       <DialogContent title={t("lb_certificate_new_dialog_title")} type="creation" Icon={FiAlertTriangle}>
         <>
-          <Form form={formMethods} handleSubmit={() => console.log("Hey")}>
+          <Form form={formMethods} handleSubmit={onSubmit}>
             <div className="flex items-start justify-between">
               <div>
                 <Label className="mt-8 text-gray-900">
@@ -170,26 +148,30 @@ export function NewCertificateButton() {
               <TextField
                 label={t("lb_certificate_name")}
                 hint={t("lb_certificate_hint")}
+                required
                 {...formMethods.register("certificate_name")}
               />
             </div>
 
             <Controller
               // This name prop, I don't get
-              name="document_type"
+              name="certificate_type"
               control={formMethods.control}
-              render={({ field: { value } }) => (
+              rules={{ required: true }}
+              render={({ field: { value }, fieldState: { error } }) => (
                 <>
                   <Label className="mt-8 text-gray-900">
                     <>{t("lb_certificate_document_type")}</>
                   </Label>
                   <Select
                     value={value}
-                    options={documentTypeOptions}
-                    onChange={(event) => {
-                      if (event) formMethods.setValue("document_type", { ...event });
+                    options={certificateTypeOptions}
+                    isLoading={certificateTypeOptions === undefined}
+                    onChange={(value) => {
+                      if (value) formMethods.setValue("certificate_type", value);
                     }}
                   />
+                  {error?.type === "required" && <div className="text-red-500">Missing</div>}
                   <div className="text-gray mt-2 flex items-center text-sm text-gray-700">
                     {t("lb_certificate_document_type_hint")}
                   </div>
@@ -200,7 +182,7 @@ export function NewCertificateButton() {
               <Label className="mt-8 text-gray-900">
                 <>{t("lb_certificate_desc")}</>
               </Label>
-              <TextArea />
+              <TextArea {...formMethods.register("certificate_desc")} />
             </div>
 
             <DialogFooter>

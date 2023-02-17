@@ -12,7 +12,7 @@ import {
   ButtonGroup,
   Tooltip,
 } from "@calcom/ui";
-import { FiDownload, FiEdit, FiFile, FiTrash2, FiUpload } from "@calcom/ui/components/icon";
+import { FiDownload, FiEdit, FiFile, FiTrash2 } from "@calcom/ui/components/icon";
 
 import { withQuery } from "@lib/QueryCell";
 
