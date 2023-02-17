@@ -5,7 +5,7 @@
 
 */
 -- AlterTable
-ALTER TABLE "EventType" ADD COLUMN     "serviceTypeId" INTEGER NOT NULL;
+ALTER TABLE "EventType" ADD COLUMN     "serviceTypeId" INTEGER;
 
 -- CreateTable
 CREATE TABLE "ServiceType" (
@@ -17,4 +17,4 @@ CREATE TABLE "ServiceType" (
 );
 
 -- AddForeignKey
-ALTER TABLE "EventType" ADD CONSTRAINT "EventType_serviceTypeId_fkey" FOREIGN KEY ("serviceTypeId") REFERENCES "ServiceType"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "EventType" ADD CONSTRAINT "EventType_serviceTypeId_fkey" FOREIGN KEY ("serviceTypeId") REFERENCES "ServiceType"("id") ON DELETE SET NULL ON UPDATE CASCADE;
