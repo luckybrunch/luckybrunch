@@ -78,7 +78,9 @@ function UnpublishedDashboard() {
   const renderItem = ({ title, description, icon, href, isDone }: Item) => (
     <ListItem rounded={false} className="flex-col border-0 md:border-0" key={title}>
       <div className="flex w-full flex-1 items-center space-x-2 rtl:space-x-reverse lg:p-2">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gray-200 ">{icon()}</div>
+        <div className="bg-brand-100 text-brand-500 flex h-10 w-10 items-center justify-center rounded-full">
+          {icon()}
+        </div>
         <div className="flex-grow truncate pl-2">
           <ListItemTitle
             component="h3"

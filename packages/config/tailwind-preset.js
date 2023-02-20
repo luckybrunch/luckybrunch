@@ -6,7 +6,7 @@ module.exports = {
   content: [
     "./pages/**/*.{js,ts,jsx,tsx}",
     "./components/**/*.{js,ts,jsx,tsx}",
-    "../../packages/app-store/**/*{components,pages}/**/*.{js,ts,jsx,tsx}",
+    "../../packages/app-store/**/{components,pages}/**/*.{js,ts,jsx,tsx}",
     "../../packages/features/**/*.{js,ts,jsx,tsx}",
     "../../packages/ui/**/*.{js,ts,jsx,tsx}",
   ],
@@ -33,17 +33,29 @@ module.exports = {
         brand: {
           // Figure out a way to automate this for self hosted users
           // Goto https://javisperez.github.io/tailwindcolorshades to generate your brand color
-          50: "#d1d5db",
-          100: "#9ca3af",
-          200: "#6b7280",
-          300: "#4b5563",
-          400: "#374151",
-          500: "#111827", // Brand color
-          600: "#0f1623",
-          700: "#0d121d",
-          800: "#0a0e17",
-          900: "#080c13",
+          50: "#f4fbfb",
+          100: "#e5fdfd",
+          200: "#caeded",
+          300: "#a9e2e2",
+          400: "#69cdcd",
+          500: "#29b7b7",
+          600: "#25a5a5",
+          700: "#1f8989",
+          800: "#196e6e",
+          900: "#145a5a", //Changed all of these shades to green
           DEFAULT: "var(--brand-color)",
+        },
+        beige: {
+          50: "#FDFCFA",
+          100: "#FDFBF7",
+          200: "#fff6e3",
+          300: "#fff0d3",
+          400: "#ffe5b1",
+          500: "#ffda90",
+          600: "#e6c482",
+          700: "#bfa46c",
+          800: "#998356",
+          900: "#7d6b47", //Added this beige
         },
         gray: {
           50: "#F9FAFB",

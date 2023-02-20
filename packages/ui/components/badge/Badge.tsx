@@ -13,6 +13,7 @@ const badgeClassNameByVariant = {
   blue: "bg-blue-100 text-blue-800",
   red: "bg-red-100 text-red-800",
   error: "bg-red-100 text-red-800",
+  lb_green: "bg-brand-100 text-gray-800",
 };
 
 const classNameBySize = {

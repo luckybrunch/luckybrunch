@@ -10,7 +10,7 @@ body  {
 }
 
 :root {
-  --brand-color: #292929;
+  --brand-color: #29B7B7;
   --brand-text-color: #ffffff;
   --brand-color-dark-mode: #fafafa;
   --brand-text-color-dark-mode: #292929;
@@ -154,7 +154,7 @@ input[type='text']:focus { box-shadow: none; }
 
 
 button[role="switch"][data-state="checked"] {
-  @apply bg-gray-900;
+  @apply bg-brand-400;
 }
 /* TODO: avoid global specific css */
 /* button[role="switch"][data-state="checked"] span {

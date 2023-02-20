@@ -347,7 +347,7 @@ export const EventTypeList = ({ group, groupIndex, readOnly, types }: EventTypeL
                       )}
                       <div className="flex items-center justify-between space-x-2 rtl:space-x-reverse">
                         {type.hidden && (
-                          <Badge variant="gray" size="lg">
+                          <Badge variant="lb_green" size="lg">
                             {t("hidden")}
                           </Badge>
                         )}
@@ -573,7 +573,7 @@ const EventTypeListHeading = ({
         {membershipCount && teamId && (
           <span className="relative -top-px text-xs text-gray-500 ltr:ml-2 ltr:mr-2 rtl:ml-2">
             <Link href={`/settings/teams/${teamId}/members`}>
-              <Badge variant="gray">
+              <Badge variant="lb_green">
                 <FiUsers className="mr-1 -mt-px inline h-3 w-3" />
                 {membershipCount}
               </Badge>

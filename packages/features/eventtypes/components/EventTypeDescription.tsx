@@ -53,21 +53,21 @@ export const EventTypeDescription = ({ eventType, className }: EventTypeDescript
           {eventType.metadata?.multipleDuration ? (
             eventType.metadata.multipleDuration.map((dur, idx) => (
               <li key={idx}>
-                <Badge variant="gray" size="lg" StartIcon={FiClock}>
+                <Badge variant="lb_green" size="lg" StartIcon={FiClock}>
                   {dur}m
                 </Badge>
               </li>
             ))
           ) : (
             <li>
-              <Badge variant="gray" size="lg" StartIcon={FiClock}>
+              <Badge variant="lb_green" size="lg" StartIcon={FiClock}>
                 {eventType.length}m
               </Badge>
             </li>
           )}
           {eventType.schedulingType && (
             <li>
-              <Badge variant="gray" size="lg" StartIcon={FiUsers}>
+              <Badge variant="lb_green" size="lg" StartIcon={FiUsers}>
                 {eventType.schedulingType === SchedulingType.ROUND_ROBIN && t("round_robin")}
                 {eventType.schedulingType === SchedulingType.COLLECTIVE && t("collective")}
               </Badge>
@@ -84,7 +84,7 @@ export const EventTypeDescription = ({ eventType, className }: EventTypeDescript
           )}
           {stripeAppData.price > 0 && (
             <li>
-              <Badge variant="gray" size="lg" StartIcon={FiCreditCard}>
+              <Badge variant="lb_green" size="lg" StartIcon={FiCreditCard}>
                 <IntlProvider locale="en">
                   <FormattedNumber
                     value={stripeAppData.price / 100.0}
