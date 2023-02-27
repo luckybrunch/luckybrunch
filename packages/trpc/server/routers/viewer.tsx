@@ -709,6 +709,14 @@ const loggedInViewerRouter = router({
         },
       });
 
+      // LuckyBrunch: Set complete profile info to true
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          completedProfileInformations: true,
+        },
+      });
+
       // Sync Services
       await syncServicesUpdateWebUser(updatedUser);
 
