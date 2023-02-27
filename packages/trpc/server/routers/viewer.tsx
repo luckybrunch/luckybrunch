@@ -50,6 +50,7 @@ import { ssoRouter } from "./viewer/sso";
 import { viewerTeamsRouter } from "./viewer/teams";
 import { webhookRouter } from "./viewer/webhook";
 import { workflowsRouter } from "./viewer/workflows";
+import { userProfileRouter } from "./viewer/userProfiles"
 
 // things that unauthenticated users can query about themselves
 const publicViewerRouter = router({
@@ -1266,5 +1267,6 @@ export const viewerRouter = mergeRouters(
     appsRouter,
     // LuckyBrunch
     profile: profileRouter,
+    userProfile: userProfileRouter
   })
 );

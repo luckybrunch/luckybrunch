@@ -27,7 +27,19 @@ import { collectPageParameters, telemetryEventTypes, useTelemetry } from "@calco
 import prisma from "@calcom/prisma";
 import { baseEventTypeSelect } from "@calcom/prisma/selects";
 import { EventTypeMetaDataSchema } from "@calcom/prisma/zod-utils";
-import { HeadSeo, AvatarGroup, Avatar } from "@calcom/ui";
+import { trpc } from "@calcom/trpc/react";
+import {
+  HeadSeo,
+  AvatarGroup,
+  Avatar,
+  Badge,
+  ListItemText,
+  ListItem,
+  ListItemTitle,
+  List,
+  Button,
+} from "@calcom/ui";
+import { FiEye } from "@calcom/ui/components/icon";
 import { BadgeCheckIcon, FiArrowRight } from "@calcom/ui/components/icon";
 
 import { inferSSRProps } from "@lib/types/inferSSRProps";
@@ -40,10 +52,32 @@ const md = new MarkdownIt("default", { html: true, breaks: true, linkify: true }
 export default function User(props: inferSSRProps<typeof getServerSideProps> & EmbedProps) {
   const { users, profile, eventTypes, isDynamicGroup, dynamicNames, dynamicUsernames, isSingleUser } = props;
   const [user] = users; //To be used when we only have a single user, not dynamic group
-  useTheme(user.theme);
+  useTheme("light"); //user.theme
   const { t } = useLocale();
   const router = useRouter();
+  const { data: userProfileInfo } = trpc.viewer.userProfile.getUserProfileList.useQuery();
+  let userProfileList;
 
+  // These Information have to be there, right? So it actually needs no "if batches == null then..." logic?
+  if (userProfileInfo) {
+    userProfileList = [
+      {
+        title: t("lb_specialization"),
+        batches: userProfileInfo[0].specializations.map(function (item) {
+          return item["label"];
+        }),
+      },
+      {
+        title: t("location"),
+        description: `${userProfileInfo[0].addressLine1}, ${userProfileInfo[0].zip} ${userProfileInfo[0].city} `,
+        batches: [t("lb_online"), t("lb_home")], // Add this when input is there
+      },
+      {
+        title: t("lb_certificates"),
+        description: t("lb_certified_nutritionist"),
+      },
+    ];
+  }
   const isBioEmpty = !user.bio || !user.bio.replace("<p><br></p>", "").length;
 
   const groupEventTypes = props.users.some((user) => !user.allowDynamicBooking) ? (
@@ -151,8 +185,47 @@ export default function User(props: inferSSRProps<typeof getServerSideProps> & E
                   />
                 </>
               )}
+              {/* ––––––––– HERE LUCKYBRUNCH CHANGES –––––––– */}
+
+              {/* <hr className="my-8 border border-gray-200 text-3xl" /> */}
+
+              <List className="mt-5">
+                {userProfileList &&
+                  userProfileList.map((list) => (
+                    <ListItem rounded={false} className="flex-col border-0 md:border-0" key={list.title}>
+                      <div className="flex w-full flex-1 items-center space-x-2 rtl:space-x-reverse lg:p-2">
+                        <div className="flex-grow truncate pl-2">
+                          <ListItemTitle
+                            component="h3"
+                            className="mb-1 space-x-2 truncate text-left text-sm font-medium text-neutral-900">
+                            {list.title}
+                          </ListItemTitle>
+                          <div className="text-left">
+                            {list.description && (
+                              <ListItemText component="p">{list.description}</ListItemText>
+                            )}
+                            {list.batches &&
+                              list.batches.map((batch) => (
+                                <Badge variant="lb_green" className="mr-2">
+                                  {batch}
+                                </Badge>
+                              ))}
+                          </div>
+                        </div>
+                        {list.title == "Zertifikate" && (
+                          <Button color="primary" StartIcon={FiEye}>
+                            Ansehen
+                          </Button>
+                        )}
+                      </div>
+                    </ListItem>
+                  ))}
+              </List>
             </div>
           )}
+          <h1 className="font-cal mb-4 text-center text-3xl text-gray-900 dark:text-white">
+            Make an Appointment
+          </h1>
           <div
             className={classNames(
               "rounded-md ",

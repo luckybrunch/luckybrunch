@@ -50,7 +50,7 @@ export default function CertificatesPage() {
                 title: certificate.name || certificate.name,
               }))
               .map((certificate) => (
-                <ListItem className="flex-col border-0" key={certificate.title}>
+                <ListItem rounded={false} className="flex-col border-0 md:border-0" key={certificate.title}>
                   <div className="flex w-full flex-1 items-center space-x-2 p-4 rtl:space-x-reverse">
                     <div className="flex-grow truncate pl-2">
                       <ListItemTitle
