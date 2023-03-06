@@ -1,6 +1,6 @@
 import { useState, FormEvent } from "react";
 import { Controller, useForm } from "react-hook-form";
-
+import type { Certificate } from "@calcom/prisma/client"
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
 import {
@@ -20,7 +20,7 @@ import {
 import { FiEdit, FiPlus } from "@calcom/ui/components/icon";
 import { FiAlertTriangle } from "@calcom/ui/components/icon";
 
-export function UpdateCertificateButton({ certificate }: { certificate?: any }) {
+export function UpdateCertificateButton({ certificate }: { certificate?: Certificate }) {
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File[] | null>(null);
@@ -60,12 +60,12 @@ export function UpdateCertificateButton({ certificate }: { certificate?: any }) 
 
   const mutation = trpc.viewer.profile.updateCertificate.useMutation({
     onSuccess: () => {
-      showToast(t("settings_updated_successfully"), "success");
+      showToast(t("lb_update_certificate_toast"), "success");
       ctx.viewer.profile.getCertificates.invalidate();
       setOpen(false);
     },
     onError: () => {
-      showToast(t("error_updating_settings"), "error");
+      showToast(t("lb_update_certificate_error"), "error");
     },
   });
 

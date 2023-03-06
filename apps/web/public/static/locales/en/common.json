@@ -1648,5 +1648,8 @@
   "lb_certified_nutritionist": "This nutritionist is certified",
   "lb_specialization": "Specialization",
   "lb_make_appointment": "Book an appointment",
-  "lb_view": "View"
+  "lb_view": "View",
+  "lb_update_certificate_toast": "Certificate updated successfully",
+  "lb_update_certificate_error": "Error updating certificate"
+  
 }
