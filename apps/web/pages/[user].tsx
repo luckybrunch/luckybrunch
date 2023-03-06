@@ -214,7 +214,7 @@ export default function User(props: inferSSRProps<typeof getServerSideProps> & E
                         </div>
                         {list.title == "Zertifikate" && (
                           <Button color="primary" StartIcon={FiEye}>
-                            Ansehen
+                            {t("lb_view")}
                           </Button>
                         )}
                       </div>
@@ -224,7 +224,7 @@ export default function User(props: inferSSRProps<typeof getServerSideProps> & E
             </div>
           )}
           <h1 className="font-cal mb-4 text-center text-3xl text-gray-900 dark:text-white">
-            Make an Appointment
+          {t("lb_make_appointment")}
           </h1>
           <div
             className={classNames(

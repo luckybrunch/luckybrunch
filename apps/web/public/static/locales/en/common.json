@@ -1638,12 +1638,14 @@
   "lb_submit_for_review": "Submit for Review",
   "lb_services_page_title": "Services",
   "lb_services_page_subtitle": "Here you can manage all the services that you offer",
-  "lb_delete_service_type": "delete service",
+  "lb_delete_service_type": "Delete service",
   "lb_confirm_delete_service_type": "Yes, delete service",
   "lb_delete_service_type_description": "Are you sure you want to delete this event type? Anyone who you've shared this link with will no longer be able to book using it.",
   "lb_new_service_type_heading": "Create your first service",
   "lb_new_service_type_description": "Services enable you to share links that show available times on your calendar and allow people to make bookings with you.",
-  "lb_certificates": "certificates",
+  "lb_certificates": "Certificates",
   "lb_certified_nutritionist": "This nutritionist is certified",
-  "lb_specialization": "specialization"
+  "lb_specialization": "Specialization",
+  "lb_make_appointment": "Book an appointment",
+  "lb_view": "View"
 }
