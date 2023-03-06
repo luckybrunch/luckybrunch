@@ -1,2 +1,2 @@
-export { NewCertificateButton } from "./NewCertificateButton";
+export { UpdateCertificateButton } from "./UpdateCertificateButton";
 export { SubmitForReviewButton } from "./SubmitForReviewButton";

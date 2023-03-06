@@ -17,15 +17,17 @@ import {
   TextArea,
   showToast,
 } from "@calcom/ui";
-import { FiAlertTriangle, FiPlus } from "@calcom/ui/components/icon";
+import { FiEdit, FiPlus } from "@calcom/ui/components/icon";
+import { FiAlertTriangle } from "@calcom/ui/components/icon";
 
-export function NewCertificateButton() {
+export function UpdateCertificateButton({ certificate }: { certificate?: any }) {
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File[] | null>(null);
   const { reset } = useForm();
 
   const { data: certificateTypes } = trpc.viewer.profile.getCertificateTypes.useQuery();
+
   const ctx = trpc.useContext();
   const certificateTypeOptions = certificateTypes?.map((item) => ({ label: item.name, value: item.id }));
 
@@ -41,9 +43,9 @@ export function NewCertificateButton() {
   };
 
   const defaultValues = {
-    certificate_name: "",
-    certificate_type: null,
-    certificate_desc: "",
+    certificate_name: certificate ? certificate.name : "",
+    certificate_type: certificate ? { value: certificate.type.id, label: certificate.type.name } : null,
+    certificate_desc: certificate ? certificate.description : "",
   };
 
   const formMethods = useForm<FormValues>({
@@ -56,7 +58,7 @@ export function NewCertificateButton() {
 
   const isDisabled = isSubmitting || !isDirty;
 
-  const mutation = trpc.viewer.profile.addCertificate.useMutation({
+  const mutation = trpc.viewer.profile.updateCertificate.useMutation({
     onSuccess: () => {
       showToast(t("settings_updated_successfully"), "success");
       ctx.viewer.profile.getCertificates.invalidate();
@@ -68,17 +70,17 @@ export function NewCertificateButton() {
   });
 
   const onSubmit = (input: FormValues) => {
-    console.log(input);
     if (input.certificate_type === null) throw Error("No certificate selected");
 
-    const certificate = {
+    const certificateForm = {
+      certId: certificate ? certificate.id : undefined,
       name: input.certificate_name,
       description: input.certificate_desc,
       typeId: input.certificate_type.value,
       fileUrl: "implement later",
     };
-
-    mutation.mutate(certificate);
+    console.log("certificateForm: ", certificateForm);
+    mutation.mutate(certificateForm);
     reset(input);
   };
 
@@ -108,11 +110,19 @@ export function NewCertificateButton() {
         setOpen(open);
       }}>
       <DialogTrigger asChild>
-        <Button data-testid="delete-account" color="primary" className="mt-1 border-2" StartIcon={FiPlus}>
-          {t("add")}
-        </Button>
+        {certificate ? (
+          <Button color="secondary" StartIcon={FiEdit} />
+        ) : (
+          <Button data-testid="delete-account" color="primary" className="mt-1 border-2" StartIcon={FiPlus}>
+            {t("add")}
+          </Button>
+        )}
       </DialogTrigger>
-      <DialogContent title={t("lb_certificate_new_dialog_title")} type="creation" Icon={FiAlertTriangle}>
+
+      <DialogContent
+        title={certificate ? t("lb_edit_certificate_dialog_title") : t("lb_add_certificate_dialog_title")}
+        type="creation"
+        Icon={FiAlertTriangle}>
         <>
           <Form form={formMethods} handleSubmit={onSubmit}>
             <div className="flex items-start justify-between">
@@ -154,7 +164,6 @@ export function NewCertificateButton() {
             </div>
 
             <Controller
-              // This name prop, I don't get
               name="certificate_type"
               control={formMethods.control}
               rules={{ required: true }}
@@ -187,7 +196,7 @@ export function NewCertificateButton() {
 
             <DialogFooter>
               <Button disabled={isDisabled} color="primary" type="submit">
-                {t("update")}
+                {certificate ? t("update") : t("add")}
               </Button>
               <DialogClose />
             </DialogFooter>

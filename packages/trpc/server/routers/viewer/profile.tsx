@@ -5,12 +5,24 @@ import { authedProcedure, router } from "../../trpc";
 export const profileRouter = router({
   getCertificates: authedProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
-
     const certificates = await prisma.certificate.findMany({
       where: { userId: ctx.user.id },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        fileUrl: true,
+        type: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
     });
     return certificates;
   }),
+
   getOnboardingFlags: authedProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
 
@@ -40,9 +52,10 @@ export const profileRouter = router({
     return certificateTypes;
   }),
 
-  addCertificate: authedProcedure
+  updateCertificate: authedProcedure
     .input(
       z.object({
+        certId: z.number().optional(),
         name: z.string(),
         description: z.string(),
         typeId: z.number(),
@@ -51,15 +64,30 @@ export const profileRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { prisma, user } = ctx;
-      await prisma.certificate.create({
-        data: {
-          userId: user.id,
-          name: input.name,
-          description: input.description,
-          typeId: input.typeId,
-          fileUrl: input.fileUrl,
-        },
-      });
+      if (input.certId) {
+        await prisma.certificate.updateMany({
+          where: {
+            id: input.certId,
+            userId: ctx.user.id,
+          },
+          data: {
+            name: input.name,
+            description: input.description,
+            typeId: input.typeId,
+            fileUrl: input.fileUrl,
+          },
+        });
+      } else {
+        await prisma.certificate.create({
+          data: {
+            userId: user.id,
+            name: input.name,
+            description: input.description,
+            typeId: input.typeId,
+            fileUrl: input.fileUrl,
+          },
+        });
+      }
 
       await prisma.user.update({
         where: { id: user.id },
@@ -84,5 +112,16 @@ export const profileRouter = router({
           completedProfileServices: input.completedProfileServices,
         },
       });
+    }),
+
+  deleteCertificate: authedProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { prisma, user } = ctx;
+      await prisma.certificate.deleteMany({ where: { userId: ctx.user.id, id: input.id } });
     }),
 });
