@@ -38,6 +38,7 @@ async function getUserFromSession({
       zip: true,
       city: true,
       country: true,
+      appointmentTypes: true,
       email: true,
       bio: true,
       timeZone: true,

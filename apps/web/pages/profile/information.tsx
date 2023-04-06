@@ -1,4 +1,3 @@
-import { DesktopComputerIcon, HomeIcon } from "@heroicons/react/solid";
 import crypto from "crypto";
 import MarkdownIt from "markdown-it";
 import { Controller, useForm } from "react-hook-form";
@@ -14,12 +13,12 @@ import {
   Form,
   ImageUploader,
   Label,
+  Select,
   showToast,
   SkeletonAvatar,
   SkeletonButton,
   SkeletonContainer,
   SkeletonText,
-  Select,
   TextField,
   Editor,
   Checkbox,
@@ -56,8 +55,14 @@ type FormValues = {
   zip: string;
   city: string;
   country: string;
-  // check design update later on for specilization fields
+  appointmentTypes: string[];
 };
+
+const AppointmentTypes = {
+  online: "lb_appointmenttype_online",
+  office: "lb_appointmenttype_office",
+  home: "lb_appointmenttype_home",
+} as const;
 
 const InformationPage = () => {
   const { t } = useLocale();
@@ -93,6 +98,9 @@ const InformationPage = () => {
     zip: user.zip || "",
     city: user.city || "",
     country: user.country || "",
+    appointmentTypes: (user.appointmentTypes || "")
+      .split(",")
+      .filter((v) => Object.keys(AppointmentTypes).includes(v)),
   };
 
   return (
@@ -101,7 +109,11 @@ const InformationPage = () => {
         key={JSON.stringify(defaultValues)}
         defaultValues={defaultValues}
         onSubmit={(values) => {
-          mutation.mutate(values);
+          const { appointmentTypes, ...rest } = values;
+          mutation.mutate({
+            ...rest,
+            appointmentTypes: appointmentTypes.join(","),
+          });
         }}
       />
     </Shell>
@@ -131,6 +143,11 @@ const ProfileForm = ({
   } = formMethods;
 
   const isDisabled = isSubmitting || !isDirty;
+
+  const appointmentTypeOptions = Object.entries(AppointmentTypes).map(([value, label]) => ({
+    value,
+    label: t(label),
+  }));
 
   return (
     <Form form={formMethods} handleSubmit={onSubmit}>
@@ -226,14 +243,31 @@ const ProfileForm = ({
         <h4 className="text-lg font-bold">{t("lb_place_work")}</h4>
       </div>
 
-      <div className="mt-2 font-bold lg:flex">
-        <Button StartIcon={HomeIcon} color="secondary" type="submit">
-          {t("lb_home")}
-        </Button>
-        <Button className="ml-10" StartIcon={DesktopComputerIcon} color="secondary" type="submit">
-          {t("lb_online")}
-        </Button>
-      </div>
+      <Controller
+        name="appointmentTypes"
+        control={formMethods.control}
+        render={({ field: { value } }) => (
+          <>
+            <Label className="mt-8 text-gray-900">
+              <>{t("lb_appointmenttypes_label")}</>
+            </Label>
+
+            <Select
+              isMulti
+              placeholder={t("select")}
+              options={appointmentTypeOptions}
+              value={value.map((v) => appointmentTypeOptions.find((o) => o.value === v))}
+              onChange={(value) => {
+                if (value)
+                  formMethods.setValue("appointmentTypes", value.map((v) => v?.value ?? "").filter(Boolean), {
+                    shouldDirty: true,
+                  });
+              }}
+            />
+          </>
+        )}
+      />
+
       <div className="text-right">
         <Button disabled={isDisabled} color="primary" className="mt-8" type="submit">
           {t("update")}

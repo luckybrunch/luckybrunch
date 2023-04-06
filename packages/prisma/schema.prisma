@@ -214,19 +214,23 @@ model User {
   certificates         Certificate[]
 
   // LuckyBrunch
-  completedProfileInformations Boolean          @default(false)
-  completedProfileCertificates Boolean          @default(false)
-  completedProfileServices     Boolean          @default(false)
+  completedProfileInformations Boolean   @default(false)
+  completedProfileCertificates Boolean   @default(false)
+  completedProfileServices     Boolean   @default(false)
   requestedReviewAt            DateTime?
   reviewedAt                   DateTime?
-  specializations              Specialization[]
 
+  // LuckyBrunch - Address
   companyName  String?
   addressLine1 String?
   addressLine2 String?
   zip          String?
   city         String?
   country      String? // ISO 3166 codes
+
+  appointmentTypes String?
+  specializations  Specialization[]
+  // LuckyBrunch - END
 
   @@map(name: "users")
 }
