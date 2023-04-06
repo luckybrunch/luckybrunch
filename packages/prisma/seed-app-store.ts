@@ -146,26 +146,6 @@ async function seedAppData() {
   });
 }
 
-async function seedLuckyBrunchData() {
-  const certypes = [
-    { id: 1, name: "Ernährungsberater/DGE, Ernährungsmedizinischer Berater/DGE" },
-    { id: 2, name: "VDD-Fortbildungszertifikat" },
-    { id: 3, name: "Zertifikat Ernährungsberater VDOE" },
-    { id: 4, name: "VFED-Zertifizierung" },
-    { id: 5, name: "QUETHEB-Registrierung" },
-    { id: 6, name: "Ernährungsberater UGB" },
-    { id: 7, name: "Ernährungsmediziner (BDEM/DGEM)" },
-  ];
-
-  for (const certype of certypes) {
-    await prisma.certificateType.upsert({
-      where: { id: certype.id },
-      update: { name: certype.name },
-      create: certype,
-    });
-  }
-}
-
 async function createApp(
   /** The App identifier in the DB also used for public page in `/apps/[slug]` */
   slug: Prisma.AppCreateInput["slug"],
@@ -328,7 +308,6 @@ export default async function main() {
   }
 
   await seedAppData();
-  await seedLuckyBrunchData();
 }
 
 main()

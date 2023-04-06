@@ -1613,6 +1613,7 @@
   "lb_work_equals_billing_address": "Is your work address the same as your billing address?",
   "lb_specialities": "Your specialities",
   "lb_specialities_hint": "In which specialties do you offer your consulting services?",
+  "lb_specializations_label": "Specializations",
   "lb_to_be_inputed_later": "To be inputed later",
   "lb_place_work": "Where do you offer your services?",
   "lb_appointmenttypes_label": "Appointment types",

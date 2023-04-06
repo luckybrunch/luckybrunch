@@ -39,17 +39,18 @@ export const profileRouter = router({
 
     return flags;
   }),
-  getCertificateTypes: authedProcedure.query(async ({ ctx }) => {
+
+  getSpecializations: authedProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
-
-    const certificateTypes = await prisma.certificateType.findMany({
-      select: {
-        id: true,
-        name: true,
-      },
-    });
-
-    return certificateTypes;
+    const specializations = await prisma.user
+      .findUnique({
+        where: { id: ctx.user.id },
+        select: {
+          specializations: true,
+        },
+      })
+      .specializations();
+    return specializations || [];
   }),
 
   updateCertificate: authedProcedure

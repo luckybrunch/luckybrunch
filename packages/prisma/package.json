@@ -17,6 +17,7 @@
     "generate-schemas": "prisma generate && prisma format",
     "post-install": "yarn generate-schemas",
     "seed-app-store": "ts-node --transpile-only ./seed-app-store.ts",
+    "seed-luckybrunch": "ts-node --transpile-only ./seed-luckybrunch.ts",
     "delete-app": "ts-node --transpile-only ./delete-app.ts"
   },
   "devDependencies": {

@@ -3,7 +3,6 @@ import MarkdownIt from "markdown-it";
 import { Controller, useForm } from "react-hook-form";
 
 import Shell from "@calcom/features/shell/Shell";
-import classNames from "@calcom/lib/classNames";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import turndown from "@calcom/lib/turndownService";
 import { trpc } from "@calcom/trpc/react";
@@ -56,6 +55,7 @@ type FormValues = {
   city: string;
   country: string;
   appointmentTypes: string[];
+  specializations: number[];
 };
 
 const AppointmentTypes = {
@@ -69,18 +69,30 @@ const InformationPage = () => {
   const utils = trpc.useContext();
   const { data: user, isLoading } = trpc.viewer.me.useQuery();
   const { data: avatar, isLoading: isLoadingAvatar } = trpc.viewer.avatar.useQuery();
+  const { data: specializations, isLoading: isLoadingSpecializationValues } =
+    trpc.viewer.profile.getSpecializations.useQuery();
+  const { isLoading: isLoadingSpecializations } = trpc.public.getSpecializations.useQuery();
+
   const mutation = trpc.viewer.updateProfile.useMutation({
     onSuccess: () => {
       showToast(t("settings_updated_successfully"), "success");
       utils.viewer.me.invalidate();
       utils.viewer.avatar.invalidate();
+      utils.viewer.profile.getSpecializations.invalidate();
     },
     onError: () => {
       showToast(t("error_updating_settings"), "error");
     },
   });
 
-  if (isLoading || !user || isLoadingAvatar || !avatar)
+  if (
+    isLoading ||
+    !user ||
+    isLoadingAvatar ||
+    !avatar ||
+    isLoadingSpecializationValues ||
+    isLoadingSpecializations
+  )
     return (
       <Shell title={t("lb_information_title")} subtitle={t("lb_information_subtitle")}>
         <SkeletonLoader />
@@ -101,6 +113,7 @@ const InformationPage = () => {
     appointmentTypes: (user.appointmentTypes || "")
       .split(",")
       .filter((v) => Object.keys(AppointmentTypes).includes(v)),
+    specializations: specializations?.map((item) => item.id) || [],
   };
 
   return (
@@ -143,6 +156,13 @@ const ProfileForm = ({
   } = formMethods;
 
   const isDisabled = isSubmitting || !isDirty;
+
+  const { data: specializations } = trpc.public.getSpecializations.useQuery();
+  const specializationsOptions =
+    specializations?.map((item) => ({
+      label: item.label,
+      value: String(item.id),
+    })) ?? [];
 
   const appointmentTypeOptions = Object.entries(AppointmentTypes).map(([value, label]) => ({
     value,
@@ -226,16 +246,36 @@ const ProfileForm = ({
       </div>
 
       <div className="mt-5">
-        <Select
-          placeholder={t("select")}
-          //options={options}
-          isSearchable={false}
-          //onChange={props.onChange}
-          className={classNames("block w-full min-w-0 flex-1 rounded-sm text-sm")}
-          //value={value}
-          //components={{ Option, SingleValue }}
-          isMulti={true}
-          //check code above for options
+        <Controller
+          name="specializations"
+          control={formMethods.control}
+          render={({ field: { value } }) => (
+            <>
+              <Label className="mt-8 text-gray-900">
+                <>{t("lb_specializations_label")}</>
+              </Label>
+
+              <Select
+                isMulti
+                placeholder={t("select")}
+                options={specializationsOptions}
+                value={value.map((v) => specializationsOptions.find((o) => o.value === String(v)))}
+                onChange={(value) => {
+                  if (value)
+                    formMethods.setValue(
+                      "specializations",
+                      value
+                        .map((v) => v?.value ?? "")
+                        .map(Number)
+                        .filter(Boolean),
+                      {
+                        shouldDirty: true,
+                      }
+                    );
+                }}
+              />
+            </>
+          )}
         />
       </div>
 

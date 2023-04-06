@@ -10,6 +10,7 @@ import { DEFAULT_SCHEDULE, getAvailabilityFromSchedule } from "@calcom/lib/avail
 
 import prisma from ".";
 import mainAppStore from "./seed-app-store";
+import mainLuckyBrunch from "./seed-luckybrunch";
 
 async function createUserAndEventType(opts: {
   user: {
@@ -643,6 +644,7 @@ async function main() {
 
 main()
   .then(() => mainAppStore())
+  .then(() => mainLuckyBrunch())
   .catch((e) => {
     console.error(e);
     process.exit(1);

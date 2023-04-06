@@ -11,10 +11,9 @@ import {
   EmptyScreen,
   ButtonGroup,
   Tooltip,
-  showToast
+  showToast,
 } from "@calcom/ui";
-import { FiDownload, FiEdit, FiFile, FiTrash2 } from "@calcom/ui/components/icon";
-import { mutate } from "@glidejs/glide";
+import { FiDownload, FiFile, FiTrash2 } from "@calcom/ui/components/icon";
 
 import { withQuery } from "@lib/QueryCell";
 
@@ -74,8 +73,8 @@ export default function CertificatesPage() {
                     </div>
                     <div>
                       <ButtonGroup combined>
-                        <Tooltip content={t("edit")}>                   
-                          <UpdateCertificateButton certificate={certificate}/>                   
+                        <Tooltip content={t("edit")}>
+                          <UpdateCertificateButton certificate={certificate} />
                           {/* <Button color="secondary" target="_blank" StartIcon={FiEdit} /> */}
                         </Tooltip>
                         <Tooltip content={t("download")}>
@@ -86,9 +85,7 @@ export default function CertificatesPage() {
                             color="secondary"
                             StartIcon={FiTrash2}
                             onClick={() => {
-                              showToast(t("link_copied"), "success");
-                              console.log("certificate:", certificate);
-                              mutation.mutate({id: certificate.id})
+                              mutation.mutate({ id: certificate.id });
                             }}
                           />
                         </Tooltip>

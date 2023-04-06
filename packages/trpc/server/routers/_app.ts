@@ -2,6 +2,7 @@
  * This file contains the root router of your tRPC-backend
  */
 import { router } from "../trpc";
+import { publicRouter } from "./public";
 import { viewerRouter } from "./viewer";
 
 /**
@@ -11,6 +12,7 @@ import { viewerRouter } from "./viewer";
  * @link https://trpc.io/docs/router
  */
 export const appRouter = router({
+  public: publicRouter,
   viewer: viewerRouter,
 });
 

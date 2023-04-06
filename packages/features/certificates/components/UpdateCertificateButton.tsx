@@ -1,6 +1,6 @@
 import { useState, FormEvent } from "react";
 import { Controller, useForm } from "react-hook-form";
-import type { Certificate } from "@calcom/prisma/client"
+
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
 import {
@@ -20,13 +20,24 @@ import {
 import { FiEdit, FiPlus } from "@calcom/ui/components/icon";
 import { FiAlertTriangle } from "@calcom/ui/components/icon";
 
-export function UpdateCertificateButton({ certificate }: { certificate?: Certificate }) {
+type Cert = {
+  id: number;
+  description: string | null;
+  type: {
+    id: number;
+    name: string;
+  };
+  name: string;
+  fileUrl: string;
+};
+
+export function UpdateCertificateButton({ certificate }: { certificate?: Cert }) {
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File[] | null>(null);
   const { reset } = useForm();
 
-  const { data: certificateTypes } = trpc.viewer.profile.getCertificateTypes.useQuery();
+  const { data: certificateTypes } = trpc.public.getCertificateTypes.useQuery();
 
   const ctx = trpc.useContext();
   const certificateTypeOptions = certificateTypes?.map((item) => ({ label: item.name, value: item.id }));
@@ -43,9 +54,9 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Certifi
   };
 
   const defaultValues = {
-    certificate_name: certificate ? certificate.name : "",
-    certificate_type: certificate ? { value: certificate.type.id, label: certificate.type.name } : null,
-    certificate_desc: certificate ? certificate.description : "",
+    certificate_name: certificate?.name || "",
+    certificate_type: certificate ? { value: certificate.type.id, label: certificate.type.name } : undefined,
+    certificate_desc: certificate?.description || "",
   };
 
   const formMethods = useForm<FormValues>({
@@ -177,7 +188,7 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Certifi
                     options={certificateTypeOptions}
                     isLoading={certificateTypeOptions === undefined}
                     onChange={(value) => {
-                      if (value) formMethods.setValue("certificate_type", value);
+                      if (value) formMethods.setValue("certificate_type", value, { shouldDirty: true });
                     }}
                   />
                   {error?.type === "required" && <div className="text-red-500">Missing</div>}

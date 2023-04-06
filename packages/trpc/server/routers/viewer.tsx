@@ -48,9 +48,9 @@ import { profileRouter } from "./viewer/profile";
 import { slotsRouter } from "./viewer/slots";
 import { ssoRouter } from "./viewer/sso";
 import { viewerTeamsRouter } from "./viewer/teams";
+import { userProfileRouter } from "./viewer/userProfiles";
 import { webhookRouter } from "./viewer/webhook";
 import { workflowsRouter } from "./viewer/workflows";
-import { userProfileRouter } from "./viewer/userProfiles"
 
 // things that unauthenticated users can query about themselves
 const publicViewerRouter = router({
@@ -614,6 +614,7 @@ const loggedInViewerRouter = router({
         city: z.string().optional(),
         country: z.string().optional(),
         appointmentTypes: z.string().optional(),
+        specializations: z.number().array().optional(),
         name: z.string().optional(),
         bio: z.string().optional(),
         avatar: z.string().optional(),
@@ -633,10 +634,18 @@ const loggedInViewerRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { user, prisma } = ctx;
+      const { specializations, ...stuff } = input;
       const data: Prisma.UserUpdateInput = {
-        ...input,
+        ...stuff,
         metadata: input.metadata as Prisma.InputJsonValue,
       };
+
+      if (specializations) {
+        data.specializations = {
+          set: specializations.map((id) => ({ id })),
+        };
+      }
+
       let isPremiumUsername = false;
       if (input.username) {
         const username = slugify(input.username);
@@ -1277,6 +1286,6 @@ export const viewerRouter = mergeRouters(
     appsRouter,
     // LuckyBrunch
     profile: profileRouter,
-    userProfile: userProfileRouter
+    userProfile: userProfileRouter,
   })
 );
