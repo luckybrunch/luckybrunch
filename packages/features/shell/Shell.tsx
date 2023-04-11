@@ -320,7 +320,7 @@ function UserDropdown({ small }: { small?: boolean }) {
             <HelpMenuItem onHelpItemSelect={() => onHelpItemSelect()} />
           ) : (
             <>
-              <DropdownMenuItem>
+              {/* <DropdownMenuItem>
                 <DropdownItem
                   type="button"
                   StartIcon={(props) => (
@@ -341,7 +341,7 @@ function UserDropdown({ small }: { small?: boolean }) {
                   {user.away ? t("set_as_free") : t("set_as_away")}
                 </DropdownItem>
               </DropdownMenuItem>
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator /> */}
               {user.username && (
                 <>
                   <DropdownMenuItem>
@@ -353,6 +353,7 @@ function UserDropdown({ small }: { small?: boolean }) {
                       {t("view_public_page")}
                     </DropdownItem>
                   </DropdownMenuItem>
+                  {/* PUBLIC PAGE  */}
                   <DropdownMenuItem>
                     <DropdownItem
                       type="button"
@@ -369,7 +370,7 @@ function UserDropdown({ small }: { small?: boolean }) {
                   </DropdownMenuItem>
                 </>
               )}
-              <DropdownMenuSeparator />
+              {/* <DropdownMenuSeparator />
               <DropdownMenuItem>
                 <DropdownItem
                   StartIcon={(props) => <FiSlack strokeWidth={1.5} {...props} />}
@@ -398,7 +399,7 @@ function UserDropdown({ small }: { small?: boolean }) {
                 </DropdownItem>
               </DropdownMenuItem>
 
-              <DropdownMenuSeparator />
+              <DropdownMenuSeparator /> */}
               <DropdownMenuItem>
                 <DropdownItem
                   type="button"
