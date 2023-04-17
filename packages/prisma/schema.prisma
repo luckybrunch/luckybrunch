@@ -149,6 +149,11 @@ model Specialization {
   users User[]
 }
 
+enum CustomerType {
+  COACH
+  CUSTOMER
+}
+
 model User {
   id                   Int                     @id @default(autoincrement())
   username             String?                 @unique
@@ -230,6 +235,7 @@ model User {
 
   appointmentTypes String?
   specializations  Specialization[]
+  customerType     CustomerType     @default(COACH)
   // LuckyBrunch - END
 
   @@map(name: "users")
