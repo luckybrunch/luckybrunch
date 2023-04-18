@@ -1,4 +1,4 @@
-import { IdentityProvider } from "@prisma/client";
+import { IdentityProvider, CustomerType } from "@prisma/client";
 import { NextApiRequest, NextApiResponse } from "next";
 
 import { hashPassword } from "@calcom/lib/auth";
@@ -17,6 +17,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const data = req.body;
+  const isOnboardingCompletionRequired = !Boolean(req.query.is_customer);
   const { email, password } = data;
   const username = slugify(data.username);
   const userEmail = email.toLowerCase();
@@ -57,6 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const hashedPassword = await hashPassword(password);
+  const customerType = isOnboardingCompletionRequired ? CustomerType.COACH : CustomerType.CUSTOMER;
 
   const user = await prisma.user.upsert({
     where: { email: userEmail },
@@ -65,12 +67,16 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       password: hashedPassword,
       emailVerified: new Date(Date.now()),
       identityProvider: IdentityProvider.CAL,
+      completedOnboarding: !isOnboardingCompletionRequired,
+      customerType,
     },
     create: {
       username,
       email: userEmail,
       password: hashedPassword,
       identityProvider: IdentityProvider.CAL,
+      completedOnboarding: !isOnboardingCompletionRequired,
+      customerType,
     },
   });
 
