@@ -58,7 +58,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const hashedPassword = await hashPassword(password);
-  const customerType = isOnboardingCompletionRequired ? CustomerType.COACH : CustomerType.CUSTOMER;
+  const customerType = req.query.is_customer ? CustomerType.CUSTOMER : CustomerType.COACH;
 
   const user = await prisma.user.upsert({
     where: { email: userEmail },
