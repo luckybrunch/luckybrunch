@@ -1655,6 +1655,16 @@
   "lb_make_appointment": "Book an appointment",
   "lb_view": "View",
   "lb_update_certificate_toast": "Certificate updated successfully",
-  "lb_update_certificate_error": "Error updating certificate"
-  
+  "lb_update_certificate_error": "Error updating certificate",
+  "lb_add_more_information_to_get_customers": "Add more information to get more customers",
+  "lb_complete_elements_to_submit_for_review": "To submit your profile for review, you have to complete the following elements:",
+  "lb_add_following_parameters_for_review": "You need to add the following parameters to your profile to submit it to review",
+  "lb_name_and_bio": "Name & Bio",
+  "lb_profile_image": "Profile image",
+  "lb_specializations": "Specializations",
+  "lb_manage_settings_for_nutritionist_profile": "Manage settings for your nutritionist profile",
+  "lb_dashboard": "Dashboard",
+  "lb_complete_your_info": "Complete your information",
+  "lb_add_certificates": "Add your certificates",
+  "lb_add_your_services": "Add your services"
 }

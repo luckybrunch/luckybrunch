@@ -28,6 +28,7 @@ import { withQuery } from "@lib/QueryCell";
 
 function UnpublishedDashboard() {
   const { data } = trpc.viewer.profile.getOnboardingFlags.useQuery();
+  const { t } = useLocale();
 
   type Item = {
     title: string;
@@ -43,14 +44,14 @@ function UnpublishedDashboard() {
     }
     return [
       {
-        title: "Complete your information",
+        title: t("lb_complete_your_info"),
         description: () => (
           <ListItemText component="div">
-            <p>You need to add the following parameters to your profile to submit it to review:</p>
+            <p>{`${t("lb_add_following_parameters_for_review")}:`}</p>
             <ul className="ml-5 list-disc">
-              <li>Name & Bio</li>
-              <li>Profile image</li>
-              <li>Specializations</li>
+              <li>{t("lb_name_and_bio")}</li>
+              <li>{t("lb_profile_image")}</li>
+              <li>{t("lb_specializations")}</li>
             </ul>
           </ListItemText>
         ),
@@ -59,15 +60,15 @@ function UnpublishedDashboard() {
         isDone: data.completedProfileInformations,
       },
       {
-        title: "Add your certificates",
-        description: "You need to upload your certification to get the access to the platform",
+        title: t("lb_certificate_empty_state_heading"),
+        description: t("lb_certificate_empty_state_desc"),
         icon: () => <FiFile />,
         href: "/profile/certificates",
         isDone: data.completedProfileCertificates,
       },
       {
-        title: "Add your services",
-        description: "You need to upload your certification to get the access to the platform",
+        title: t("lb_add_your_services"),
+        description: t("lb_certificate_empty_state_desc"),
         icon: () => <FiClock />,
         href: "/profile/services",
         isDone: data.completedProfileServices,
@@ -96,11 +97,11 @@ function UnpublishedDashboard() {
         <div>
           {isDone ? (
             <Button color="secondary" StartIcon={FiCheck} disabled>
-              Done
+              {t("done")}
             </Button>
           ) : (
             <Button color="primary" StartIcon={FiPlus} href={href}>
-              Add
+              {t("add")}
             </Button>
           )}
         </div>
@@ -113,10 +114,8 @@ function UnpublishedDashboard() {
       <Divider />
       <div className="mb-6 mt-6 flex items-center text-sm">
         <div>
-          <p className="font-semibold">Add more information to get more customers</p>
-          <p className="text-gray-600">
-            To submit your profile for review, you have to complete the following elements:{" "}
-          </p>
+          <p className="font-semibold">{t("lb_add_more_information_to_get_customers")}</p>
+          <p className="text-gray-600">{`${t("lb_complete_elements_to_submit_for_review")}: `}</p>
         </div>
       </div>
       <div className="w-full bg-white sm:mx-0 xl:mt-0">
@@ -167,9 +166,10 @@ function Published() {
 
 export default function DashboardPage() {
   const WithQuery = withQuery(trpc.viewer.profile.getOnboardingFlags);
+  const { t } = useLocale();
 
   return (
-    <Shell heading="Dashboard" subtitle="Manage settings for your nutritionist profile">
+    <Shell heading={t("lb_dashboard")} subtitle={t("lb_manage_settings_for_nutritionist_profile")}>
       <WithQuery
         customLoader={<SkeletonLoader />}
         success={({ data }) => {
