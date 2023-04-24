@@ -42,6 +42,7 @@ import { appsRouter } from "./viewer/apps";
 import { authRouter } from "./viewer/auth";
 import { availabilityRouter } from "./viewer/availability";
 import { bookingsRouter } from "./viewer/bookings";
+import { coachesRouter } from "./viewer/coaches";
 import { deploymentSetupRouter } from "./viewer/deploymentSetup";
 import { eventTypesRouter } from "./viewer/eventTypes";
 import { profileRouter } from "./viewer/profile";
@@ -1288,5 +1289,6 @@ export const viewerRouter = mergeRouters(
     // LuckyBrunch
     profile: profileRouter,
     userProfile: userProfileRouter,
+    coaches: coachesRouter,
   })
 );

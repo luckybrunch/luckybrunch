@@ -43,12 +43,6 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
   };
 
   const signUp: SubmitHandler<FormValues> = async (data) => {
-    await router.push({
-      query: {
-        callbackUrl: "/",
-      },
-    });
-
     await fetch("/api/auth/signup?is_customer=true", {
       body: JSON.stringify({
         ...data,
@@ -63,9 +57,7 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
         telemetry.event(telemetryEventTypes.signup, collectPageParameters());
         await signIn<"credentials">("credentials", {
           ...data,
-          callbackUrl: router.query.callbackUrl
-            ? `${WEBAPP_URL}/${router.query.callbackUrl}`
-            : `${WEBAPP_URL}/getting-started`,
+          callbackUrl: `${WEBAPP_URL}/search`,
         });
       })
       .catch((err) => {
