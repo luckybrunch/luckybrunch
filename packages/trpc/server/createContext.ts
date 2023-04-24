@@ -83,6 +83,7 @@ async function getUserFromSession({
       trialEndsAt: true,
       metadata: true,
       role: true,
+      customerType: true,
     },
   });
 

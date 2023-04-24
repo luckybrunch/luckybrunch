@@ -1,4 +1,4 @@
-import type { User } from "@prisma/client";
+import { CustomerType, User } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { NextRouter, useRouter } from "next/router";
@@ -13,11 +13,10 @@ import HelpMenuItem from "@calcom/features/ee/support/components/HelpMenuItem";
 import { TeamsUpgradeBanner } from "@calcom/features/ee/teams/components";
 import { KBarContent, KBarRoot, KBarTrigger } from "@calcom/features/kbar/Kbar";
 import TimezoneChangeDialog from "@calcom/features/settings/TimezoneChangeDialog";
-import { Tips } from "@calcom/features/tips";
 import AdminPasswordBanner from "@calcom/features/users/components/AdminPasswordBanner";
 import CustomBranding from "@calcom/lib/CustomBranding";
 import classNames from "@calcom/lib/classNames";
-import { APP_NAME, DESKTOP_APP_LINK, JOIN_SLACK, ROADMAP, WEBAPP_URL } from "@calcom/lib/constants";
+import { APP_NAME, WEBAPP_URL } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import useTheme from "@calcom/lib/hooks/useTheme";
 import { trpc } from "@calcom/trpc/react";
@@ -31,7 +30,6 @@ import {
   DropdownMenuItem,
   DropdownItem,
   DropdownMenuPortal,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
   ErrorBoundary,
   Logo,
@@ -41,13 +39,8 @@ import {
 } from "@calcom/ui";
 import {
   FiMoreVertical,
-  FiMoon,
   FiExternalLink,
   FiLink,
-  FiSlack,
-  FiMap,
-  FiHelpCircle,
-  FiDownload,
   FiLogOut,
   FiCalendar,
   FiUsers,
@@ -439,13 +432,26 @@ export type NavigationItemType = {
 const requiredCredentialNavigationItems = ["Routing Forms"];
 const MORE_SEPARATOR_NAME = "more";
 
-const navigation: NavigationItemType[] = [
+enum DashboardItem {
+  DASHBOARD,
+  BOOKINGS,
+  CUSTOMERS,
+  PROFILE,
+  MORE_SEPARATOR,
+  SETTINGS,
+  COACHES,
+  DISCOVER,
+}
+
+const navigation: ({ itemId: DashboardItem } & NavigationItemType)[] = [
   {
+    itemId: DashboardItem.DASHBOARD,
     name: "Dashboard" /* TODO: localize */,
     href: "/dashboard",
     icon: FiTrello,
   },
   {
+    itemId: DashboardItem.BOOKINGS,
     name: "bookings",
     href: "/bookings/upcoming",
     icon: FiCalendar,
@@ -456,11 +462,13 @@ const navigation: NavigationItemType[] = [
     },
   },
   {
+    itemId: DashboardItem.CUSTOMERS,
     name: "Customers",
     href: "/customers",
     icon: FiUsers,
   },
   {
+    itemId: DashboardItem.PROFILE,
     name: "Profile",
     href: "/profile/information",
     icon: FiUser,
@@ -475,35 +483,84 @@ const navigation: NavigationItemType[] = [
     ],
   },
   {
+    itemId: DashboardItem.MORE_SEPARATOR,
     name: MORE_SEPARATOR_NAME,
     href: "/more",
     icon: FiMoreHorizontal,
   },
   {
+    itemId: DashboardItem.SETTINGS,
     name: "settings",
     href: "/settings/my-account/profile",
     icon: FiSettings,
   },
+  {
+    itemId: DashboardItem.DISCOVER,
+    name: "Discover",
+    href: "/search",
+    icon: FiSettings,
+  },
+  {
+    itemId: DashboardItem.COACHES,
+    name: "Coaches",
+    href: "/coaches",
+    icon: FiSettings,
+  },
 ];
 
-const moreSeparatorIndex = navigation.findIndex((item) => item.name === MORE_SEPARATOR_NAME);
-// We create all needed navigation items for the different use cases
-const { desktopNavigationItems, mobileNavigationBottomItems, mobileNavigationMoreItems } = navigation.reduce<
-  Record<string, NavigationItemType[]>
->(
-  (items, item, index) => {
-    // We filter out the "more" separator in` desktop navigation
-    if (item.name !== MORE_SEPARATOR_NAME) items.desktopNavigationItems.push(item);
-    // Items for mobile bottom navigation
-    if (index < moreSeparatorIndex + 1 && !item.onlyDesktop) items.mobileNavigationBottomItems.push(item);
-    // Items for the "more" menu in mobile navigation
-    else items.mobileNavigationMoreItems.push(item);
-    return items;
-  },
-  { desktopNavigationItems: [], mobileNavigationBottomItems: [], mobileNavigationMoreItems: [] }
-);
+const findNavigationItem = (itemId: DashboardItem) => {
+  for (const navigationItem of navigation) {
+    if (navigationItem.itemId === itemId) {
+      return navigationItem;
+    }
+  }
+  // Which should never happen
+  return {} as NavigationItemType;
+};
+
+const coachDashboardItems: NavigationItemType[] = [
+  DashboardItem.DASHBOARD,
+  DashboardItem.BOOKINGS,
+  DashboardItem.CUSTOMERS,
+  DashboardItem.PROFILE,
+  DashboardItem.MORE_SEPARATOR,
+  DashboardItem.SETTINGS,
+].map(findNavigationItem);
+
+const customerDashboardItems: NavigationItemType[] = [
+  DashboardItem.DISCOVER,
+  DashboardItem.BOOKINGS,
+  DashboardItem.COACHES,
+  DashboardItem.PROFILE,
+  DashboardItem.MORE_SEPARATOR,
+  DashboardItem.SETTINGS,
+].map(findNavigationItem);
+
+const getNavigationItems = (customerType: CustomerType = CustomerType.COACH) => {
+  const moreSeparatorIndex = navigation.findIndex((item) => item.name === MORE_SEPARATOR_NAME);
+  // We create all needed navigation items for the different use cases
+  const currentNavigationItems =
+    customerType === CustomerType.COACH ? coachDashboardItems : customerDashboardItems;
+  return currentNavigationItems.reduce<Record<string, NavigationItemType[]>>(
+    (items, item, index) => {
+      // We filter out the "more" separator in` desktop navigation
+      if (item.name !== MORE_SEPARATOR_NAME) items.desktopNavigationItems.push(item);
+      // Items for mobile bottom navigation
+      if (index < moreSeparatorIndex + 1 && !item.onlyDesktop) items.mobileNavigationBottomItems.push(item);
+      // Items for the "more" menu in mobile navigation
+      else items.mobileNavigationMoreItems.push(item);
+      return items;
+    },
+    { desktopNavigationItems: [], mobileNavigationBottomItems: [], mobileNavigationMoreItems: [] }
+  );
+};
 
 const Navigation = () => {
+  const query = useMeQuery();
+  const user = query.data;
+
+  const { desktopNavigationItems } = getNavigationItems(user?.customerType);
+
   return (
     <nav className="mt-2 flex-1 md:px-2 lg:mt-6 lg:px-0">
       {desktopNavigationItems.map((item) => (
@@ -591,6 +648,10 @@ function MobileNavigationContainer() {
 
 const MobileNavigation = () => {
   const isEmbed = useIsEmbed();
+  const query = useMeQuery();
+  const user = query.data;
+
+  const { mobileNavigationBottomItems } = getNavigationItems(user?.customerType);
 
   return (
     <>
@@ -843,10 +904,17 @@ function TopNav() {
   );
 }
 
-export const MobileNavigationMoreItems = () => (
-  <ul className="mt-2 rounded-md border">
-    {mobileNavigationMoreItems.map((item) => (
-      <MobileNavigationMoreItem key={item.name} item={item} />
-    ))}
-  </ul>
-);
+export const MobileNavigationMoreItems = () => {
+  const query = useMeQuery();
+  const user = query.data;
+
+  const { mobileNavigationMoreItems } = getNavigationItems(user?.customerType);
+
+  return (
+    <ul className="mt-2 rounded-md border">
+      {mobileNavigationMoreItems.map((item) => (
+        <MobileNavigationMoreItem key={item.name} item={item} />
+      ))}
+    </ul>
+  );
+};

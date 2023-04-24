@@ -186,6 +186,7 @@ const loggedInViewerRouter = router({
       theme: user.theme,
       hideBranding: user.hideBranding,
       metadata: user.metadata,
+      customerType: user.customerType,
     };
   }),
   avatar: authedProcedure.query(({ ctx }) => ({
