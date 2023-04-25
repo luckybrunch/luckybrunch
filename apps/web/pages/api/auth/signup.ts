@@ -6,6 +6,8 @@ import slugify from "@calcom/lib/slugify";
 import { closeComUpsertTeamUser } from "@calcom/lib/sync/SyncServiceManager";
 import prisma from "@calcom/prisma";
 
+const generateRandomUsername = () => Math.random().toString(36).slice(2);
+
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== "POST") {
     return;
@@ -19,8 +21,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const data = req.body;
   const isOnboardingCompletionRequired = !Boolean(req.query.is_customer);
   const { email, password } = data;
-  const username = slugify(data.username);
+  const username = slugify(data.username ?? generateRandomUsername());
   const userEmail = email.toLowerCase();
+  const name = data.name ?? "";
 
   if (!username) {
     res.status(422).json({ message: "Invalid username" });
@@ -64,6 +67,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     where: { email: userEmail },
     update: {
       username,
+      name,
       password: hashedPassword,
       emailVerified: new Date(Date.now()),
       identityProvider: IdentityProvider.CAL,
@@ -72,6 +76,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
     create: {
       username,
+      name,
       email: userEmail,
       password: hashedPassword,
       identityProvider: IdentityProvider.CAL,
