@@ -241,8 +241,8 @@ const ProfileForm = ({
       </div>
 
       <div className="mt-8">
-        <h4 className="text-lg font-bold">{t("lb_specialities")}</h4>
-        <h6 className="text-sm text-gray-700">{t("lb_specialities_hint")}</h6>
+        <h4 className="text-lg font-bold">{t("lb_specializations")}</h4>
+        <h6 className="text-sm text-gray-700">{t("lb_specializations_hint")}</h6>
       </div>
 
       <div className="mt-5">

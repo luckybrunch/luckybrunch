@@ -11,6 +11,7 @@ import { MarkdownShortcutPlugin } from "@lexical/react/LexicalMarkdownShortcutPl
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { TableCellNode, TableNode, TableRowNode } from "@lexical/table";
+import { useEffect, useState } from "react";
 
 import ExampleTheme from "./ExampleTheme";
 import AutoLinkPlugin from "./plugins/AutoLinkPlugin";
@@ -54,6 +55,14 @@ const editorConfig = {
 };
 
 export const Editor = (props: TextEditorProps) => {
+  // Note: <LexicalComposer> accesses `window` also while SSRing.
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) return null;
+
   return (
     <div className="editor">
       <LexicalComposer initialConfig={editorConfig}>

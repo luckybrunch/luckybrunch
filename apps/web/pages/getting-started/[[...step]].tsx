@@ -12,15 +12,21 @@ import { Button, StepCard, Steps } from "@calcom/ui";
 
 import { inferSSRProps } from "@lib/types/inferSSRProps";
 
-import { ConnectedCalendars } from "@components/getting-started/steps-views/ConnectCalendars";
-import { SetupAvailability } from "@components/getting-started/steps-views/SetupAvailability";
-import UserProfile from "@components/getting-started/steps-views/UserProfile";
-import { UserSettings } from "@components/getting-started/steps-views/UserSettings";
+import Lb_AlmostDone from "@components/getting-started/steps-views/Lb_AlmostDone";
+import { Lb_CompanyInfo } from "@components/getting-started/steps-views/Lb_CompanyInfo";
+import { Lb_Specializations } from "@components/getting-started/steps-views/Lb_Specializations";
+import Lb_UserProfile from "@components/getting-started/steps-views/Lb_UserProfile";
+
+// import { UserSettings } from "@components/getting-started/steps-views/UserSettings";
+// import { ConnectedCalendars } from "@components/getting-started/steps-views/ConnectCalendars";
+// import { SetupAvailability } from "@components/getting-started/steps-views/SetupAvailability";
+// import UserProfile from "@components/getting-started/steps-views/UserProfile";
 
 export type IOnboardingPageProps = inferSSRProps<typeof getServerSideProps>;
 
-const INITIAL_STEP = "user-settings";
-const steps = ["user-settings", "connected-calendar", "setup-availability", "user-profile"] as const;
+const INITIAL_STEP = "lb_user-profile"; //"user-settings"
+const steps = ["lb_user-profile", "lb_company-info", "lb_specializations", "lb_almost-done"] as const;
+//"user-settings", "connected-calendar","setup-availability", "user-profile"
 
 const stepTransform = (step: typeof steps[number]) => {
   const stepIndex = steps.indexOf(step);
@@ -49,20 +55,20 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
       subtitle: [`${t("we_just_need_basic_info")}`, `${t("edit_form_later_subtitle")}`],
     },
     {
-      title: `${t("connect_your_calendar")}`,
-      subtitle: [`${t("connect_your_calendar_instructions")}`],
-      skipText: `${t("connect_calendar_later")}`,
+      title: `${t("lb_work_info_onboarding")}`,
+      subtitle: [`${t("lb_work_info_instructions_onboarding")}`],
+      skipText: `${t("lb_work_info_later_onboarding")}`,
     },
     {
-      title: `${t("set_availability")}`,
+      title: `${t("lb_specialization_onboarding")}`,
       subtitle: [
-        `${t("set_availability_getting_started_subtitle_1")}`,
-        `${t("set_availability_getting_started_subtitle_2")}`,
+        `${t("lb_set_specialization_onboarding_subtitle_1")}`,
+        `${t("lb_set_specialization_onboarding_subtitle_2")}`,
       ],
     },
     {
       title: `${t("nearly_there")}`,
-      subtitle: [`${t("nearly_there_instructions")}`],
+      subtitle: [`${t("lb_almost_done_instructions")}`],
     },
   ];
 
@@ -108,15 +114,19 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
               <Steps maxSteps={steps.length} currentStep={currentStepIndex + 1} navigateToStep={goToIndex} />
             </div>
             <StepCard>
-              {currentStep === "user-settings" && <UserSettings user={user} nextStep={() => goToIndex(1)} />}
-
-              {currentStep === "connected-calendar" && <ConnectedCalendars nextStep={() => goToIndex(2)} />}
-
-              {currentStep === "setup-availability" && (
-                <SetupAvailability nextStep={() => goToIndex(3)} defaultScheduleId={user.defaultScheduleId} />
+              {currentStep === "lb_user-profile" && (
+                <Lb_UserProfile user={user} nextStep={() => goToIndex(1)} />
               )}
 
-              {currentStep === "user-profile" && <UserProfile user={user} />}
+              {/* This "user={user}" I can remove later */}
+              {currentStep === "lb_company-info" && (
+                <Lb_CompanyInfo user={user} nextStep={() => goToIndex(2)} />
+              )}
+
+              {currentStep === "lb_specializations" && (
+                <Lb_Specializations user={user} nextStep={() => goToIndex(3)} />
+              )}
+              {currentStep === "lb_almost-done" && <Lb_AlmostDone user={user} />}
             </StepCard>
             {headers[currentStepIndex]?.skipText && (
               <div className="flex w-full flex-row justify-center">
@@ -154,10 +164,15 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     select: {
       id: true,
       username: true,
+      companyName: true,
       name: true,
       email: true,
       bio: true,
       avatar: true,
+      addressLine1: true,
+      zip: true,
+      city: true,
+      specializations: true,
       timeZone: true,
       weekStart: true,
       hideBranding: true,
@@ -169,6 +184,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
       allowDynamicBooking: true,
       defaultScheduleId: true,
       completedOnboarding: true,
+      appointmentTypes: true,
     },
   });
 

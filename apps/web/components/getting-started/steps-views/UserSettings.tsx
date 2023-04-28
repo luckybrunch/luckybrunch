@@ -21,7 +21,9 @@ const UserSettings = (props: IUserSettingsProps) => {
   const { user, nextStep } = props;
   const { t } = useLocale();
   const [selectedTimeZone, setSelectedTimeZone] = useState(dayjs.tz.guess());
+
   const telemetry = useTelemetry();
+
   const {
     register,
     handleSubmit,
@@ -40,10 +42,12 @@ const UserSettings = (props: IUserSettingsProps) => {
   const defaultOptions = { required: true, maxLength: 255 };
 
   const utils = trpc.useContext();
+
   const onSuccess = async () => {
     await utils.viewer.me.invalidate();
     nextStep();
   };
+
   const mutation = trpc.viewer.updateProfile.useMutation({
     onSuccess: onSuccess,
   });
