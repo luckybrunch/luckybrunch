@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 import Shell from "@calcom/features/shell/Shell";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
@@ -25,20 +27,24 @@ export default function Customers() {
                   <ListItem
                     className="border-brand-300 flex content-center justify-between rounded-2xl md:p-10"
                     key={customer.email}>
-                    <div className="flex flex-row">
-                      <img
-                        className="mr-2 h-10 w-10 rounded-full"
-                        src="https://picsum.photos/200/300"
-                        alt={customer.name}
-                      />
-                      <div className="flex flex-col content-start">
-                        <ListItemTitle>{customer.name}</ListItemTitle>
-                        <ListItemText>{customer.email}</ListItemText>
+                    <Link
+                      className="flex w-full content-center justify-between rounded-2xl"
+                      href={`/customer-details/information?email=${customer.email}`}>
+                      <div className="flex flex-row">
+                        <img
+                          className="mr-2 h-10 w-10 rounded-full"
+                          src="https://picsum.photos/200/300"
+                          alt={customer.name}
+                        />
+                        <div className="flex flex-col content-start">
+                          <ListItemTitle>{customer.name}</ListItemTitle>
+                          <ListItemText>{customer.email}</ListItemText>
+                        </div>
                       </div>
-                    </div>
-                    <div className="border-brand-200 rounded-lg border-2 p-1">
-                      <FiLink className="text-brand-500 text-3xl font-bold" />
-                    </div>
+                      <div className="border-brand-200 rounded-lg border-2 p-1">
+                        <FiLink className="text-brand-500 text-3xl font-bold" />
+                      </div>
+                    </Link>
                   </ListItem>
                 );
               })}

@@ -1,4 +1,5 @@
 import { Attendee } from "@prisma/client";
+import { z } from "zod";
 
 import { authedProcedure, router } from "../../trpc";
 
@@ -37,4 +38,61 @@ export const customersRouter = router({
 
     return customers;
   }),
+  customerDetails: authedProcedure
+    .input(
+      z.object({
+        email: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { prisma } = ctx;
+      const { email } = input;
+
+      let customerDetails;
+
+      customerDetails = await prisma.user.findFirst({
+        where: {
+          email,
+        },
+      });
+
+      // Queried email may not be a user in the db yet i.e the user didn't complete the signup process
+      if (!customerDetails) {
+        customerDetails = await prisma.attendee.findFirst({
+          where: {
+            email,
+          },
+        });
+      }
+
+      return customerDetails;
+    }),
+  customerBookings: authedProcedure
+    .input(
+      z.object({
+        customerEmail: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { prisma } = ctx;
+      const { customerEmail } = input;
+
+      const bookings = await prisma.booking.findMany({
+        include: {
+          // TODO: Consider including this when the component for listing booking item is updated / changed
+          // currently it's a must include for listing using the <BookingListItem /> component
+          attendees: true,
+        },
+        where: {
+          attendees: {
+            some: {
+              email: customerEmail,
+            },
+          },
+          endTime: { gte: new Date() },
+        },
+      });
+
+      return bookings;
+    }),
 });
