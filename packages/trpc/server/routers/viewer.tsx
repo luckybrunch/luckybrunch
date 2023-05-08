@@ -42,7 +42,7 @@ import { appsRouter } from "./viewer/apps";
 import { authRouter } from "./viewer/auth";
 import { availabilityRouter } from "./viewer/availability";
 import { bookingsRouter } from "./viewer/bookings";
-import { customersRouter } from "./viewer/customers";
+import { clientsRouter } from "./viewer/clients";
 import { coachesRouter } from "./viewer/coaches";
 import { deploymentSetupRouter } from "./viewer/deploymentSetup";
 import { eventTypesRouter } from "./viewer/eventTypes";
@@ -188,7 +188,7 @@ const loggedInViewerRouter = router({
       theme: user.theme,
       hideBranding: user.hideBranding,
       metadata: user.metadata,
-      customerType: user.customerType,
+      userType: user.userType,
     };
   }),
   avatar: authedProcedure.query(({ ctx }) => ({
@@ -1290,7 +1290,7 @@ export const viewerRouter = mergeRouters(
     // LuckyBrunch
     profile: profileRouter,
     userProfile: userProfileRouter,
-    customers: customersRouter,
+    clients: clientsRouter,
     coaches: coachesRouter,
   })
 );

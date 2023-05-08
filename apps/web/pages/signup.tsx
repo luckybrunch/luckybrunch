@@ -19,7 +19,7 @@ const personas = [
     name: "I am searching for a coach",
     role: "Sign up as client",
     imageUrl: "/user.jpg",
-    websiteUrl: `${WEBSITE_URL}/signup/costumer`,
+    websiteUrl: `${WEBSITE_URL}/signup/client`,
     twitterUrl: "#",
     linkedinUrl: "#",
   },

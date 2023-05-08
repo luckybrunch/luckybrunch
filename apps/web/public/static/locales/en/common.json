@@ -1666,7 +1666,7 @@
   "lb_almost_done_instructions": "To make your profile public you need to submit it for Review. To ensure the quality of Luckybrunch and the safety of our members someone from our team will check your information and documents",
   "lb_update_certificate_toast": "Certificate updated successfully",
   "lb_update_certificate_error": "Error updating certificate",
-  "lb_add_more_information_to_get_customers": "Add more information to get more customers",
+  "lb_add_more_information_to_get_clients": "Add more information to get more clients",
   "lb_complete_elements_to_submit_for_review": "To submit your profile for review, you have to complete the following elements:",
   "lb_add_following_parameters_for_review": "You need to add the following parameters to your profile to submit it to review",
   "lb_name_and_bio": "Name & Bio",
@@ -1677,13 +1677,13 @@
   "lb_complete_your_info": "Complete your information",
   "lb_add_certificates": "Add your certificates",
   "lb_add_your_services": "Add your services",
-  "lb_customer_list_title": "Customers",
-  "lb_customer_list_subtitle": "Manage settings for your nutritionist profile",
+  "lb_client_list_title": "Clients",
+  "lb_client_list_subtitle": "Manage settings for your nutritionist profile",
   "lb_search_coach": "Search for a coach",
   "lb_search_coach_subtitle": "Find your dream coach",
   "lb_go_to_homepage": "Go to home page",
-  "lb_customers_nav_information": "Information",
-  "lb_customers_nav_chat": "Chat",
-  "lb_customers_nav_bookings": "Bookings",
-  "lb_customers_nav_notes": "Notes"
+  "lb_clients_nav_information": "Information",
+  "lb_clients_nav_chat": "Chat",
+  "lb_clients_nav_bookings": "Bookings",
+  "lb_clients_nav_notes": "Notes"
 }

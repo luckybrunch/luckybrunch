@@ -4,32 +4,32 @@ import Shell from "@calcom/features/shell/Shell";
 import { VerticalTabItemProps, HorizontalTabItemProps, HorizontalTabs } from "@calcom/ui";
 
 const translationKeys = {
-  information: "lb_customers_nav_information",
-  chat: "lb_customers_nav_chat",
-  clientBookings: "lb_customers_nav_bookings",
-  notes: "lb_customers_nav_notes",
+  information: "lb_clients_nav_information",
+  chat: "lb_clients_nav_chat",
+  clientBookings: "lb_clients_nav_bookings",
+  notes: "lb_clients_nav_notes",
 };
 
 const tabs: (VerticalTabItemProps | HorizontalTabItemProps)[] = [
   {
     name: translationKeys.information,
-    href: "/customer-details/information",
+    href: "/client-details/information",
   },
   {
     name: translationKeys.chat,
-    href: "/customer-details/chat",
+    href: "/client-details/chat",
   },
   {
     name: translationKeys.clientBookings,
-    href: "/customer-details/bookings",
+    href: "/client-details-details/bookings",
   },
   {
     name: translationKeys.notes,
-    href: "/customer-details/notes",
+    href: "/client-details/notes",
   },
 ];
 
-export default function CustomerLayout({
+export default function ClientLayout({
   children,
   email,
   ...rest

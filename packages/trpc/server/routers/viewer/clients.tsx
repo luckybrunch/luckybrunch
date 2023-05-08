@@ -3,8 +3,8 @@ import { z } from "zod";
 
 import { authedProcedure, router } from "../../trpc";
 
-export const customersRouter = router({
-  myCustomers: authedProcedure.query(async ({ ctx }) => {
+export const clientsRouter = router({
+  myClients: authedProcedure.query(async ({ ctx }) => {
     const { prisma, user } = ctx;
 
     const bookings = await prisma.booking.findMany({
@@ -21,24 +21,24 @@ export const customersRouter = router({
       },
     });
 
-    const customers: Pick<Attendee, "name" | "email">[] = [];
+    const clients: Pick<Attendee, "name" | "email">[] = [];
 
     // Prevent duplicate records of attendees
     bookings
       .map((booking) => booking.attendees)
       .flat()
       .forEach((attendee) => {
-        // If the attendee is present in the unique customer list, skip them
-        if (customers.findIndex((customer) => customer.email === attendee.email) !== -1) {
+        // If the attendee is present in the unique client list, skip them
+        if (clients.findIndex((client) => client.email === attendee.email) !== -1) {
           return;
         }
 
-        customers.push(attendee);
+        clients.push(attendee);
       });
 
-    return customers;
+    return clients;
   }),
-  customerDetails: authedProcedure
+  clientDetails: authedProcedure
     .input(
       z.object({
         email: z.string(),
@@ -48,34 +48,34 @@ export const customersRouter = router({
       const { prisma } = ctx;
       const { email } = input;
 
-      let customerDetails;
+      let clientDetails;
 
-      customerDetails = await prisma.user.findFirst({
+      clientDetails = await prisma.user.findFirst({
         where: {
           email,
         },
       });
 
       // Queried email may not be a user in the db yet i.e the user didn't complete the signup process
-      if (!customerDetails) {
-        customerDetails = await prisma.attendee.findFirst({
+      if (!clientDetails) {
+        clientDetails = await prisma.attendee.findFirst({
           where: {
             email,
           },
         });
       }
 
-      return customerDetails;
+      return clientDetails;
     }),
-  customerBookings: authedProcedure
+  clientBookings: authedProcedure
     .input(
       z.object({
-        customerEmail: z.string(),
+        clientEmail: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
       const { prisma } = ctx;
-      const { customerEmail } = input;
+      const { clientEmail } = input;
 
       const bookings = await prisma.booking.findMany({
         include: {
@@ -86,7 +86,7 @@ export const customersRouter = router({
         where: {
           attendees: {
             some: {
-              email: customerEmail,
+              email: clientEmail,
             },
           },
           endTime: { gte: new Date() },

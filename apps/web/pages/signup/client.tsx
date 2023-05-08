@@ -44,7 +44,7 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
   };
 
   const signUp: SubmitHandler<FormValues> = async (data) => {
-    await fetch("/api/auth/signup?is_customer=true", {
+    await fetch("/api/auth/signup?is_client=true", {
       body: JSON.stringify({
         ...data,
       }),

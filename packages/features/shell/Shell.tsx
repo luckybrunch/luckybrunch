@@ -1,4 +1,4 @@
-import { CustomerType, User } from "@prisma/client";
+import { UserType, User } from "@prisma/client";
 import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 import { NextRouter, useRouter } from "next/router";
@@ -435,7 +435,7 @@ const MORE_SEPARATOR_NAME = "more";
 enum DashboardItem {
   DASHBOARD,
   BOOKINGS,
-  CUSTOMERS,
+  CLIENTS,
   PROFILE,
   MORE_SEPARATOR,
   SETTINGS,
@@ -462,9 +462,9 @@ const navigation: ({ itemId: DashboardItem } & NavigationItemType)[] = [
     },
   },
   {
-    itemId: DashboardItem.CUSTOMERS,
-    name: "Customers",
-    href: "/customers",
+    itemId: DashboardItem.CLIENTS,
+    name: "Clients",
+    href: "/clients",
     icon: FiUsers,
   },
   {
@@ -521,13 +521,13 @@ const findNavigationItem = (itemId: DashboardItem) => {
 const coachDashboardItems: NavigationItemType[] = [
   DashboardItem.DASHBOARD,
   DashboardItem.BOOKINGS,
-  DashboardItem.CUSTOMERS,
+  DashboardItem.CLIENTS,
   DashboardItem.PROFILE,
   DashboardItem.MORE_SEPARATOR,
   DashboardItem.SETTINGS,
 ].map(findNavigationItem);
 
-const customerDashboardItems: NavigationItemType[] = [
+const clientDashboardItems: NavigationItemType[] = [
   DashboardItem.DISCOVER,
   DashboardItem.BOOKINGS,
   DashboardItem.COACHES,
@@ -536,11 +536,10 @@ const customerDashboardItems: NavigationItemType[] = [
   DashboardItem.SETTINGS,
 ].map(findNavigationItem);
 
-const getNavigationItems = (customerType: CustomerType = CustomerType.COACH) => {
+const getNavigationItems = (userType: UserType = UserType.COACH) => {
   const moreSeparatorIndex = navigation.findIndex((item) => item.name === MORE_SEPARATOR_NAME);
   // We create all needed navigation items for the different use cases
-  const currentNavigationItems =
-    customerType === CustomerType.COACH ? coachDashboardItems : customerDashboardItems;
+  const currentNavigationItems = userType === UserType.COACH ? coachDashboardItems : clientDashboardItems;
   return currentNavigationItems.reduce<Record<string, NavigationItemType[]>>(
     (items, item, index) => {
       // We filter out the "more" separator in` desktop navigation
@@ -559,7 +558,7 @@ const Navigation = () => {
   const query = useMeQuery();
   const user = query.data;
 
-  const { desktopNavigationItems } = getNavigationItems(user?.customerType);
+  const { desktopNavigationItems } = getNavigationItems(user?.userType);
 
   return (
     <nav className="mt-2 flex-1 md:px-2 lg:mt-6 lg:px-0">
@@ -651,7 +650,7 @@ const MobileNavigation = () => {
   const query = useMeQuery();
   const user = query.data;
 
-  const { mobileNavigationBottomItems } = getNavigationItems(user?.customerType);
+  const { mobileNavigationBottomItems } = getNavigationItems(user?.userType);
 
   return (
     <>
@@ -908,7 +907,7 @@ export const MobileNavigationMoreItems = () => {
   const query = useMeQuery();
   const user = query.data;
 
-  const { mobileNavigationMoreItems } = getNavigationItems(user?.customerType);
+  const { mobileNavigationMoreItems } = getNavigationItems(user?.userType);
 
   return (
     <ul className="mt-2 rounded-md border">

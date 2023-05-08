@@ -3,15 +3,15 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import { z } from "zod";
 
-import CustomerLayout from "@calcom/features/customers/layout/CustomerLayout";
+import ClientLayout from "@calcom/features/clients/layout/ClientLayout";
 import { trpc } from "@calcom/trpc/react";
 import { EmptyScreen, SkeletonLoader } from "@calcom/ui";
 import { FiDelete } from "@calcom/ui/components/icon";
 
-import Chat from "@components/customers/Chat";
-import ClientBookings from "@components/customers/ClientBookings";
-import Information from "@components/customers/Information";
-import Notes from "@components/customers/Notes";
+import Chat from "@components/clients/Chat";
+import ClientBookings from "@components/clients/ClientBookings";
+import Information from "@components/clients/Information";
+import Notes from "@components/clients/Notes";
 
 import { ssgInit } from "@server/lib/ssg";
 
@@ -29,7 +29,7 @@ export const querySchema = z.object({
 type QuerySchema = z.infer<typeof querySchema>;
 type ValidSectionEnum = z.infer<typeof validSectionEnum>;
 
-type CustomerDetailsProps = {
+type ClientDetailsProps = {
   section: ValidSectionEnum;
 };
 
@@ -40,13 +40,13 @@ function SectionContent({
 }: {
   user?: Attendee | User | null;
   queryStatus: "success" | "error" | "loading";
-} & CustomerDetailsProps) {
+} & ClientDetailsProps) {
   if (queryStatus === "success") {
     return (
       <>
         {section === "information" && <Information />}
         {section === "chat" && <Chat />}
-        {section === "bookings" && <ClientBookings customerEmail={user?.email} />}
+        {section === "bookings" && <ClientBookings clientEmail={user?.email} />}
         {section === "notes" && <Notes />}
       </>
     );
@@ -57,19 +57,19 @@ function SectionContent({
       <EmptyScreen
         Icon={FiDelete}
         headline="An error occurred"
-        description="An error occurred while listing customer information"
+        description="An error occurred while listing client information"
       />
     </div>
   );
 }
 
-export default function CustomerDetails(props: CustomerDetailsProps) {
+export default function ClientDetails(props: ClientDetailsProps) {
   const router = useRouter();
   const { section } = props;
 
   const { email }: Partial<QuerySchema> = router.isReady ? querySchema.parse(router.query) : { email: "" };
 
-  const query = trpc.viewer.customers.customerDetails.useQuery(
+  const query = trpc.viewer.clients.clientDetails.useQuery(
     {
       email,
     },
@@ -83,13 +83,13 @@ export default function CustomerDetails(props: CustomerDetailsProps) {
   }
 
   return (
-    <CustomerLayout
+    <ClientLayout
       subtitle="Manage settings for your nutritionist profile"
       title={user?.name ?? "N/A"}
       heading={user?.name ?? "N/A"}
       email={email}>
       <SectionContent user={user} queryStatus={query.status} section={section as ValidSectionEnum} />
-    </CustomerLayout>
+    </ClientLayout>
   );
 }
 

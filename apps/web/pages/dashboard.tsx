@@ -114,7 +114,7 @@ function UnpublishedDashboard() {
       <Divider />
       <div className="mb-6 mt-6 flex items-center text-sm">
         <div>
-          <p className="font-semibold">{t("lb_add_more_information_to_get_customers")}</p>
+          <p className="font-semibold">{t("lb_add_more_information_to_get_clients")}</p>
           <p className="text-gray-600">{`${t("lb_complete_elements_to_submit_for_review")}: `}</p>
         </div>
       </div>

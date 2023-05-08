@@ -149,9 +149,9 @@ model Specialization {
   users User[]
 }
 
-enum CustomerType {
+enum UserType {
   COACH
-  CUSTOMER
+  CLIENT
 }
 
 model User {
@@ -235,7 +235,7 @@ model User {
 
   appointmentTypes String?
   specializations  Specialization[]
-  customerType     CustomerType     @default(COACH)
+  userType         UserType         @default(COACH)
   // LuckyBrunch - END
 
   @@map(name: "users")

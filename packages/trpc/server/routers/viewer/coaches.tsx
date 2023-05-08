@@ -1,4 +1,4 @@
-import { CustomerType } from "@prisma/client";
+import { UserType } from "@prisma/client";
 
 import { router, publicProcedure } from "../../trpc";
 
@@ -8,7 +8,7 @@ export const coachesRouter = router({
 
     const coaches = await prisma.user.findMany({
       where: {
-        customerType: CustomerType.COACH,
+        userType: UserType.COACH,
       },
       select: {
         id: true,

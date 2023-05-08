@@ -2,13 +2,13 @@ import { trpc } from "@calcom/trpc/react";
 
 import BookingListItem from "@components/booking/BookingListItem";
 
-export default function ClientBookings({ customerEmail }: { customerEmail?: string }) {
-  const query = trpc.viewer.customers.customerBookings.useQuery(
+export default function ClientBookings({ clientEmail }: { clientEmail?: string }) {
+  const query = trpc.viewer.clients.clientBookings.useQuery(
     {
-      customerEmail: customerEmail ?? "",
+      clientEmail: clientEmail ?? "",
     },
     {
-      enabled: !!customerEmail,
+      enabled: !!clientEmail,
     }
   );
   const bookings = query.data;

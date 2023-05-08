@@ -8,37 +8,37 @@ import { FiLink } from "@calcom/ui/components/icon";
 
 import { withQuery } from "@lib/QueryCell";
 
-export default function Customers() {
+export default function Clients() {
   const { t } = useLocale();
-  const WithQuery = withQuery(trpc.viewer.customers.myCustomers);
+  const WithQuery = withQuery(trpc.viewer.clients.myClients);
 
   return (
     <Shell
-      heading={t("lb_customer_list_title")}
-      title={t("lb_customer_list_title")}
-      subtitle={t("lb_customer_list_subtitle")}>
+      heading={t("lb_client_list_title")}
+      title={t("lb_client_list_title")}
+      subtitle={t("lb_client_list_subtitle")}>
       <WithQuery
         customLoader={<SkeletonLoader />}
-        success={({ data: customers }) => {
+        success={({ data: clients }) => {
           return (
             <List className="border-none" role="list">
-              {customers.map((customer) => {
+              {clients.map((client) => {
                 return (
                   <ListItem
                     className="border-brand-300 flex content-center justify-between rounded-2xl md:p-10"
-                    key={customer.email}>
+                    key={client.email}>
                     <Link
                       className="flex w-full content-center justify-between rounded-2xl"
-                      href={`/customer-details/information?email=${customer.email}`}>
+                      href={`/client-details/information?email=${client.email}`}>
                       <div className="flex flex-row">
                         <img
                           className="mr-2 h-10 w-10 rounded-full"
                           src="https://picsum.photos/200/300"
-                          alt={customer.name}
+                          alt={client.name}
                         />
                         <div className="flex flex-col content-start">
-                          <ListItemTitle>{customer.name}</ListItemTitle>
-                          <ListItemText>{customer.email}</ListItemText>
+                          <ListItemTitle>{client.name}</ListItemTitle>
+                          <ListItemText>{client.email}</ListItemText>
                         </div>
                       </div>
                       <div className="border-brand-200 rounded-lg border-2 p-1">
