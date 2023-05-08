@@ -122,7 +122,7 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
       }}>
       <DialogTrigger asChild>
         {certificate ? (
-          <Button color="secondary" StartIcon={FiEdit} />
+          <Button color="secondary" variant="icon" StartIcon={FiEdit} />
         ) : (
           <Button data-testid="delete-account" color="primary" className="mt-1 border-2" StartIcon={FiPlus}>
             {t("add")}

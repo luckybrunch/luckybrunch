@@ -1641,6 +1641,8 @@
   "lb_certificate_subtitle": "Here you can see all your active certificates",
   "lb_certificate_empty_state_heading": "Add your certificates",
   "lb_certificate_empty_state_desc": "You need to upload your certification to get the access to the platform",
+  "lb_certificate_deleted_successfully": "Certificate deleted successfully",
+  "lb_error_deleting_certificate": "Error deleting certificate",
   "lb_submit_for_review": "Submit for Review",
   "lb_services_page_title": "Services",
   "lb_services_page_subtitle": "Here you can manage all the services that you offer",

@@ -31,11 +31,11 @@ export default function CertificatesPage() {
   const WithQuery = withQuery(trpc.viewer.profile.getCertificates);
   const mutation = trpc.viewer.profile.deleteCertificate.useMutation({
     onSuccess: () => {
-      showToast(t("settings_updated_successfully"), "success");
+      showToast(t("lb_certificate_deleted_successfully"), "success");
       ctx.viewer.profile.getCertificates.invalidate();
     },
     onError: () => {
-      showToast(t("error_updating_settings"), "error");
+      showToast(t("lb_error_deleting_certificate"), "error");
     },
   });
 
@@ -78,11 +78,12 @@ export default function CertificatesPage() {
                           {/* <Button color="secondary" target="_blank" StartIcon={FiEdit} /> */}
                         </Tooltip>
                         <Tooltip content={t("download")}>
-                          <Button color="secondary" StartIcon={FiDownload} />
+                          <Button color="secondary" variant="icon" StartIcon={FiDownload} />
                         </Tooltip>
                         <Tooltip content={t("delete")}>
                           <Button
                             color="secondary"
+                            variant="icon"
                             StartIcon={FiTrash2}
                             onClick={() => {
                               mutation.mutate({ id: certificate.id });
