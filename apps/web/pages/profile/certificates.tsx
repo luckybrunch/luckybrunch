@@ -78,7 +78,13 @@ export default function CertificatesPage() {
                           {/* <Button color="secondary" target="_blank" StartIcon={FiEdit} /> */}
                         </Tooltip>
                         <Tooltip content={t("download")}>
-                          <Button color="secondary" variant="icon" StartIcon={FiDownload} />
+                          <Button
+                            target="_blank"
+                            variant="icon"
+                            StartIcon={FiDownload}
+                            href={certificate.fileUrl}
+                            color="secondary"
+                          />
                         </Tooltip>
                         <Tooltip content={t("delete")}>
                           <Button
