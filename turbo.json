@@ -274,6 +274,11 @@
     "$ALCHEMY_API_KEY",
     "$INFURA_API_KEY",
     "$GITHUB_API_REPO_TOKEN",
+    "$S3_ENDPOINT",
+    "$S3_BUCKET",
+    "$S3_REGION",
+    "$S3_KEY",
+    "$S3_SECRET",
     "yarn.lock"
   ]
 }

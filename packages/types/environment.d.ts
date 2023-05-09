@@ -56,5 +56,11 @@ declare namespace NodeJS {
      *  "non-strict" -> Strict CSP except the usage of unsafe-inline for `style-src`
      */
     readonly CSP_POLICY: "strict" | "non-strict";
+
+    readonly S3_ENDPOINT: string | undefined;
+    readonly S3_BUCKET: string | undefined;
+    readonly S3_REGION: string | undefined;
+    readonly S3_KEY: string | undefined;
+    readonly S3_SECRET: string | undefined;
   }
 }

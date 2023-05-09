@@ -1,3 +1,4 @@
+import type { PresignedPost } from "@aws-sdk/s3-presigned-post";
 import { useState, FormEvent } from "react";
 import { Controller, useForm } from "react-hook-form";
 
@@ -36,8 +37,10 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File[] | null>(null);
   const { reset } = useForm();
+  const [isLoading, setLoading] = useState<boolean>(false);
 
   const { data: certificateTypes } = trpc.public.getCertificateTypes.useQuery();
+  const { data: signedUrl } = trpc.viewer.coaches.getSignedUrl.useQuery();
 
   const ctx = trpc.useContext();
   const certificateTypeOptions = certificateTypes?.map((item) => ({ label: item.name, value: item.id }));
@@ -69,6 +72,22 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
 
   const isDisabled = isSubmitting || !isDirty;
 
+  const uploadCertificate = async (post: PresignedPost, file: Blob) => {
+    const { url, fields } = post;
+    const formData = new FormData();
+
+    Object.entries({ ...fields, file }).forEach(([key, value]) => {
+      formData.append(key, value);
+    });
+
+    const upload = await fetch(url, {
+      method: "POST",
+      body: formData,
+    });
+
+    return upload.ok;
+  };
+
   const mutation = trpc.viewer.profile.updateCertificate.useMutation({
     onSuccess: () => {
       showToast(t("lb_update_certificate_toast"), "success");
@@ -80,19 +99,39 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
     },
   });
 
-  const onSubmit = (input: FormValues) => {
-    if (input.certificate_type === null) throw Error("No certificate selected");
+  const onSubmit = async (input: FormValues) => {
+    if (input.certificate_type === null) throw new Error("No certificate type is selected");
 
-    const certificateForm = {
-      certId: certificate ? certificate.id : undefined,
-      name: input.certificate_name,
-      description: input.certificate_desc,
-      typeId: input.certificate_type.value,
-      fileUrl: "implement later",
-    };
-    console.log("certificateForm: ", certificateForm);
-    mutation.mutate(certificateForm);
-    reset(input);
+    if (file == null || file?.length === 0 || signedUrl == null) {
+      throw new Error("Certificate isn't selected or an error occurred while uploading");
+    }
+
+    try {
+      setLoading(true);
+      const { post, fileUrl } = signedUrl;
+      const uploadSuccess = await uploadCertificate(post, file[0]);
+
+      if (!uploadSuccess) {
+        throw new Error("An error occurred while uploading the certificate");
+      }
+
+      const certificateForm = {
+        certId: certificate ? certificate.id : undefined,
+        name: input.certificate_name,
+        description: input.certificate_desc,
+        typeId: input.certificate_type.value,
+        fileUrl,
+      };
+
+      mutation.mutate(certificateForm);
+      // reset call of react-hook-form doesn't reset <input type="file" />
+      setFile(null);
+      reset(input);
+    } catch (err) {
+      throw err;
+    } finally {
+      setLoading(false);
+    }
   };
 
   const onInputFile = (e: FormEvent<HTMLInputElement>) => {
@@ -104,7 +143,6 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
     } else {
       setFile([e.currentTarget.files[0]]);
     }
-    console.log("file:", file);
   };
 
   function getRandomInt(max: number) {
@@ -139,7 +177,7 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
             <div className="flex items-start justify-between">
               <div>
                 <Label className="mt-8 text-gray-900">
-                  <>{t("lb_certificate_update_label")}</>
+                  <>{t("lb_certificate_file_label")}</>
                 </Label>
                 {file &&
                   file?.map((file) => (
@@ -154,12 +192,12 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
               <div className="flex items-center">
                 <label className="mt-8 rounded-sm border border-gray-300 bg-white px-3 py-1 text-xs font-medium leading-4 text-gray-700 hover:bg-gray-50 hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-1 dark:border-gray-800 dark:bg-transparent dark:text-white dark:hover:bg-gray-900">
                   <input
-                    onInput={onInputFile}
+                    onChange={onInputFile}
                     type="file"
                     name="certificate-upload"
                     placeholder={t("lb_certificate_upload_placeholder")}
                     className="pointer-events-none absolute mt-4 opacity-0"
-                    accept="image/*"
+                    accept="application/pdf"
                   />
                   {t("choose_a_file")}
                 </label>
@@ -168,7 +206,6 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
             <div className="mt-8">
               <TextField
                 label={t("lb_certificate_name")}
-                hint={t("lb_certificate_hint")}
                 required
                 {...formMethods.register("certificate_name")}
               />
@@ -192,9 +229,6 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
                     }}
                   />
                   {error?.type === "required" && <div className="text-red-500">Missing</div>}
-                  <div className="text-gray mt-2 flex items-center text-sm text-gray-700">
-                    {t("lb_certificate_document_type_hint")}
-                  </div>
                 </>
               )}
             />
@@ -206,7 +240,7 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
             </div>
 
             <DialogFooter>
-              <Button disabled={isDisabled} color="primary" type="submit">
+              <Button loading={isLoading} disabled={isDisabled} color="primary" type="submit">
                 {certificate ? t("update") : t("add")}
               </Button>
               <DialogClose />
