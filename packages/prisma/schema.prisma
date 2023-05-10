@@ -146,7 +146,7 @@ model Specialization {
   label String
   icon  String?
 
-  users User[]
+  coaches Coach[]
 }
 
 enum UserType {
@@ -216,7 +216,6 @@ model User {
   routingForms         App_RoutingForms_Form[] @relation("routing-form")
   verifiedNumbers      VerifiedNumber[]
   hosts                Host[]
-  certificates         Certificate[]
 
   // LuckyBrunch
   completedProfileInformations Boolean   @default(false)
@@ -225,17 +224,11 @@ model User {
   requestedReviewAt            DateTime?
   reviewedAt                   DateTime?
 
-  // LuckyBrunch - Address
-  companyName  String?
-  addressLine1 String?
-  addressLine2 String?
-  zip          String?
-  city         String?
-  country      String? // ISO 3166 codes
-
-  appointmentTypes String?
-  specializations  Specialization[]
-  userType         UserType         @default(COACH)
+  userType            UserType @default(COACH)
+  coachProfileId      Int?     @unique
+  coachProfile        Coach?   @relation(name: "coachProfile", fields: [coachProfileId], references: [id])
+  coachProfileDraftId Int?     @unique
+  coachProfileDraft   Coach?   @relation(name: "coachProfileDraft", fields: [coachProfileDraftId], references: [id])
   // LuckyBrunch - END
 
   @@map(name: "users")
@@ -704,8 +697,8 @@ model VerifiedNumber {
 model Certificate {
   id          Int             @id @default(autoincrement())
   createdAt   DateTime        @default(now())
-  userId      Int
-  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coachId     Int
+  coach       Coach           @relation(fields: [coachId], references: [id], onDelete: Cascade)
   name        String
   description String?
   // what type will the upload be? Is it a string that points to some data?
@@ -725,4 +718,31 @@ model ServiceType {
   name        String
   description String?
   services    EventType[]
+}
+
+enum ReviewStatus {
+  STARTED
+  APPROVED
+  REJECTED
+}
+
+model Coach {
+  id                Int           @id @default(autoincrement())
+  name              String
+  bio               String
+  companyName       String?
+  addressLine1      String?
+  addressLine2      String?
+  zip               String?
+  city              String?
+  country           String? // ISO 3166 codes
+  appointmentTypes  String?
+  coachProfile      User?         @relation(name: "coachProfile")
+  coachProfileDraft User?         @relation(name: "coachProfileDraft")
+  requestedReviewAt DateTime?
+  reviewedAt        DateTime?
+  reviewStatus      ReviewStatus?
+
+  specializations Specialization[]
+  certificates    Certificate[]
 }
