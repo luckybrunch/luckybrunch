@@ -21,7 +21,7 @@ const tabs: (VerticalTabItemProps | HorizontalTabItemProps)[] = [
   },
   {
     name: translationKeys.clientBookings,
-    href: "/client-details-details/bookings",
+    href: "/client-details/bookings",
   },
   {
     name: translationKeys.notes,
