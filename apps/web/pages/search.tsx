@@ -20,7 +20,7 @@ export default function Search() {
           if (data.length > 0) {
             return (
               <List className="flex w-full flex-row flex-wrap justify-center">
-                {data.map(({ id, name, avatar, bio, specializations }) => {
+                {data.map(({ id, name, user, bio, specializations }) => {
                   return (
                     <ListItem
                       rounded={false}
@@ -29,7 +29,7 @@ export default function Search() {
                       <div className="flex flex-col items-center pb-10">
                         <img
                           className="mb-3 h-24 w-24 rounded-full text-center shadow-lg"
-                          src={avatar ?? ""}
+                          src={user?.avatar ?? ""}
                           alt={name ?? ""}
                         />
                         <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">{name}</h5>

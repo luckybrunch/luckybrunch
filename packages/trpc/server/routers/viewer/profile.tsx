@@ -1,12 +1,28 @@
 import z from "zod";
 
+import { TRPCError } from "@trpc/server";
+
 import { authedProcedure, router } from "../../trpc";
 
 export const profileRouter = router({
   getCertificates: authedProcedure.query(async ({ ctx }) => {
-    const { prisma } = ctx;
+    const { prisma, user } = ctx;
+
+    if (!user.coachProfile) {
+      throw new TRPCError({
+        message: "User must have a coach profile in order to retrieve certificates",
+        code: "NOT_FOUND",
+      });
+    }
+
     const certificates = await prisma.certificate.findMany({
-      where: { userId: ctx.user.id },
+      where: {
+        coach: {
+          user: {
+            id: user.coachProfile.id,
+          },
+        },
+      },
       select: {
         id: true,
         name: true,
@@ -41,10 +57,22 @@ export const profileRouter = router({
   }),
 
   getSpecializations: authedProcedure.query(async ({ ctx }) => {
-    const { prisma } = ctx;
-    const specializations = await prisma.user
-      .findUnique({
-        where: { id: ctx.user.id },
+    const { prisma, user } = ctx;
+
+    if (!user.coachProfile) {
+      throw new TRPCError({
+        message: "User must have a coach profile in order to retireve specializations",
+        code: "NOT_FOUND",
+      });
+    }
+
+    const specializations = await prisma.coach
+      .findFirst({
+        where: {
+          user: {
+            id: user.coachProfile.id,
+          },
+        },
         select: {
           specializations: true,
         },
@@ -69,7 +97,7 @@ export const profileRouter = router({
         await prisma.certificate.updateMany({
           where: {
             id: input.certId,
-            userId: ctx.user.id,
+            coachId: user.coachProfile?.id,
           },
           data: {
             name: input.name,
@@ -79,9 +107,16 @@ export const profileRouter = router({
           },
         });
       } else {
+        if (!user.coachProfile?.id) {
+          throw new TRPCError({
+            code: "INTERNAL_SERVER_ERROR",
+            message: "User must have a coach profile in order to add a new certificate",
+          });
+        }
+
         await prisma.certificate.create({
           data: {
-            userId: user.id,
+            coachId: user.coachProfile?.id,
             name: input.name,
             description: input.description,
             typeId: input.typeId,
@@ -105,9 +140,10 @@ export const profileRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { prisma, user } = ctx;
-      const completedProfileServices = await ctx.prisma.user.update({
+
+      const completedProfileServices = await prisma.user.update({
         where: {
-          id: ctx.user.id,
+          id: user.id,
         },
         data: {
           completedProfileServices: input.completedProfileServices,
@@ -123,6 +159,14 @@ export const profileRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { prisma, user } = ctx;
-      await prisma.certificate.deleteMany({ where: { userId: ctx.user.id, id: input.id } });
+
+      if (!user.coachProfile) {
+        throw new TRPCError({
+          message: "User must have a coach profile in order to delete a certificate",
+          code: "NOT_FOUND",
+        });
+      }
+
+      await prisma.certificate.deleteMany({ where: { coachId: user.coachProfile.id, id: input.id } });
     }),
 });

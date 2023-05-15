@@ -12,6 +12,8 @@ import * as trpc from "@trpc/server";
 import { Maybe } from "@trpc/server";
 import * as trpcNext from "@trpc/server/adapters/next";
 
+import { Prisma } from ".prisma/client";
+
 type CreateContextOptions = trpcNext.CreateNextContextOptions | GetServerSidePropsContext;
 
 async function getUserFromSession({
@@ -24,6 +26,20 @@ async function getUserFromSession({
   if (!session?.user?.id) {
     return null;
   }
+
+  const coachSelect: Prisma.CoachSelect = {
+    id: true,
+    name: true,
+    bio: true,
+    companyName: true,
+    addressLine1: true,
+    addressLine2: true,
+    zip: true,
+    city: true,
+    country: true,
+    appointmentTypes: true,
+  };
+
   const user = await prisma.user.findUnique({
     where: {
       id: session.user.id,
@@ -32,13 +48,6 @@ async function getUserFromSession({
       id: true,
       username: true,
       name: true,
-      companyName: true,
-      addressLine1: true,
-      addressLine2: true,
-      zip: true,
-      city: true,
-      country: true,
-      appointmentTypes: true,
       email: true,
       bio: true,
       timeZone: true,
@@ -84,6 +93,12 @@ async function getUserFromSession({
       metadata: true,
       role: true,
       userType: true,
+      coachProfile: {
+        select: coachSelect,
+      },
+      coachProfileDraft: {
+        select: coachSelect,
+      },
     },
   });
 

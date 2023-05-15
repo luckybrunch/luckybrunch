@@ -63,13 +63,13 @@ export default function User(props: inferSSRProps<typeof getServerSideProps> & E
     userProfileList = [
       {
         title: t("lb_specialization"),
-        batches: userProfileInfo[0].specializations.map(function (item) {
+        batches: (userProfileInfo.coachProfile?.specializations ?? []).map((item) => {
           return item["label"];
         }),
       },
       {
         title: t("location"),
-        description: `${userProfileInfo[0].addressLine1}, ${userProfileInfo[0].zip} ${userProfileInfo[0].city} `,
+        description: `${userProfileInfo.coachProfile?.addressLine1}, ${userProfileInfo.coachProfile?.zip} ${userProfileInfo.coachProfile?.city} `,
         batches: [t("lb_online"), t("lb_home")], // Add this when input is there
       },
       {
@@ -205,8 +205,8 @@ export default function User(props: inferSSRProps<typeof getServerSideProps> & E
                               <ListItemText component="p">{list.description}</ListItemText>
                             )}
                             {list.batches &&
-                              list.batches.map((batch) => (
-                                <Badge variant="lb_green" className="mr-2">
+                              list.batches.map((batch, index) => (
+                                <Badge key={index} variant="lb_green" className="mr-2">
                                   {batch}
                                 </Badge>
                               ))}
@@ -224,7 +224,7 @@ export default function User(props: inferSSRProps<typeof getServerSideProps> & E
             </div>
           )}
           <h1 className="font-cal mb-4 text-center text-3xl text-gray-900 dark:text-white">
-          {t("lb_make_appointment")}
+            {t("lb_make_appointment")}
           </h1>
           <div
             className={classNames(

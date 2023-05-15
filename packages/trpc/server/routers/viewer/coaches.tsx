@@ -1,8 +1,6 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
-import { CustomerType } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
-import { UserType } from "@prisma/client";
 
 import { TRPCError } from "@trpc/server";
 
@@ -12,15 +10,17 @@ export const coachesRouter = router({
   search: publicProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
 
-    const coaches = await prisma.user.findMany({
-      where: {
-        userType: UserType.COACH,
-      },
+    const coaches = await prisma.coach.findMany({
       select: {
         id: true,
         name: true,
         bio: true,
-        avatar: true,
+        // TODO: Add avatar through join or also duplicate to Coach model?
+        user: {
+          select: {
+            avatar: true,
+          },
+        },
         specializations: {
           select: {
             id: true,

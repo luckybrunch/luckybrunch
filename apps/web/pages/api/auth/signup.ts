@@ -85,6 +85,22 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   });
 
+  // Create initial coach profile for the user type of coach
+  if (userType === UserType.COACH) {
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        coachProfile: {
+          create: {
+            name,
+          },
+        },
+      },
+    });
+  }
+
   // If user has been invitedTo a team, we accept the membership
   if (user.invitedTo) {
     const team = await prisma.team.findFirst({

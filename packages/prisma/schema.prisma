@@ -721,27 +721,31 @@ model ServiceType {
 }
 
 enum ReviewStatus {
-  STARTED
-  APPROVED
-  REJECTED
+  DRAFT
+  REVIEW_REQUESTED
+  REVIEW_STARTED
+  PUBLISHED
 }
 
 model Coach {
-  id                Int           @id @default(autoincrement())
-  name              String
-  bio               String
-  companyName       String?
-  addressLine1      String?
-  addressLine2      String?
-  zip               String?
-  city              String?
-  country           String? // ISO 3166 codes
-  appointmentTypes  String?
-  coachProfile      User?         @relation(name: "coachProfile")
-  coachProfileDraft User?         @relation(name: "coachProfileDraft")
+  id               Int     @id @default(autoincrement())
+  name             String
+  bio              String?
+  companyName      String?
+  addressLine1     String?
+  addressLine2     String?
+  zip              String?
+  city             String?
+  country          String? // ISO 3166 codes
+  appointmentTypes String?
+  user             User?   @relation(name: "coachProfile")
+  userFromDraft    User?   @relation(name: "coachProfileDraft")
+
+  // Review request
+  reviewStatus      ReviewStatus
   requestedReviewAt DateTime?
   reviewedAt        DateTime?
-  reviewStatus      ReviewStatus?
+  rejectionReason   String?
 
   specializations Specialization[]
   certificates    Certificate[]

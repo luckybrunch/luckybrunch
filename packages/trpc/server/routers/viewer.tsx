@@ -158,13 +158,13 @@ const loggedInViewerRouter = router({
       id: user.id,
       name: user.name,
       username: user.username,
-      companyName: user.companyName,
-      addressLine1: user.addressLine1,
-      addressLine2: user.addressLine2,
-      zip: user.zip,
-      city: user.city,
-      country: user.country,
-      appointmentTypes: user.appointmentTypes,
+      companyName: user.coachProfile?.companyName,
+      addressLine1: user.coachProfile?.addressLine1,
+      addressLine2: user.coachProfile?.addressLine2,
+      zip: user.coachProfile?.zip,
+      city: user.coachProfile?.city,
+      country: user.coachProfile?.country,
+      appointmentTypes: user.coachProfile?.appointmentTypes,
       email: user.email,
       startTime: user.startTime,
       endTime: user.endTime,
@@ -633,19 +633,50 @@ const loggedInViewerRouter = router({
         timeFormat: z.number().optional(),
         disableImpersonation: z.boolean().optional(),
         metadata: userMetadata.optional(),
+        isCoach: z.boolean().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
       const { user, prisma } = ctx;
-      const { specializations, ...stuff } = input;
+      const {
+        specializations,
+        addressLine1,
+        addressLine2,
+        companyName,
+        appointmentTypes,
+        zip,
+        city,
+        country,
+        isCoach,
+        ...stuff
+      } = input;
       const data: Prisma.UserUpdateInput = {
         ...stuff,
         metadata: input.metadata as Prisma.InputJsonValue,
       };
 
       if (specializations) {
-        data.specializations = {
-          set: specializations.map((id) => ({ id })),
+        data.coachProfile = {
+          update: {
+            specializations: {
+              set: specializations.map((id) => ({ id })),
+            },
+          },
+        };
+      }
+
+      if (isCoach) {
+        data.coachProfile = {
+          update: {
+            bio: stuff.bio,
+            addressLine1,
+            addressLine2,
+            companyName,
+            appointmentTypes,
+            zip,
+            city,
+            country,
+          },
         };
       }
 

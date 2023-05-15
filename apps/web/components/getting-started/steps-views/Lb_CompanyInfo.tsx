@@ -1,4 +1,5 @@
 import { ArrowRightIcon } from "@heroicons/react/outline";
+import { UserType } from "@prisma/client";
 import { useForm, Controller } from "react-hook-form";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -40,11 +41,11 @@ const Lb_CompanyInfo = (props: IUserSettingsProps) => {
   }));
 
   const defaultValues = {
-    addressLine1: user?.addressLine1 || "",
-    companyName: user?.companyName || "",
-    zip: user?.zip || "",
-    city: user?.city || "",
-    appointmentTypes: (user.appointmentTypes || "")
+    addressLine1: user?.coachProfile?.addressLine1 || "",
+    companyName: user?.coachProfile?.companyName || "",
+    zip: user?.coachProfile?.zip || "",
+    city: user?.coachProfile?.city || "",
+    appointmentTypes: (user?.coachProfile?.appointmentTypes || "")
       .split(",")
       .filter((v) => Object.keys(AppointmentTypes).includes(v)),
   };
@@ -70,6 +71,7 @@ const Lb_CompanyInfo = (props: IUserSettingsProps) => {
       city: data.city,
       companyName: data.companyName,
       appointmentTypes: data.appointmentTypes.join(","),
+      isCoach: user.userType === UserType.COACH,
     });
   };
 

@@ -1,27 +1,31 @@
-import { publicProcedure, router } from "../../trpc";
+import { authedProcedure, router } from "../../trpc";
 
 export const userProfileRouter = router({
-  getUserProfileList: publicProcedure.query(async ({ ctx }) => {
-    const { prisma } = ctx;
+  getUserProfileList: authedProcedure.query(async ({ ctx }) => {
+    const { prisma, user } = ctx;
 
-    const userProfileInfo = await prisma.user.findMany({
-      where: { id: ctx.user.id },
+    const userProfileInfo = await prisma.user.findUnique({
+      where: { id: user.id },
       select: {
-        specializations: {
+        coachProfile: {
           select: {
-            label: true,
-          },
-        },
-        addressLine1: true,
-        zip: true,
-        city: true,
-        certificates: {
-          select: {
-            name: true,
+            addressLine1: true,
+            zip: true,
+            city: true,
+            specializations: {
+              select: {
+                label: true,
+              },
+            },
+            certificates: {
+              select: {
+                name: true,
+              },
+            },
           },
         },
       },
     });
-    return userProfileInfo;  
+    return userProfileInfo;
   }),
 });
