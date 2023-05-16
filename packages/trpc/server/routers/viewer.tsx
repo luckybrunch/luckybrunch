@@ -656,7 +656,7 @@ const loggedInViewerRouter = router({
       };
 
       if (specializations) {
-        data.coachProfile = {
+        data.coachProfileDraft = {
           update: {
             specializations: {
               set: specializations.map((id) => ({ id })),
@@ -666,7 +666,7 @@ const loggedInViewerRouter = router({
       }
 
       if (isCoach) {
-        data.coachProfile = {
+        data.coachProfileDraft = {
           update: {
             bio: stuff.bio,
             addressLine1,

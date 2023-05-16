@@ -1,3 +1,4 @@
+import { UserType } from "@prisma/client";
 import superjson from "superjson";
 
 import rateLimit from "@calcom/lib/rateLimit";
@@ -69,11 +70,67 @@ const isRateLimitedByUserIdMiddleware = ({ intervalInMs, limit }: IRateLimitOpti
     });
   });
 
+// Used after authentication step
+const createDraftProfileForCoachesMiddleware = t.middleware(async ({ ctx, next }) => {
+  if (ctx.user?.userType === UserType.COACH && !ctx.user.coachProfileDraft) {
+    await ctx.prisma.user.update({
+      where: {
+        id: ctx.user.id,
+      },
+      data: {
+        coachProfileDraft: {
+          create: {
+            name: ctx.user.name ?? "",
+          },
+        },
+      },
+    });
+  }
+
+  // To prevent repetitve checks for ctx.user and ctx.session, this middleware is used after authentication
+  type User = NonNullable<typeof ctx.user>;
+  type Session = NonNullable<typeof ctx.session>;
+
+  return next({
+    ctx: {
+      session: ctx.session as Session,
+      user: ctx.user as User,
+    },
+  });
+});
+
+// Used after authentication step
+const isCoachMiddleware = t.middleware(async ({ ctx, next }) => {
+  if (ctx.user?.userType !== UserType.COACH) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
+  // To prevent repetitve checks for ctx.user and ctx.session, this middleware is used after authentication
+  type User = NonNullable<typeof ctx.user>;
+  type Session = NonNullable<typeof ctx.session>;
+
+  return next({
+    ctx: {
+      // infers that `user` and `session` are non-nullable to downstream procedures
+      session: ctx.session as Session,
+      user: ctx.user as User,
+    },
+  });
+});
+
 export const router = t.router;
 export const mergeRouters = t.mergeRouters;
 export const middleware = t.middleware;
 export const publicProcedure = t.procedure.use(perfMiddleware);
-export const authedProcedure = t.procedure.use(perfMiddleware).use(isAuthedMiddleware);
+export const authedProcedure = t.procedure
+  .use(perfMiddleware)
+  .use(isAuthedMiddleware)
+  .use(createDraftProfileForCoachesMiddleware);
+export const authedCoachProcedure = t.procedure
+  .use(perfMiddleware)
+  .use(isAuthedMiddleware)
+  .use(isCoachMiddleware)
+  .use(createDraftProfileForCoachesMiddleware);
 export const authedRateLimitedProcedure = ({ intervalInMs, limit }: IRateLimitOptions) =>
   t.procedure
     .use(perfMiddleware)

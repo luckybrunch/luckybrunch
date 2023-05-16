@@ -92,9 +92,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         id: user.id,
       },
       data: {
-        coachProfile: {
+        coachProfileDraft: {
           create: {
-            name,
+            name: name ?? "",
           },
         },
       },

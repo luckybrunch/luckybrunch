@@ -742,7 +742,7 @@ model Coach {
   userFromDraft    User?   @relation(name: "coachProfileDraft")
 
   // Review request
-  reviewStatus      ReviewStatus
+  reviewStatus      ReviewStatus @default(DRAFT)
   requestedReviewAt DateTime?
   reviewedAt        DateTime?
   rejectionReason   String?

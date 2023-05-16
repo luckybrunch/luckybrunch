@@ -2,7 +2,7 @@ import z from "zod";
 
 import { TRPCError } from "@trpc/server";
 
-import { authedProcedure, router } from "../../trpc";
+import { authedCoachProcedure, authedProcedure, router } from "../../trpc";
 
 export const profileRouter = router({
   getCertificates: authedProcedure.query(async ({ ctx }) => {
@@ -81,7 +81,7 @@ export const profileRouter = router({
     return specializations || [];
   }),
 
-  updateCertificate: authedProcedure
+  updateCertificate: authedCoachProcedure
     .input(
       z.object({
         certId: z.number().optional(),
@@ -93,11 +93,12 @@ export const profileRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { prisma, user } = ctx;
+
       if (input.certId) {
         await prisma.certificate.updateMany({
           where: {
             id: input.certId,
-            coachId: user.coachProfile?.id,
+            coachId: user.coachProfileDraft?.id,
           },
           data: {
             name: input.name,
@@ -107,16 +108,9 @@ export const profileRouter = router({
           },
         });
       } else {
-        if (!user.coachProfile?.id) {
-          throw new TRPCError({
-            code: "INTERNAL_SERVER_ERROR",
-            message: "User must have a coach profile in order to add a new certificate",
-          });
-        }
-
         await prisma.certificate.create({
           data: {
-            coachId: user.coachProfile?.id,
+            coachId: user.coachProfileDraft!.id!,
             name: input.name,
             description: input.description,
             typeId: input.typeId,
@@ -151,7 +145,7 @@ export const profileRouter = router({
       });
     }),
 
-  deleteCertificate: authedProcedure
+  deleteCertificate: authedCoachProcedure
     .input(
       z.object({
         id: z.number(),
@@ -160,13 +154,6 @@ export const profileRouter = router({
     .mutation(async ({ ctx, input }) => {
       const { prisma, user } = ctx;
 
-      if (!user.coachProfile) {
-        throw new TRPCError({
-          message: "User must have a coach profile in order to delete a certificate",
-          code: "NOT_FOUND",
-        });
-      }
-
-      await prisma.certificate.deleteMany({ where: { coachId: user.coachProfile.id, id: input.id } });
+      await prisma.certificate.deleteMany({ where: { coachId: user.coachProfileDraft?.id, id: input.id } });
     }),
 });

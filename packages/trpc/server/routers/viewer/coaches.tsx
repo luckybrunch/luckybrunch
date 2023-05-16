@@ -1,10 +1,12 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
+import { ReviewStatus } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 
 import { TRPCError } from "@trpc/server";
 
-import { router, publicProcedure, authedProcedure } from "../../trpc";
+
+import { router, publicProcedure, authedCoachProcedure } from "../../trpc";
 import { UserType } from ".prisma/client";
 
 export const coachesRouter = router({
@@ -41,7 +43,7 @@ export const coachesRouter = router({
 
     return coaches;
   }),
-  getSignedUrl: authedProcedure.query(async () => {
+  getSignedUrl: authedCoachProcedure.query(async () => {
     const s3Bucket = process.env.S3_BUCKET || "";
     const s3Endpoint = process.env.S3_ENDPOINT || "";
     const s3Region = process.env.S3_REGION || "";
@@ -83,5 +85,22 @@ export const coachesRouter = router({
         cause: err,
       });
     }
+  }),
+  requestReview: authedCoachProcedure.mutation(async ({ ctx }) => {
+    const { prisma, user } = ctx;
+
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        coachProfileDraft: {
+          update: {
+            reviewStatus: ReviewStatus.REVIEW_REQUESTED,
+            requestedReviewAt: new Date(),
+          },
+        },
+      },
+    });
   }),
 });

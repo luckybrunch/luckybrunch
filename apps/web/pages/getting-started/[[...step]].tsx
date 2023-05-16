@@ -180,7 +180,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
       completedOnboarding: true,
       id: true,
       userType: true,
-      coachProfile: {
+      coachProfileDraft: {
         select: {
           companyName: true,
           name: true,

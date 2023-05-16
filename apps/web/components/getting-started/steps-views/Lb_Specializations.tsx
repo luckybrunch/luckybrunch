@@ -29,7 +29,7 @@ const Lb_Specializations = (props: IUserSettingsProps) => {
     })) ?? [];
 
   const defaultValues = {
-    specializations: user?.coachProfile?.specializations.map((item) => item.id) || [],
+    specializations: user?.coachProfileDraft?.specializations.map((item) => item.id) || [],
   };
 
   const formMethods = useForm<FormValues>({

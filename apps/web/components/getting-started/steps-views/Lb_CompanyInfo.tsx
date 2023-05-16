@@ -41,11 +41,11 @@ const Lb_CompanyInfo = (props: IUserSettingsProps) => {
   }));
 
   const defaultValues = {
-    addressLine1: user?.coachProfile?.addressLine1 || "",
-    companyName: user?.coachProfile?.companyName || "",
-    zip: user?.coachProfile?.zip || "",
-    city: user?.coachProfile?.city || "",
-    appointmentTypes: (user?.coachProfile?.appointmentTypes || "")
+    addressLine1: user?.coachProfileDraft?.addressLine1 || "",
+    companyName: user?.coachProfileDraft?.companyName || "",
+    zip: user?.coachProfileDraft?.zip || "",
+    city: user?.coachProfileDraft?.city || "",
+    appointmentTypes: (user?.coachProfileDraft?.appointmentTypes || "")
       .split(",")
       .filter((v) => Object.keys(AppointmentTypes).includes(v)),
   };
