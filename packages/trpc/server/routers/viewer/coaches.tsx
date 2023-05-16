@@ -5,27 +5,35 @@ import { v4 as uuidv4 } from "uuid";
 import { TRPCError } from "@trpc/server";
 
 import { router, publicProcedure, authedProcedure } from "../../trpc";
+import { UserType } from ".prisma/client";
 
 export const coachesRouter = router({
   search: publicProcedure.query(async ({ ctx }) => {
     const { prisma } = ctx;
 
-    const coaches = await prisma.coach.findMany({
+    const coaches = await prisma.user.findMany({
+      where: {
+        userType: UserType.COACH,
+        // If a coach profile that is not a draft exists, then it's a published coach
+        coachProfileId: {
+          not: null,
+        },
+      },
       select: {
         id: true,
-        name: true,
-        bio: true,
-        // TODO: Add avatar through join or also duplicate to Coach model?
-        user: {
-          select: {
-            avatar: true,
-          },
-        },
-        specializations: {
+        avatar: true,
+        coachProfile: {
           select: {
             id: true,
-            icon: true,
-            label: true,
+            name: true,
+            bio: true,
+            specializations: {
+              select: {
+                id: true,
+                icon: true,
+                label: true,
+              },
+            },
           },
         },
       },
