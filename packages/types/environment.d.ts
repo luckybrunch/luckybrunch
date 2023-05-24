@@ -62,5 +62,7 @@ declare namespace NodeJS {
     readonly S3_REGION: string | undefined;
     readonly S3_KEY: string | undefined;
     readonly S3_SECRET: string | undefined;
+
+    readonly RETOOL_AUTH_KEY: string | undefined;
   }
 }

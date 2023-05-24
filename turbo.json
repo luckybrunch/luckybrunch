@@ -279,6 +279,7 @@
     "$S3_REGION",
     "$S3_KEY",
     "$S3_SECRET",
+    "$RETOOL_AUTH_KEY",
     "yarn.lock"
   ]
 }
