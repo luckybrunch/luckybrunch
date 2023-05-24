@@ -1,4 +1,5 @@
 import { AppCategories, BookingStatus, DestinationCalendar, IdentityProvider, Prisma } from "@prisma/client";
+import { ReviewStatus } from "@prisma/client";
 import _ from "lodash";
 import { authenticator } from "otplib";
 import z from "zod";
@@ -189,6 +190,8 @@ const loggedInViewerRouter = router({
       hideBranding: user.hideBranding,
       metadata: user.metadata,
       userType: user.userType,
+      coachProfileDraft: user.coachProfileDraft,
+      coachProfile: user.coachProfile,
     };
   }),
   avatar: authedProcedure.query(({ ctx }) => ({
@@ -638,6 +641,14 @@ const loggedInViewerRouter = router({
     )
     .mutation(async ({ ctx, input }) => {
       const { user, prisma } = ctx;
+
+      if (user.coachProfileDraft?.reviewStatus === ReviewStatus.REVIEW_STARTED) {
+        throw new TRPCError({
+          code: "BAD_REQUEST",
+          message: "Cannot perform changes when profile is being reviewed",
+        });
+      }
+
       const {
         specializations,
         addressLine1,

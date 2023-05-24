@@ -1683,5 +1683,9 @@
   "lb_clients_nav_information": "Information",
   "lb_clients_nav_chat": "Chat",
   "lb_clients_nav_bookings": "Bookings",
-  "lb_clients_nav_notes": "Notes"
+  "lb_clients_nav_notes": "Notes",
+  "lb_country": "Country",
+  "lb_revert": "Revert",
+  "lb_request_review": "Request a Review",
+  "lb_profile_changes": "Profile changes"
 }

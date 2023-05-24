@@ -1,6 +1,8 @@
 import { ClockIcon, DesktopComputerIcon } from "@heroicons/react/outline";
-import { useMemo } from "react";
+import { ReviewStatus } from "@prisma/client";
+import React, { useMemo } from "react";
 
+import { withProfileDiffList } from "@calcom/features/coaches/lib/withProfileDiff";
 import Shell from "@calcom/features/shell/Shell";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
@@ -165,27 +167,24 @@ function Published() {
 }
 
 export default function DashboardPage() {
-  const WithQuery = withQuery(trpc.viewer.profile.getOnboardingFlags);
+  const WithQuery = withQuery(trpc.viewer.me);
+  const { data: profileDiff } = trpc.viewer.coaches.getProfileDiff.useQuery();
   const { t } = useLocale();
 
   return (
     <Shell heading={t("lb_dashboard")} subtitle={t("lb_manage_settings_for_nutritionist_profile")}>
       <WithQuery
         customLoader={<SkeletonLoader />}
-        success={({ data }) => {
-          if (
-            data.requestedReviewAt &&
-            data.reviewedAt &&
-            data.reviewedAt.getTime() > data.requestedReviewAt.getTime()
-          ) {
-            return <Published />;
+        success={({ data: user }) => {
+          if (user?.coachProfile && user.coachProfileDraft?.reviewStatus !== ReviewStatus.REVIEW_STARTED) {
+            return withProfileDiffList(Published, profileDiff?.diffList);
           }
 
-          if (data.requestedReviewAt) {
-            return <InReview />;
+          if (user?.coachProfileDraft?.reviewStatus === ReviewStatus.REVIEW_STARTED) {
+            return withProfileDiffList(InReview, profileDiff?.diffList);
           }
 
-          return <UnpublishedDashboard />;
+          return withProfileDiffList(UnpublishedDashboard, profileDiff?.diffList);
         }}
       />
     </Shell>

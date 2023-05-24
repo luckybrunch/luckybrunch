@@ -38,6 +38,10 @@ async function getUserFromSession({
     city: true,
     country: true,
     appointmentTypes: true,
+    reviewStatus: true,
+    requestedReviewAt: true,
+    reviewedAt: true,
+    rejectionReason: true,
   };
 
   const user = await prisma.user.findUnique({

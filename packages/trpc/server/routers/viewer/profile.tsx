@@ -1,27 +1,14 @@
 import z from "zod";
 
-import { TRPCError } from "@trpc/server";
-
 import { authedCoachProcedure, authedProcedure, router } from "../../trpc";
 
 export const profileRouter = router({
-  getCertificates: authedProcedure.query(async ({ ctx }) => {
+  getCertificates: authedCoachProcedure.query(async ({ ctx }) => {
     const { prisma, user } = ctx;
-
-    if (!user.coachProfile) {
-      throw new TRPCError({
-        message: "User must have a coach profile in order to retrieve certificates",
-        code: "NOT_FOUND",
-      });
-    }
 
     const certificates = await prisma.certificate.findMany({
       where: {
-        coach: {
-          user: {
-            id: user.coachProfile.id,
-          },
-        },
+        coachId: user.coachProfileDraft?.id,
       },
       select: {
         id: true,
@@ -56,21 +43,14 @@ export const profileRouter = router({
     return flags;
   }),
 
-  getSpecializations: authedProcedure.query(async ({ ctx }) => {
+  getSpecializations: authedCoachProcedure.query(async ({ ctx }) => {
     const { prisma, user } = ctx;
-
-    if (!user.coachProfile) {
-      throw new TRPCError({
-        message: "User must have a coach profile in order to retireve specializations",
-        code: "NOT_FOUND",
-      });
-    }
 
     const specializations = await prisma.coach
       .findFirst({
         where: {
-          user: {
-            id: user.coachProfile.id,
+          userFromDraft: {
+            id: user.id,
           },
         },
         select: {
@@ -78,6 +58,7 @@ export const profileRouter = router({
         },
       })
       .specializations();
+
     return specializations || [];
   }),
 
