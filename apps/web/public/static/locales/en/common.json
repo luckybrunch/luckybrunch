@@ -1687,5 +1687,9 @@
   "lb_country": "Country",
   "lb_revert": "Revert",
   "lb_request_review": "Request a Review",
-  "lb_profile_changes": "Profile changes"
+  "lb_profile_changes": "Profile changes",
+  "lb_review_status_banner_contains_changes": "Your profile contains changes that haven't been reviewed",
+  "lb_review_status_banner_review_requested": "You requested a review for your profile",
+  "lb_review_status_banner_in_review": "Your profile is currently being reviewed",
+  "lb_review_status_banner_rejection": "Your profile is rejected: {{rejectionReason}}"
 }
