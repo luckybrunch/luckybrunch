@@ -533,7 +533,6 @@ const clientDashboardItems: NavigationItemType[] = [
   DashboardItem.DISCOVER,
   DashboardItem.BOOKINGS,
   DashboardItem.COACHES,
-  DashboardItem.PROFILE,
   DashboardItem.MORE_SEPARATOR,
   DashboardItem.SETTINGS,
 ].map(findNavigationItem);

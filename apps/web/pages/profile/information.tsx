@@ -100,17 +100,17 @@ const InformationPage = () => {
     );
 
   const defaultValues = {
-    avatar: avatar.avatar || "",
-    name: user.name || "",
-    email: user.email || "",
-    bio: user.bio || "",
-    companyName: user.companyName || "",
-    addressLine1: user.addressLine1 || "",
-    addressLine2: user.addressLine2 || "",
-    zip: user.zip || "",
-    city: user.city || "",
-    country: user.country || "",
-    appointmentTypes: (user.appointmentTypes || "")
+    avatar: avatar.avatar ?? "",
+    email: user.email ?? "",
+    name: user.coachProfileDraft?.name ?? "",
+    bio: user.coachProfileDraft?.bio ?? "",
+    companyName: user.coachProfileDraft?.companyName ?? "",
+    addressLine1: user.coachProfileDraft?.addressLine1 ?? "",
+    addressLine2: user.coachProfileDraft?.addressLine2 ?? "",
+    zip: user.coachProfileDraft?.zip ?? "",
+    city: user.coachProfileDraft?.city ?? "",
+    country: user.coachProfileDraft?.country ?? "",
+    appointmentTypes: (user.coachProfileDraft?.appointmentTypes ?? "")
       .split(",")
       .filter((v) => Object.keys(AppointmentTypes).includes(v)),
     specializations: specializations?.map((item) => item.id) || [],

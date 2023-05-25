@@ -159,13 +159,6 @@ const loggedInViewerRouter = router({
       id: user.id,
       name: user.name,
       username: user.username,
-      companyName: user.coachProfile?.companyName,
-      addressLine1: user.coachProfile?.addressLine1,
-      addressLine2: user.coachProfile?.addressLine2,
-      zip: user.coachProfile?.zip,
-      city: user.coachProfile?.city,
-      country: user.coachProfile?.country,
-      appointmentTypes: user.coachProfile?.appointmentTypes,
       email: user.email,
       startTime: user.startTime,
       endTime: user.endTime,
@@ -679,6 +672,7 @@ const loggedInViewerRouter = router({
       if (isCoach) {
         data.coachProfileDraft = {
           update: {
+            name: stuff.name,
             bio: stuff.bio,
             addressLine1,
             addressLine2,
