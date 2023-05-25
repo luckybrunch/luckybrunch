@@ -121,17 +121,31 @@ export const coachesRouter = router({
   getProfileDiff: authedCoachProcedure.query(async ({ ctx }) => {
     const { prisma, user } = ctx;
 
-    const pp = prisma.coach.findUnique({
-      where: {
-        id: user.coachProfile?.id,
-      },
-    });
+    const pp = prisma.user
+      .findUnique({
+        where: {
+          id: user.id,
+        },
+      })
+      .coachProfile({
+        include: {
+          specializations: true,
+          certificates: true,
+        },
+      });
 
-    const dp = prisma.coach.findUnique({
-      where: {
-        id: user.coachProfileDraft?.id,
-      },
-    });
+    const dp = prisma.user
+      .findUnique({
+        where: {
+          id: user.id,
+        },
+      })
+      .coachProfileDraft({
+        include: {
+          specializations: true,
+          certificates: true,
+        },
+      });
 
     const [publishedProfile, draftProfile] = await Promise.all([pp, dp]);
 

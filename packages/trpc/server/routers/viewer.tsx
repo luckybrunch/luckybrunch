@@ -629,7 +629,6 @@ const loggedInViewerRouter = router({
         timeFormat: z.number().optional(),
         disableImpersonation: z.boolean().optional(),
         metadata: userMetadata.optional(),
-        isCoach: z.boolean().optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -651,7 +650,6 @@ const loggedInViewerRouter = router({
         zip,
         city,
         country,
-        isCoach,
         ...stuff
       } = input;
       const data: Prisma.UserUpdateInput = {
@@ -669,7 +667,7 @@ const loggedInViewerRouter = router({
         };
       }
 
-      if (isCoach) {
+      if (user.coachProfileDraft) {
         data.coachProfileDraft = {
           update: {
             name: stuff.name,

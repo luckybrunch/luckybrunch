@@ -16,10 +16,11 @@ export const ProfileDiffList = ({ diffList }: { diffList: FieldDiffMetada[] }) =
   const revertChangeMutation = trpc.viewer.coaches.revertProfileChange.useMutation({
     onSuccess: () => {
       ctx.viewer.coaches.getProfileDiff.invalidate();
+      ctx.viewer.me.invalidate();
     },
   });
 
-  const revertChange = async (type: "revertNew" | "revertChange", field: string) => {
+  const revertChange = async (field: string) => {
     revertChangeMutation.mutate({ field });
   };
 

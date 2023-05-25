@@ -1,5 +1,4 @@
 import { ArrowRightIcon } from "@heroicons/react/outline";
-import { UserType } from "@prisma/client";
 import { useForm, Controller } from "react-hook-form";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -71,7 +70,6 @@ const Lb_CompanyInfo = (props: IUserSettingsProps) => {
       city: data.city,
       companyName: data.companyName,
       appointmentTypes: data.appointmentTypes.join(","),
-      isCoach: user.userType === UserType.COACH,
     });
   };
 
