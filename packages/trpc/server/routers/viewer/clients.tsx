@@ -1,7 +1,7 @@
 import { Attendee } from "@prisma/client";
 import { z } from "zod";
 
-import { authedProcedure, router } from "../../trpc";
+import { authedCoachProcedure, authedProcedure, router } from "../../trpc";
 
 export const clientsRouter = router({
   myClients: authedProcedure.query(async ({ ctx }) => {
@@ -94,5 +94,56 @@ export const clientsRouter = router({
       });
 
       return bookings;
+    }),
+  clientNotes: authedCoachProcedure
+    .input(
+      z.object({
+        clientEmail: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { prisma, user } = ctx;
+
+      const clientNotes = await prisma.clientNotes.findUnique({
+        where: {
+          coachUserId_clientEmail: {
+            coachUserId: user.id,
+            clientEmail: input.clientEmail,
+          },
+        },
+      });
+
+      if (!clientNotes) {
+        return "";
+      }
+
+      return clientNotes.content;
+    }),
+  setClientNotes: authedCoachProcedure
+    .input(
+      z.object({
+        clientEmail: z.string(),
+        content: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { prisma, user } = ctx;
+
+      await prisma.clientNotes.upsert({
+        where: {
+          coachUserId_clientEmail: {
+            coachUserId: user.id,
+            clientEmail: input.clientEmail,
+          },
+        },
+        create: {
+          coachUserId: user.id,
+          clientEmail: input.clientEmail,
+          content: input.content,
+        },
+        update: {
+          content: input.content,
+        },
+      });
     }),
 });

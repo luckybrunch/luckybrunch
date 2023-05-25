@@ -47,7 +47,7 @@ function SectionContent({
         {section === "information" && <Information />}
         {section === "chat" && <Chat />}
         {section === "bookings" && <ClientBookings clientEmail={user?.email} />}
-        {section === "notes" && <Notes />}
+        {section === "notes" && <Notes clientEmail={user?.email} />}
       </>
     );
   }
