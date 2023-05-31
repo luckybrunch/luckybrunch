@@ -3,7 +3,7 @@ import { GetServerSidePropsContext } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { ParsedUrlQueryInput } from "querystring";
+import { ParsedUrlQueryInput, stringify } from "querystring";
 import { FC } from "react";
 import { z } from "zod";
 
@@ -11,15 +11,16 @@ import { getSession } from "@calcom/lib/auth";
 import { APP_NAME } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import prisma from "@calcom/prisma";
+import { trpc } from "@calcom/trpc/react";
 import { Button, StepCard, Steps } from "@calcom/ui";
 
 import { inferSSRProps } from "@lib/types/inferSSRProps";
 
+import { ClientLocation } from "@components/getting-started/steps-views/ClientLocation";
 import Lb_AlmostDone from "@components/getting-started/steps-views/Lb_AlmostDone";
 import { Lb_CompanyInfo } from "@components/getting-started/steps-views/Lb_CompanyInfo";
 import { Lb_Specializations } from "@components/getting-started/steps-views/Lb_Specializations";
 import Lb_UserProfile from "@components/getting-started/steps-views/Lb_UserProfile";
-import { YourLocation } from "@components/getting-started/steps-views/Location";
 import { MeetingOptions } from "@components/getting-started/steps-views/MeetingOptions";
 import { MeetingRange } from "@components/getting-started/steps-views/MeetingRange";
 import { PriceRange } from "@components/getting-started/steps-views/PriceRange";
@@ -28,9 +29,51 @@ import { UserGoals } from "@components/getting-started/steps-views/UserGoals";
 export type IOnboardingPageProps = inferSSRProps<typeof getServerSideProps>;
 export type IOnboardingComponentProps = {
   user: IOnboardingPageProps["user"];
-  nextStep?: (queryParams?: ParsedUrlQueryInput) => void;
+  nextStep: (queryParams?: ParsedUrlQueryInput) => void;
 };
 type OnboardingUrl = typeof availableUrls[number];
+
+type StepLink = {
+  [key in OnboardingUrl]: {
+    next: OnboardingUrl | ((queryParams: ParsedUrlQueryInput) => OnboardingUrl | null) | null;
+  };
+};
+
+const stepLinks: StepLink = {
+  "lb_user-profile": {
+    next: "lb_company-info",
+  },
+  "lb_company-info": {
+    next: "lb_specializations",
+  },
+  lb_specializations: {
+    next: "lb_almost-done",
+  },
+  "lb_user-goals": {
+    next: "lb_meeting-options",
+  },
+  "lb_where-do-you-live": {
+    next: "lb_meeting-range",
+  },
+  "lb_meeting-range": {
+    next: "lb_price-range",
+  },
+  "lb_meeting-options": {
+    next: (params) => {
+      if (params.inPerson) {
+        return "lb_where-do-you-live";
+      }
+
+      return "lb_price-range";
+    },
+  },
+  "lb_price-range": {
+    next: null,
+  },
+  "lb_almost-done": {
+    next: null,
+  },
+};
 
 type TranslationPlaceholder = {
   translationKey: string;
@@ -81,7 +124,7 @@ const components: Record<OnboardingUrl, FC<IOnboardingComponentProps>> = {
   "lb_almost-done": Lb_AlmostDone,
   "lb_user-goals": UserGoals,
   "lb_meeting-options": MeetingOptions,
-  "lb_where-do-you-live": YourLocation,
+  "lb_where-do-you-live": ClientLocation,
   "lb_meeting-range": MeetingRange,
   "lb_price-range": PriceRange,
 };
@@ -180,22 +223,62 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
 
   const { user, steps } = props;
   const { t } = useLocale();
+  const utils = trpc.useContext();
+  const mutation = trpc.viewer.updateProfile.useMutation({
+    onSuccess: async () => {
+      let url;
+
+      if (user.userType === UserType.COACH) {
+        url = "/";
+      } else {
+        url = "/search";
+      }
+
+      await utils.viewer.me.refetch();
+      router.push({ pathname: url, query: { ...router.query } });
+    },
+  });
 
   const [firstStep] = steps;
   const result = stepRouteSchema.safeParse(router.query);
   const currentUrl = result.success ? result.data.step[0] : firstStep.url;
 
-  const goToIndex = (index: number, queryParams?: ParsedUrlQueryInput) => {
+  const goToIndex = (index: number) => {
     const newStep = steps[index];
     router.push(
       {
         pathname: `/getting-started/${stepTransform(newStep, steps)}`,
         query: {
-          ...queryParams,
+          ...router.query,
         },
       },
       undefined
     );
+  };
+
+  const goToNextStep = async (currentStepIndex: number, newParams?: ParsedUrlQueryInput) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+    const { step, ...previousParams } = router.query;
+    const currentStep = steps[currentStepIndex];
+    const { next } = stepLinks[currentStep.url];
+    let nextStep: OnboardingUrl | null = null;
+
+    if (typeof next === "function") {
+      nextStep = next({ ...previousParams, ...newParams } ?? {});
+    }
+
+    // Last step if null
+    if (next == null && nextStep == null) {
+      mutation.mutate({
+        completedOnboarding: true,
+      });
+      return;
+    }
+
+    router.push({
+      pathname: `/getting-started/${nextStep ?? next}`,
+      query: { ...previousParams, ...newParams },
+    });
   };
 
   const currentStepIndex = steps.findIndex((s) => s.url === currentUrl);
@@ -234,7 +317,7 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
               <Steps maxSteps={steps.length} currentStep={currentStepIndex + 1} navigateToStep={goToIndex} />
             </div>
             <StepCard>
-              <Component user={user} nextStep={(q) => goToIndex(currentStepIndex + 1, q)} />
+              <Component user={user} nextStep={(q) => goToNextStep(currentStepIndex, q)} />
             </StepCard>
             {headers.skipText && (
               <div className="flex w-full flex-row justify-center">
@@ -309,8 +392,10 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     throw new Error("User from session not found");
   }
 
+  const destination = user.userType === UserType.COACH ? "/dasboard" : "/search";
+
   if (user.completedOnboarding) {
-    return { redirect: { permanent: false, destination: "/event-types" } };
+    return { redirect: { permanent: false, destination: `${destination}?${stringify(context.query)}` } };
   }
 
   const steps = user.userType === UserType.COACH ? coachOnboardingSteps : clientOnboardingSteps;
