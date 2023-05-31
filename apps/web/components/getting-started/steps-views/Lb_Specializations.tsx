@@ -5,17 +5,13 @@ import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
 import { Button, Label, Select, Form } from "@calcom/ui";
 
-import type { IOnboardingPageProps } from "../../../pages/getting-started/[[...step]]";
+import type { IOnboardingComponentProps } from "../../../pages/getting-started/[[...step]]";
 
-interface IUserSettingsProps {
-  user: IOnboardingPageProps["user"];
-  nextStep: () => void;
-}
 type FormValues = {
   specializations: number[];
 };
 
-const Lb_Specializations = (props: IUserSettingsProps) => {
+const Lb_Specializations = (props: IOnboardingComponentProps) => {
   const { t } = useLocale();
   const { user, nextStep } = props;
   const utils = trpc.useContext();
@@ -50,7 +46,7 @@ const Lb_Specializations = (props: IUserSettingsProps) => {
     mutation.mutate({
       specializations: data.specializations,
     });
-    nextStep();
+    nextStep?.();
   };
 
   return (

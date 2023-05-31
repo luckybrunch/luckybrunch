@@ -1,4 +1,5 @@
 import { DesktopComputerIcon } from "@heroicons/react/outline";
+import { GetServerSidePropsContext } from "next/types";
 
 import Shell from "@calcom/features/shell/Shell";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -7,6 +8,8 @@ import { EmptyScreen, List, Button, ListItem, SkeletonLoader } from "@calcom/ui"
 import { FiLink } from "@calcom/ui/components/icon";
 
 import { withQuery } from "@lib/QueryCell";
+
+import { ssrInit } from "@server/lib/ssr";
 
 export default function Search() {
   const WithQuery = withQuery(trpc.viewer.coaches.search);
@@ -72,4 +75,14 @@ export default function Search() {
       />
     </Shell>
   );
+}
+
+export async function getServerSideProps(context: GetServerSidePropsContext) {
+  const ssr = await ssrInit(context);
+
+  return {
+    props: {
+      trpcState: ssr.dehydrate(),
+    },
+  };
 }

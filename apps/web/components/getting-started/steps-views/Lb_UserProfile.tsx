@@ -9,7 +9,7 @@ import { trpc } from "@calcom/trpc/react";
 import { Button, Editor, ImageUploader, Label } from "@calcom/ui";
 import { Avatar } from "@calcom/ui";
 
-import type { IOnboardingPageProps } from "../../../pages/getting-started/[[...step]]";
+import type { IOnboardingComponentProps } from "../../../pages/getting-started/[[...step]]";
 
 const md = new MarkdownIt("default", { html: true, breaks: true });
 
@@ -17,12 +17,8 @@ type FormData = {
   bio: string;
   name: string;
 };
-interface IUserProfileProps {
-  user: IOnboardingPageProps["user"];
-  nextStep: () => void;
-}
 
-const Lb_UserProfile = (props: IUserProfileProps) => {
+const Lb_UserProfile = (props: IOnboardingComponentProps) => {
   const { user, nextStep } = props;
   const { t } = useLocale();
   const utils = trpc.useContext();
@@ -49,9 +45,8 @@ const Lb_UserProfile = (props: IUserProfileProps) => {
           throw error;
         }
         await utils.viewer.me.invalidate();
-        nextStep();
+        nextStep?.();
       }
-      trpc.viewer.profile.setCompletedProfileServices.useMutation();
     },
     onError: (error) => {
       throw error;

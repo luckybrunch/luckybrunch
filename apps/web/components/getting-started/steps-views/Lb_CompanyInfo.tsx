@@ -5,14 +5,9 @@ import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
 import { Button, Select, Form, Label } from "@calcom/ui";
 
-import type { IOnboardingPageProps } from "../../../pages/getting-started/[[...step]]";
+import type { IOnboardingComponentProps } from "../../../pages/getting-started/[[...step]]";
 
-interface IUserSettingsProps {
-  user: IOnboardingPageProps["user"];
-  nextStep: () => void;
-}
-
-const Lb_CompanyInfo = (props: IUserSettingsProps) => {
+const Lb_CompanyInfo = (props: IOnboardingComponentProps) => {
   const { user, nextStep } = props;
   const { t } = useLocale();
   const utils = trpc.useContext();
@@ -56,7 +51,7 @@ const Lb_CompanyInfo = (props: IUserSettingsProps) => {
   const mutation = trpc.viewer.updateProfile.useMutation({
     onSuccess: () => {
       utils.viewer.me.invalidate();
-      nextStep();
+      nextStep?.();
     },
     onError: (error) => {
       throw error;

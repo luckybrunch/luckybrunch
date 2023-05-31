@@ -1,5 +1,4 @@
 import { ArrowRightIcon } from "@heroicons/react/solid";
-import MarkdownIt from "markdown-it";
 import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 
@@ -8,15 +7,9 @@ import { telemetryEventTypes, useTelemetry } from "@calcom/lib/telemetry";
 import { trpc } from "@calcom/trpc/react";
 import { Button } from "@calcom/ui";
 
-import type { IOnboardingPageProps } from "../../../pages/getting-started/[[...step]]";
+import type { IOnboardingComponentProps } from "../../../pages/getting-started/[[...step]]";
 
-const md = new MarkdownIt("default", { html: true, breaks: true });
-
-interface IUserProfileProps {
-  user: IOnboardingPageProps["user"];
-}
-
-const Lb_AlmostDone = (props: IUserProfileProps) => {
+const Lb_AlmostDone = (props: IOnboardingComponentProps) => {
   const { t } = useLocale();
   const { handleSubmit } = useForm<FormData>();
   const router = useRouter();
