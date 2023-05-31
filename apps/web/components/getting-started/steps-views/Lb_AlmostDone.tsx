@@ -1,31 +1,22 @@
 import { ArrowRightIcon } from "@heroicons/react/solid";
-import { useRouter } from "next/router";
+
 import { useForm } from "react-hook-form";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { telemetryEventTypes, useTelemetry } from "@calcom/lib/telemetry";
-import { trpc } from "@calcom/trpc/react";
 import { Button } from "@calcom/ui";
 
 import type { IOnboardingComponentProps } from "../../../pages/getting-started/[[...step]]";
 
 const Lb_AlmostDone = (props: IOnboardingComponentProps) => {
+  const { nextStep } = props;
   const { t } = useLocale();
   const { handleSubmit } = useForm<FormData>();
-  const router = useRouter();
   const telemetry = useTelemetry();
-
-  const mutation = trpc.viewer.updateProfile.useMutation({
-    onSuccess: async (_data) => {
-      router.push("/");
-    },
-  });
 
   const onSubmit = handleSubmit(() => {
     telemetry.event(telemetryEventTypes.onboardingFinished);
-    mutation.mutate({
-      completedOnboarding: true,
-    });
+    nextStep();
   });
 
   return (

@@ -16,7 +16,7 @@ export const PriceRange = (props: IOnboardingComponentProps) => {
   const formMethods = useForm<FormData>({ defaultValues: { priceRange: "500" } });
 
   const onSubmit = () => {
-    nextStep?.();
+    nextStep({ maxPrice: formMethods.getValues("priceRange") });
   };
 
   const currentPrice = formMethods.watch("priceRange");

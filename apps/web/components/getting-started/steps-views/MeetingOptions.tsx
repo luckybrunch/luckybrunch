@@ -20,8 +20,8 @@ export const MeetingOptions = (props: IOnboardingComponentProps) => {
   const { handleSubmit } = useForm();
 
   const onSubmit = handleSubmit(() => {
-    const inPerson = options.filter((o) => o.inPerson).length > 0;
-    nextStep?.({ inPerson });
+    const inPerson = options.filter((o) => o.inPerson && o._isSelected).length > 0;
+    nextStep({ inPerson });
   });
 
   return (

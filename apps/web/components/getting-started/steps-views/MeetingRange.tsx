@@ -16,7 +16,7 @@ export const MeetingRange = (props: IOnboardingComponentProps) => {
   const formMethods = useForm<FormData>({ defaultValues: { distance: "35" } });
 
   const onSubmit = () => {
-    nextStep?.();
+    nextStep({ maxDistance: formMethods.getValues("distance") });
   };
 
   return (

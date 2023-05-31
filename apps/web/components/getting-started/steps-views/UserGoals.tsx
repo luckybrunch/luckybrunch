@@ -21,7 +21,7 @@ export const UserGoals = (props: IOnboardingComponentProps) => {
   ]);
 
   const onSubmit = handleSubmit(() => {
-    nextStep?.();
+    nextStep({ goals: options.filter((o) => o._isSelected).map((o) => o.title) });
   });
 
   return (

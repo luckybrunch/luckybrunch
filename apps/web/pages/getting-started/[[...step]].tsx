@@ -67,7 +67,6 @@ const clientUrls: OnboardingUrl[] = [
   "lb_meeting-range",
   "lb_price-range",
 ];
-
 const coachUrls: OnboardingUrl[] = [
   "lb_user-profile",
   "lb_company-info",
@@ -175,19 +174,6 @@ const stepTransform = (step: Step, allSteps: Step[]) => {
 };
 
 const stepRouteSchema = z.object({ step: z.array(z.enum(availableUrls)) });
-
-
-const coachOnboardingSteps = coachUrls.map(getStep).filter(Boolean) as Step[];
-const clientOnboardingSteps = clientUrls.map(getStep).filter(Boolean) as Step[];
-
-const stepTransform = (step: Step, allSteps: Step[]) => {
-  const stepIndex = allSteps.findIndex((s) => s.url === step.url);
-  if (stepIndex > -1) {
-    return allSteps[stepIndex].url;
-  }
-
-  return allSteps[0].url;
-};
 
 const OnboardingPage = (props: IOnboardingPageProps) => {
   const router = useRouter();
