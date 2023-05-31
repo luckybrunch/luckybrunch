@@ -3,6 +3,7 @@ import { GetServerSidePropsContext } from "next";
 import { serverSideTranslations } from "next-i18next/serverSideTranslations";
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { ParsedUrlQueryInput } from "querystring";
 import { FC } from "react";
 import { z } from "zod";
 
@@ -18,11 +19,16 @@ import Lb_AlmostDone from "@components/getting-started/steps-views/Lb_AlmostDone
 import { Lb_CompanyInfo } from "@components/getting-started/steps-views/Lb_CompanyInfo";
 import { Lb_Specializations } from "@components/getting-started/steps-views/Lb_Specializations";
 import Lb_UserProfile from "@components/getting-started/steps-views/Lb_UserProfile";
+import { YourLocation } from "@components/getting-started/steps-views/Location";
+import { MeetingOptions } from "@components/getting-started/steps-views/MeetingOptions";
+import { MeetingRange } from "@components/getting-started/steps-views/MeetingRange";
+import { PriceRange } from "@components/getting-started/steps-views/PriceRange";
+import { UserGoals } from "@components/getting-started/steps-views/UserGoals";
 
 export type IOnboardingPageProps = inferSSRProps<typeof getServerSideProps>;
 export type IOnboardingComponentProps = {
   user: IOnboardingPageProps["user"];
-  nextStep?: () => void;
+  nextStep?: (queryParams?: ParsedUrlQueryInput) => void;
 };
 type OnboardingUrl = typeof availableUrls[number];
 
@@ -42,9 +48,26 @@ type Step = {
   };
 };
 
-const availableUrls = ["lb_user-profile", "lb_company-info", "lb_specializations", "lb_almost-done"] as const;
+const availableUrls = [
+  "lb_user-profile",
+  "lb_company-info",
+  "lb_specializations",
+  "lb_almost-done",
+  "lb_user-goals",
+  "lb_meeting-options",
+  "lb_where-do-you-live",
+  "lb_meeting-range",
+  "lb_price-range",
+] as const;
 
-const clientUrls: OnboardingUrl[] = ["lb_company-info", "lb_user-profile", "lb_almost-done"];
+const clientUrls: OnboardingUrl[] = [
+  "lb_user-goals",
+  "lb_meeting-options",
+  "lb_where-do-you-live",
+  "lb_meeting-range",
+  "lb_price-range",
+];
+
 const coachUrls: OnboardingUrl[] = [
   "lb_user-profile",
   "lb_company-info",
@@ -57,6 +80,11 @@ const components: Record<OnboardingUrl, FC<IOnboardingComponentProps>> = {
   "lb_company-info": Lb_CompanyInfo,
   lb_specializations: Lb_Specializations,
   "lb_almost-done": Lb_AlmostDone,
+  "lb_user-goals": UserGoals,
+  "lb_meeting-options": MeetingOptions,
+  "lb_where-do-you-live": YourLocation,
+  "lb_meeting-range": MeetingRange,
+  "lb_price-range": PriceRange,
 };
 
 const availableSteps: Step[] = [
@@ -95,6 +123,41 @@ const availableSteps: Step[] = [
       subtitle: [{ translationKey: "lb_almost_done_instructions" }],
     },
   },
+  {
+    url: "lb_user-goals",
+    headers: {
+      title: { translationKey: "What are you interested in?" },
+      subtitle: [{ translationKey: "What would you like to achieve?" }],
+    },
+  },
+  {
+    url: "lb_meeting-options",
+    headers: {
+      title: { translationKey: "Where would you like to meet with your coach" },
+      subtitle: [{ translationKey: "Select your prefered way of meeting your coach" }],
+    },
+  },
+  {
+    url: "lb_where-do-you-live",
+    headers: {
+      title: { translationKey: "Where do you live?" },
+      subtitle: [{ translationKey: "Provide your location to help us find the best match for you" }],
+    },
+  },
+  {
+    url: "lb_meeting-range",
+    headers: {
+      title: { translationKey: "Prefered distance range" },
+      subtitle: [{ translationKey: "What's the maximum distance that you'd want us to match you" }],
+    },
+  },
+  {
+    url: "lb_price-range",
+    headers: {
+      title: { translationKey: "Price range" },
+      subtitle: [{ translationKey: "Your prefered price range for coaches" }],
+    },
+  },
 ];
 
 const getStep = (stepUrl: string) => availableSteps.find((s) => s.url === stepUrl);
@@ -113,6 +176,19 @@ const stepTransform = (step: Step, allSteps: Step[]) => {
 
 const stepRouteSchema = z.object({ step: z.array(z.enum(availableUrls)) });
 
+
+const coachOnboardingSteps = coachUrls.map(getStep).filter(Boolean) as Step[];
+const clientOnboardingSteps = clientUrls.map(getStep).filter(Boolean) as Step[];
+
+const stepTransform = (step: Step, allSteps: Step[]) => {
+  const stepIndex = allSteps.findIndex((s) => s.url === step.url);
+  if (stepIndex > -1) {
+    return allSteps[stepIndex].url;
+  }
+
+  return allSteps[0].url;
+};
+
 const OnboardingPage = (props: IOnboardingPageProps) => {
   const router = useRouter();
 
@@ -123,11 +199,14 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
   const result = stepRouteSchema.safeParse(router.query);
   const currentUrl = result.success ? result.data.step[0] : firstStep.url;
 
-  const goToIndex = (index: number) => {
+  const goToIndex = (index: number, queryParams?: ParsedUrlQueryInput) => {
     const newStep = steps[index];
     router.push(
       {
         pathname: `/getting-started/${stepTransform(newStep, steps)}`,
+        query: {
+          ...queryParams,
+        },
       },
       undefined
     );
@@ -169,7 +248,7 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
               <Steps maxSteps={steps.length} currentStep={currentStepIndex + 1} navigateToStep={goToIndex} />
             </div>
             <StepCard>
-              <Component user={user} nextStep={() => goToIndex(currentStepIndex + 1)} />
+              <Component user={user} nextStep={(q) => goToIndex(currentStepIndex + 1, q)} />
             </StepCard>
             {headers.skipText && (
               <div className="flex w-full flex-row justify-center">

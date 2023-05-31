@@ -1691,5 +1691,9 @@
   "lb_review_status_banner_contains_changes": "Your profile contains changes that haven't been reviewed",
   "lb_review_status_banner_review_requested": "You requested a review for your profile",
   "lb_review_status_banner_in_review": "Your profile is currently being reviewed",
-  "lb_review_status_banner_rejection": "Your profile is rejected: {{rejectionReason}}"
+  "lb_review_status_banner_rejection": "Your profile is rejected: {{rejectionReason}}",
+  "lb_meeting_range": "Your range",
+  "lb_meeting_range_value": "Distance range: {{range}} Kilometers",
+  "lb_price_range_value": "Price range: {{price}}",
+  "lb_free": "Free"
 }
