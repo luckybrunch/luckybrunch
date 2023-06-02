@@ -19,7 +19,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   }
 
   const data = req.body;
-  const isOnboardingCompletionRequired = !Boolean(req.query.is_client);
   const { email, password } = data;
   const username = slugify(data.username ?? generateRandomUsername());
   const userEmail = email.toLowerCase();
@@ -71,7 +70,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       password: hashedPassword,
       emailVerified: new Date(Date.now()),
       identityProvider: IdentityProvider.CAL,
-      completedOnboarding: !isOnboardingCompletionRequired,
       userType,
     },
     create: {
@@ -80,7 +78,6 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       email: userEmail,
       password: hashedPassword,
       identityProvider: IdentityProvider.CAL,
-      completedOnboarding: !isOnboardingCompletionRequired,
       userType,
     },
   });

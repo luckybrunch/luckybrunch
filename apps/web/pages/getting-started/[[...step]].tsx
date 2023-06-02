@@ -228,7 +228,7 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
     onSuccess: async () => {
       let url;
 
-      if (user.userType === UserType.COACH) {
+      if (user?.userType === UserType.COACH) {
         url = "/";
       } else {
         url = "/search";
@@ -269,9 +269,16 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
 
     // Last step if null
     if (next == null && nextStep == null) {
-      mutation.mutate({
-        completedOnboarding: true,
-      });
+      if (user) {
+        mutation.mutate({
+          completedOnboarding: true,
+        });
+      } else {
+        router.push({
+          pathname: "/search",
+          query: { ...previousParams, ...newParams },
+        });
+      }
       return;
     }
 
@@ -346,59 +353,53 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   const crypto = await import("crypto");
   const session = await getSession(context);
 
-  if (!session?.user?.id) {
-    return { redirect: { permanent: false, destination: "/auth/login" } };
-  }
-
-  const user = await prisma.user.findUnique({
-    where: {
-      id: session.user.id,
-    },
-    select: {
-      username: true,
-      name: true,
-      email: true,
-      avatar: true,
-      bio: true,
-      timeZone: true,
-      weekStart: true,
-      hideBranding: true,
-      theme: true,
-      brandColor: true,
-      darkBrandColor: true,
-      metadata: true,
-      timeFormat: true,
-      allowDynamicBooking: true,
-      defaultScheduleId: true,
-      completedOnboarding: true,
-      id: true,
-      userType: true,
-      coachProfileDraft: {
-        select: {
-          companyName: true,
-          name: true,
-          bio: true,
-          addressLine1: true,
-          zip: true,
-          city: true,
-          appointmentTypes: true,
-          specializations: true,
+  const user = !session
+    ? null
+    : await prisma.user.findUnique({
+        where: {
+          id: session.user.id,
         },
-      },
-    },
-  });
+        select: {
+          username: true,
+          name: true,
+          email: true,
+          avatar: true,
+          bio: true,
+          timeZone: true,
+          weekStart: true,
+          hideBranding: true,
+          theme: true,
+          brandColor: true,
+          darkBrandColor: true,
+          metadata: true,
+          timeFormat: true,
+          allowDynamicBooking: true,
+          defaultScheduleId: true,
+          completedOnboarding: true,
+          id: true,
+          userType: true,
+          coachProfileDraft: {
+            select: {
+              companyName: true,
+              name: true,
+              bio: true,
+              addressLine1: true,
+              zip: true,
+              city: true,
+              appointmentTypes: true,
+              specializations: true,
+            },
+          },
+        },
+      });
 
-  if (!user) {
-    throw new Error("User from session not found");
-  }
+  const destination = user?.userType === UserType.COACH ? "/dasboard" : "/search";
 
-  const destination = user.userType === UserType.COACH ? "/dasboard" : "/search";
-
-  if (user.completedOnboarding) {
+  if (user?.completedOnboarding) {
     return { redirect: { permanent: false, destination: `${destination}?${stringify(context.query)}` } };
   }
 
-  const steps = user.userType === UserType.COACH ? coachOnboardingSteps : clientOnboardingSteps;
+  const steps = user?.userType === UserType.COACH ? coachOnboardingSteps : clientOnboardingSteps;
   const currentlyAllowedUrls = steps.map((s) => s.url);
 
   try {
@@ -424,10 +425,12 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
   return {
     props: {
       ...(await serverSideTranslations(context.locale ?? "", ["common"])),
-      user: {
-        ...user,
-        emailMd5: crypto.createHash("md5").update(user.email).digest("hex"),
-      },
+      user: user
+        ? {
+            ...user,
+            emailMd5: crypto.createHash("md5").update(user.email).digest("hex"),
+          }
+        : null,
       steps,
     },
   };
