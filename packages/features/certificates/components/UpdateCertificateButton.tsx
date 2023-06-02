@@ -36,7 +36,6 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
   const { t } = useLocale();
   const [open, setOpen] = useState(false);
   const [file, setFile] = useState<File[] | null>(null);
-  const { reset } = useForm();
   const [isLoading, setLoading] = useState<boolean>(false);
 
   const { data: certificateTypes } = trpc.public.getCertificateTypes.useQuery();
@@ -92,6 +91,8 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
     onSuccess: () => {
       showToast(t("lb_update_certificate_toast"), "success");
       ctx.viewer.profile.getCertificates.invalidate();
+      // reset call of react-hook-form doesn't reset <input type="file" />
+      setFile(null);
       setOpen(false);
     },
     onError: () => {
@@ -102,17 +103,21 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
   const onSubmit = async (input: FormValues) => {
     if (input.certificate_type === null) throw new Error("No certificate type is selected");
 
-    if (file == null || file?.length === 0 || signedUrl == null) {
+    if ((!certificate?.fileUrl && file == null) || file?.length === 0 || signedUrl == null) {
       throw new Error("Certificate isn't selected or an error occurred while uploading");
     }
 
     try {
       setLoading(true);
       const { post, fileUrl } = signedUrl;
-      const uploadSuccess = await uploadCertificate(post, file[0]);
+      let uploadSuccess = false;
 
-      if (!uploadSuccess) {
-        throw new Error("An error occurred while uploading the certificate");
+      if (file) {
+        uploadSuccess = await uploadCertificate(post, file[0]);
+      }
+
+      if (!uploadSuccess && !certificate?.fileUrl) {
+        throw new Error("An error occurred while updating the certificate");
       }
 
       const certificateForm = {
@@ -120,13 +125,10 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
         name: input.certificate_name,
         description: input.certificate_desc,
         typeId: input.certificate_type.value,
-        fileUrl,
+        fileUrl: file ? fileUrl : certificate?.fileUrl ?? "",
       };
 
       mutation.mutate(certificateForm);
-      // reset call of react-hook-form doesn't reset <input type="file" />
-      setFile(null);
-      reset(input);
     } catch (err) {
       throw err;
     } finally {
@@ -153,7 +155,7 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
     <Dialog
       open={open}
       onOpenChange={(open) => {
-        if (open) {
+        if (open && !certificate) {
           formMethods.reset();
         }
         setOpen(open);
