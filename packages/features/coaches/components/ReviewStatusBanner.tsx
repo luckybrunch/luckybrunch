@@ -29,6 +29,15 @@ export default function ReviewStatusBanner() {
 
     const { coachProfileDraft } = user;
 
+    if (
+      profileDiff &&
+      profileDiff.diffList.length > 0 &&
+      coachProfileDraft.reviewStatus === ReviewStatus.DRAFT
+    ) {
+      title = t("lb_review_status_banner_contains_changes");
+      shouldDisplay = true;
+    }
+
     if (coachProfileDraft.rejectionReason && coachProfileDraft.reviewStatus === ReviewStatus.DRAFT) {
       const { rejectionReason } = coachProfileDraft;
       const maxCharCount = 40;
@@ -40,15 +49,6 @@ export default function ReviewStatusBanner() {
             : `${rejectionReason.slice(0, maxCharCount)}...`,
       });
       variant = "error";
-      shouldDisplay = true;
-    }
-
-    if (
-      profileDiff &&
-      profileDiff.diffList.length > 0 &&
-      coachProfileDraft.reviewStatus === ReviewStatus.DRAFT
-    ) {
-      title = t("lb_review_status_banner_contains_changes");
       shouldDisplay = true;
     }
 
