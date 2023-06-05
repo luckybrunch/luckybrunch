@@ -2,6 +2,7 @@ import crypto from "crypto";
 import MarkdownIt from "markdown-it";
 import { Controller, useForm } from "react-hook-form";
 
+import { AppointmentType } from "@calcom/features/coaches/types";
 import Shell from "@calcom/features/shell/Shell";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import turndown from "@calcom/lib/turndownService";
@@ -59,9 +60,9 @@ type FormValues = {
 };
 
 const AppointmentTypes = {
-  online: "lb_appointmenttype_online",
-  office: "lb_appointmenttype_office",
-  home: "lb_appointmenttype_home",
+  [AppointmentType.ONLINE]: "lb_appointmenttype_online",
+  [AppointmentType.OFFICE]: "lb_appointmenttype_office",
+  [AppointmentType.HOME]: "lb_appointmenttype_home",
 } as const;
 
 const InformationPage = () => {

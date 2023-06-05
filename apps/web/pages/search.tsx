@@ -1,10 +1,12 @@
 import { DesktopComputerIcon } from "@heroicons/react/outline";
 import { GetServerSidePropsContext } from "next/types";
+import { useState } from "react";
 
+import { useCoachFilterQuery } from "@calcom/features/coaches/lib/useCoachFilterQuery";
 import Shell from "@calcom/features/shell/Shell";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
-import { EmptyScreen, List, Button, ListItem, SkeletonLoader } from "@calcom/ui";
+import { EmptyScreen, List, Button, ListItem, SkeletonLoader, showToast } from "@calcom/ui";
 import { FiLink } from "@calcom/ui/components/icon";
 
 import { withQuery } from "@lib/QueryCell";
@@ -12,18 +14,39 @@ import { withQuery } from "@lib/QueryCell";
 import { ssrInit } from "@server/lib/ssr";
 
 export default function Search() {
-  const WithQuery = withQuery(trpc.viewer.coaches.search);
+  const { data: queryFilters } = useCoachFilterQuery();
+  const [isWarningShown, setWarningShown] = useState(false);
+  const WithQuery = withQuery(
+    trpc.viewer.coaches.search,
+    {
+      filters: queryFilters,
+    },
+    {
+      cacheTime: 0,
+      onSuccess: ({ matched }) => {
+        if (!matched && !isWarningShown) {
+          showToast(
+            "We couldn't find coaches for your exact criterias but here are some of them who might be able to help.",
+            "warning",
+            /* 4 seconds duration */ 4000
+          );
+          setWarningShown(true);
+        }
+      },
+    }
+  );
+
   const { t } = useLocale();
 
   return (
     <Shell isPublic heading={t("lb_search_coach")} subtitle={t("lb_search_coach_subtitle")}>
       <WithQuery
         customLoader={<SkeletonLoader />}
-        success={({ data }) => {
-          if (data.length > 0) {
+        success={({ data: { list } }) => {
+          if (list.length > 0) {
             return (
               <List className="flex w-full flex-row flex-wrap justify-center">
-                {data.map(({ id, avatar, coachProfile }) => {
+                {list.map(({ id, avatar, coachProfile }) => {
                   return (
                     <ListItem
                       rounded={false}

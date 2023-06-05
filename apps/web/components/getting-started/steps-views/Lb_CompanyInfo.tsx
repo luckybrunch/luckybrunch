@@ -1,6 +1,7 @@
 import { ArrowRightIcon } from "@heroicons/react/outline";
 import { useForm, Controller } from "react-hook-form";
 
+import { AppointmentType } from "@calcom/features/coaches/types";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
 import { Button, Select, Form, Label } from "@calcom/ui";
@@ -22,9 +23,9 @@ const Lb_CompanyInfo = (props: IOnboardingComponentProps) => {
   };
 
   const AppointmentTypes = {
-    online: "lb_appointmenttype_online",
-    office: "lb_appointmenttype_office",
-    home: "lb_appointmenttype_home",
+    [AppointmentType.ONLINE]: "lb_appointmenttype_online",
+    [AppointmentType.OFFICE]: "lb_appointmenttype_office",
+    [AppointmentType.HOME]: "lb_appointmenttype_home",
   } as const;
 
   const defaultOptions = { required: false, maxLength: 255 };

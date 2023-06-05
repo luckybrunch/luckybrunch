@@ -1,7 +1,7 @@
 import { S3Client } from "@aws-sdk/client-s3";
 import { createPresignedPost } from "@aws-sdk/s3-presigned-post";
 import { ReviewStatus } from "@prisma/client";
-import { Coach } from "@prisma/client";
+import { Coach, Prisma } from "@prisma/client";
 import { v4 as uuidv4 } from "uuid";
 import { z } from "zod";
 
@@ -11,6 +11,7 @@ import {
   getFieldDiffMetadata,
   isEmpty,
 } from "@calcom/features/coaches/lib/getDiffMetadata";
+import { AppointmentType } from "@calcom/features/coaches/types";
 
 import { TRPCError } from "@trpc/server";
 
@@ -18,18 +19,24 @@ import { router, publicProcedure, authedCoachProcedure } from "../../trpc";
 import { UserType } from ".prisma/client";
 
 export const coachesRouter = router({
-  search: publicProcedure.query(async ({ ctx }) => {
-    const { prisma } = ctx;
+  search: publicProcedure
+    .input(
+      z
+        .object({
+          filters: z.object({
+            goals: z.string().array().optional(),
+            maxDistance: z.number().optional(),
+            maxPrice: z.number().optional(),
+            inPerson: z.boolean().optional(),
+            city: z.string().optional(),
+          }),
+        })
+        .optional()
+    )
+    .query(async ({ ctx, input }) => {
+      const { prisma } = ctx;
 
-    const coaches = await prisma.user.findMany({
-      where: {
-        userType: UserType.COACH,
-        // If a coach profile that is not a draft exists, then it's a published coach
-        coachProfileId: {
-          not: null,
-        },
-      },
-      select: {
+      const userSelect = Prisma.validator<Prisma.UserSelect>()({
         id: true,
         avatar: true,
         coachProfile: {
@@ -46,11 +53,65 @@ export const coachesRouter = router({
             },
           },
         },
-      },
-    });
+      });
 
-    return coaches;
-  }),
+      const baseFilters: Prisma.UserWhereInput = {
+        userType: UserType.COACH,
+        coachProfileId: { not: null },
+      };
+
+      // TODO: Received but ignored filters: maxDistance, maxPrice, goals
+      const coachFilters: Prisma.CoachWhereInput = {};
+      const hasFilters = Object.keys(input?.filters ?? {}).length > 0;
+
+      if (input?.filters.city) {
+        coachFilters.city = input.filters.city.toLowerCase();
+      }
+
+      if (input?.filters.inPerson) {
+        coachFilters.OR = [
+          {
+            appointmentTypes: {
+              contains: AppointmentType.OFFICE,
+            },
+          },
+          {
+            appointmentTypes: {
+              contains: AppointmentType.HOME,
+            },
+          },
+        ];
+      }
+
+      const matchedCoaches = await prisma.user.findMany({
+        where: {
+          ...baseFilters,
+          coachProfile: coachFilters,
+        },
+        select: userSelect,
+      });
+
+      if (hasFilters && matchedCoaches.length > 0) {
+        return {
+          matched: true,
+          list: matchedCoaches,
+        };
+      }
+
+      const publishedCoaches = !hasFilters
+        ? matchedCoaches
+        : await prisma.user.findMany({
+            where: {
+              ...baseFilters,
+            },
+            select: userSelect,
+          });
+
+      return {
+        matched: !hasFilters,
+        list: publishedCoaches,
+      };
+    }),
   getSignedUrl: authedCoachProcedure.query(async () => {
     const s3Bucket = process.env.S3_BUCKET || "";
     const s3Endpoint = process.env.S3_ENDPOINT || "";
