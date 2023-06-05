@@ -1,4 +1,5 @@
 import { ReviewStatus } from "@prisma/client";
+import { UserType } from "@prisma/client";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
@@ -7,7 +8,9 @@ import { TopBanner } from "@calcom/ui";
 
 export default function ReviewStatusBanner() {
   const { data: user } = useMeQuery();
-  const { data: profileDiff } = trpc.viewer.coaches.getProfileDiff.useQuery();
+  const { data: profileDiff } = trpc.viewer.coaches.getProfileDiff.useQuery(undefined, {
+    enabled: user?.userType === UserType.COACH,
+  });
 
   const { t } = useLocale();
 
