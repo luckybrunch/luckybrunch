@@ -27,7 +27,7 @@ export const coachesRouter = router({
             goals: z.string().array().optional(),
             maxDistance: z.number().optional(),
             maxPrice: z.number().optional(),
-            inPerson: z.boolean().optional(),
+            meetingOptions: z.string().array().optional(),
             city: z.string().optional(),
           }),
         })
@@ -68,19 +68,27 @@ export const coachesRouter = router({
         coachFilters.city = input.filters.city.toLowerCase();
       }
 
-      if (input?.filters.inPerson) {
-        coachFilters.OR = [
-          {
-            appointmentTypes: {
-              contains: AppointmentType.OFFICE,
-            },
-          },
-          {
-            appointmentTypes: {
-              contains: AppointmentType.HOME,
-            },
-          },
-        ];
+      if (input?.filters?.meetingOptions) {
+        coachFilters.OR = [];
+
+        const { meetingOptions } = input.filters;
+        if (meetingOptions.includes(AppointmentType.OFFICE)) {
+          coachFilters.OR.push({
+            appointmentTypes: { contains: AppointmentType.OFFICE },
+          });
+        }
+
+        if (meetingOptions.includes(AppointmentType.HOME)) {
+          coachFilters.OR.push({
+            appointmentTypes: { contains: AppointmentType.HOME },
+          });
+        }
+
+        if (meetingOptions.includes(AppointmentType.ONLINE)) {
+          coachFilters.OR.push({
+            appointmentTypes: { contains: AppointmentType.ONLINE },
+          });
+        }
       }
 
       const matchedCoaches = await prisma.user.findMany({

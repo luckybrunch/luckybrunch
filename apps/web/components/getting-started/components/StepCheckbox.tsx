@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { Button } from "@calcom/ui";
 
-type Option = { title: string };
+type Option = { title: string; _isSelected?: boolean };
 // To hopefully not override a field given from component side
 type InternalOption = { _id: symbol; _isSelected: boolean };
 
@@ -12,15 +12,15 @@ export function useCheckboxOptions<T extends Option>(opts: T[], maxAllowedSelect
       return {
         ...option,
         _id: Symbol(),
-        _isSelected: false,
+        _isSelected: option?._isSelected ?? false,
       };
     })
   );
 
-  const toggleSelection = (optionId: symbol) => {
+  const toggleSelection = (optionId: symbol, state?: boolean) => {
     setOptions((options) => {
       return options.map((option) => {
-        let _isSelected = option._id === optionId ? !option._isSelected : option._isSelected;
+        let _isSelected = option._id === optionId ? state ?? !option._isSelected : option._isSelected;
 
         // If total number of selected elements equal to max limit, do not allow for more
         if (

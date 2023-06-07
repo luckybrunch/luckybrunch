@@ -1,4 +1,5 @@
 import { ArrowRightIcon } from "@heroicons/react/solid";
+import { useRouter } from "next/router";
 import { IOnboardingComponentProps } from "pages/getting-started/[[...step]]";
 import { useForm } from "react-hook-form";
 
@@ -7,21 +8,38 @@ import { Button } from "@calcom/ui";
 
 import { StepCheckbox, useCheckboxOptions } from "../components/StepCheckbox";
 
+enum Goal {
+  CHANGE_WEIGHT = "change_weight",
+  PROMOTE_HEALTH = "promote_health",
+  IMPROVE_FITNESS = "improve_fitness",
+  ALLEVIATE_INTOLERANCES = "alleviate_intolerances",
+}
+
 export const UserGoals = (props: IOnboardingComponentProps) => {
   const { nextStep } = props;
 
   const { t } = useLocale();
   const { handleSubmit } = useForm();
+  const { query, push } = useRouter();
 
-  const { options, toggleSelection } = useCheckboxOptions([
-    { title: "change weight" },
-    { title: "promote health" },
-    { title: "improve fitness" },
-    { title: "alleviate intolerances" },
-  ]);
+  const { options, toggleSelection } = useCheckboxOptions(
+    (() => {
+      return [
+        { value: Goal.CHANGE_WEIGHT, title: "change weight" },
+        { value: Goal.PROMOTE_HEALTH, title: "promote health" },
+        { value: Goal.IMPROVE_FITNESS, title: "improve fitness" },
+        { value: Goal.ALLEVIATE_INTOLERANCES, title: "alleviate intolerances" },
+      ].map((o) => ({
+        ...o,
+        _isSelected: query.goals?.includes(o.value),
+      }));
+    })()
+  );
 
-  const onSubmit = handleSubmit(() => {
-    nextStep({ goals: options.filter((o) => o._isSelected).map((o) => o.title) });
+  const onSubmit = handleSubmit(async () => {
+    const params = { goals: options.filter((o) => o._isSelected).map((o) => o.value) };
+    await push({ query: { ...query, ...params } });
+    nextStep(params);
   });
 
   return (

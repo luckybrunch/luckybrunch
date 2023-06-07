@@ -1,7 +1,9 @@
 import { ArrowRightIcon } from "@heroicons/react/solid";
+import { useRouter } from "next/router";
 import { IOnboardingComponentProps } from "pages/getting-started/[[...step]]";
 import { useForm } from "react-hook-form";
 
+import { AppointmentType } from "@calcom/features/coaches/types";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { Button } from "@calcom/ui";
 
@@ -9,19 +11,25 @@ import { StepCheckbox, useCheckboxOptions } from "../components/StepCheckbox";
 
 export const MeetingOptions = (props: IOnboardingComponentProps) => {
   const { nextStep } = props;
+  const { query, push } = useRouter();
 
   const { t } = useLocale();
-  const { options, toggleSelection } = useCheckboxOptions([
-    { title: "online", inPerson: false },
-    { title: "at home", inPerson: true },
-    { title: "in the office", inPerson: true },
-  ]);
+  const { options, toggleSelection } = useCheckboxOptions(
+    (() => {
+      return [
+        { title: t("lb_appointmenttype_online"), value: AppointmentType.ONLINE },
+        { title: t("lb_appointmenttype_home"), value: AppointmentType.HOME },
+        { title: t("lb_appointmenttype_office"), value: AppointmentType.OFFICE },
+      ].map((o) => ({ ...o, _isSelected: query.meetingOptions?.includes(o.value) }));
+    })()
+  );
 
   const { handleSubmit } = useForm();
 
-  const onSubmit = handleSubmit(() => {
-    const inPerson = options.filter((o) => o.inPerson && o._isSelected).length > 0;
-    nextStep({ inPerson });
+  const onSubmit = handleSubmit(async () => {
+    const params = { meetingOptions: options.filter((o) => o._isSelected).map((o) => o.value) };
+    await push({ query: { ...query, ...params } });
+    nextStep(params);
   });
 
   return (

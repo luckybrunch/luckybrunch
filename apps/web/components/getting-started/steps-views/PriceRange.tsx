@@ -1,4 +1,5 @@
 import { ArrowRightIcon } from "@heroicons/react/solid";
+import { useRouter } from "next/router";
 import { IOnboardingComponentProps } from "pages/getting-started/[[...step]]";
 import { useForm } from "react-hook-form";
 
@@ -12,10 +13,16 @@ type FormData = {
 export const PriceRange = (props: IOnboardingComponentProps) => {
   const { nextStep } = props;
 
-  const { t } = useLocale();
-  const formMethods = useForm<FormData>({ defaultValues: { priceRange: "500" } });
+  const { query, push } = useRouter();
 
-  const onSubmit = () => {
+  const { t } = useLocale();
+  const formMethods = useForm<FormData>({
+    defaultValues: { priceRange: (query.maxPrice as string) ?? "500" },
+  });
+
+  const onSubmit = async () => {
+    const maxPrice = formMethods.getValues("priceRange");
+    await push({ query: { ...query, maxPrice } });
     nextStep({ maxPrice: formMethods.getValues("priceRange") });
   };
 

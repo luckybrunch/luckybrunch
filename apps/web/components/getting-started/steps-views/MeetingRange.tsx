@@ -1,4 +1,5 @@
 import { ArrowRightIcon } from "@heroicons/react/solid";
+import { useRouter } from "next/router";
 import { IOnboardingComponentProps } from "pages/getting-started/[[...step]]";
 import { useForm } from "react-hook-form";
 
@@ -13,10 +14,16 @@ export const MeetingRange = (props: IOnboardingComponentProps) => {
   const { nextStep } = props;
   const { t } = useLocale();
 
-  const formMethods = useForm<FormData>({ defaultValues: { distance: "35" } });
+  const { query, push } = useRouter();
 
-  const onSubmit = () => {
-    nextStep({ maxDistance: formMethods.getValues("distance") });
+  const formMethods = useForm<FormData>({
+    defaultValues: { distance: (query.maxDistance as string) ?? "35" },
+  });
+
+  const onSubmit = async () => {
+    const maxDistance = formMethods.getValues("distance");
+    await push({ query: { ...query, maxDistance } });
+    nextStep({ maxDistance });
   };
 
   return (

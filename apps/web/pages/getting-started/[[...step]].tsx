@@ -7,6 +7,7 @@ import { ParsedUrlQueryInput, stringify } from "querystring";
 import { FC } from "react";
 import { z } from "zod";
 
+import { AppointmentType } from "@calcom/features/coaches/types";
 import { getSession } from "@calcom/lib/auth";
 import { APP_NAME } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -31,7 +32,7 @@ export type IOnboardingComponentProps = {
   user: IOnboardingPageProps["user"];
   nextStep: (queryParams?: ParsedUrlQueryInput) => void;
 };
-type OnboardingUrl = typeof availableUrls[number];
+export type OnboardingUrl = typeof availableUrls[number];
 
 type StepLink = {
   [key in OnboardingUrl]: {
@@ -60,7 +61,12 @@ const stepLinks: StepLink = {
   },
   "lb_meeting-options": {
     next: (params) => {
-      if (params.inPerson) {
+      const inPerson =
+        [AppointmentType.OFFICE, AppointmentType.HOME].filter((meetingType) =>
+          (params.meetingOptions as string[])?.includes(meetingType)
+        ).length > 0;
+
+      if (inPerson) {
         return "lb_where-do-you-live";
       }
 
@@ -245,11 +251,13 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
 
   const goToIndex = (index: number) => {
     const newStep = steps[index];
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
+    const { step, ...rest } = router.query;
     router.push(
       {
         pathname: `/getting-started/${stepTransform(newStep, steps)}`,
         query: {
-          ...router.query,
+          ...rest,
         },
       },
       undefined
@@ -261,10 +269,12 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
     const { step, ...previousParams } = router.query;
     const currentStep = steps[currentStepIndex];
     const { next } = stepLinks[currentStep.url];
+    const allParams = { ...previousParams, ...newParams };
+
     let nextStep: OnboardingUrl | null = null;
 
     if (typeof next === "function") {
-      nextStep = next({ ...previousParams, ...newParams } ?? {});
+      nextStep = next({ ...allParams } ?? {});
     }
 
     // Last step if null
@@ -276,7 +286,7 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
       } else {
         router.push({
           pathname: "/search",
-          query: { ...previousParams, ...newParams },
+          query: { ...allParams },
         });
       }
       return;
@@ -284,7 +294,7 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
 
     router.push({
       pathname: `/getting-started/${nextStep ?? next}`,
-      query: { ...previousParams, ...newParams },
+      query: { ...allParams },
     });
   };
 
