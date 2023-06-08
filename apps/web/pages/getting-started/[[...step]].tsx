@@ -32,7 +32,7 @@ export type IOnboardingComponentProps = {
   user: IOnboardingPageProps["user"];
   nextStep: (queryParams?: ParsedUrlQueryInput) => void;
 };
-export type OnboardingUrl = typeof availableUrls[number];
+export type OnboardingUrl = (typeof availableUrls)[number];
 
 type StepLink = {
   [key in OnboardingUrl]: {
@@ -403,7 +403,7 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
         },
       });
 
-  const destination = user?.userType === UserType.COACH ? "/dasboard" : "/search";
+  const destination = user?.userType === UserType.COACH ? "/dashboard" : "/search";
 
   if (user?.completedOnboarding) {
     return { redirect: { permanent: false, destination: `${destination}?${stringify(context.query)}` } };
