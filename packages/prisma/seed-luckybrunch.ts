@@ -42,36 +42,38 @@ async function seedCertificateTypes() {
 
 async function seedSpecilazations() {
   const specializations = [
-    //Ernährungstherapie
-    { id: 1, label: "Ernährungsberater/DGE, Ernährungsmedizinischer Berater/DGE" },
-    { id: 2, label: "VDD-Fortbildungszertifikat" },
-    { id: 3, label: "Zertifikat Ernährungsberater VDOE" },
-    { id: 4, label: "VFED-Zertifizierung" },
-    { id: 5, label: "QUETHEB-Registrierung" },
+    // Ernährungstherapie
+    { id: 1, label: "Adipositas | Übergewicht" },
+    { id: 2, label: "Arteriosklerose | KHK" },
+    { id: 3, label: "Darmerkrankungen" },
+    { id: 4, label: "Diabetes Typ 1 oder 2" },
+    { id: 5, label: "Essstörung" },
     { id: 6, label: "Fettstoffwechselstörung" },
-    { id: 8, label: "Fettleber | Leberzirrhose | Hepatitis" },
-    { id: 9, label: "Gastritis" },
-    { id: 10, label: "Herzinsuffizienz" },
-    { id: 11, label: "Hypertonie" },
-    { id: 12, label: "Hyperurikämie | Gicht" },
-    { id: 13, label: "	Nahrungsmittelallergie" },
-    { id: 14, label: "Nahrungsmittelintoleranz | Unverträglichkeit" },
-    { id: 15, label: "Nephrologische Erkrankungen" },
-    { id: 16, label: "Onkologische Erkrankungen" },
-    { id: 17, label: "Pankreaserkrankungen" },
-    { id: 18, label: "Rheuma" },
-    { id: 19, label: "Schilddrüsenerkrankung" },
-    { id: 20, label: "Untergewicht | Mangelernährung" },
-    { id: 21, label: "Glutenunverträglichkeit" },
-    { id: 22, label: "Sonstiges" },
-    //Präventive Ernährungsberatung
-    { id: 23, label: "Sportlerernährung" },
-    { id: 24, label: "Stärkung des Immunsystems" },
-    { id: 25, label: "Ernährung für Senioren" },
-    //Ernährungsbildung / Betriebliche Gesundheitsförderung
-    { id: 26, label: "Ernährungsberatung im Rahmen des betrieblichen Gesundheitsmanagements" },
-    { id: 27, label: "Kindergärten und Schulen" },
-    { id: 28, label: "Vereine und Selbsthilfegruppen" },
+    { id: 7, label: "Fettleber | Leberzirrhose | Hepatitis" },
+    { id: 8, label: "Gastritis" },
+    { id: 9, label: "Herzinsuffizienz" },
+    { id: 10, label: "Hypertonie" },
+    { id: 11, label: "Hyperurikämie | Gicht" },
+    { id: 12, label: "Nahrungsmittelallergie" },
+    { id: 13, label: "Nahrungsmittelintoleranz | Unverträglichkeit" },
+    { id: 14, label: "Nephrologische Erkrankungen" },
+    { id: 15, label: "Onkologische Erkrankungen" },
+    { id: 16, label: "Pankreaserkrankungen" },
+    { id: 17, label: "Rheuma" },
+    { id: 18, label: "Schilddrüsenerkrankung" },
+    { id: 19, label: "Untergewicht | Mangelernährung" },
+    { id: 20, label: "Glutenunverträglichkeit" },
+    { id: 21, label: "Sonstiges" },
+    // Präventive Ernährungsberatung
+    { id: 22, label: "Sportlerernährung" },
+    { id: 23, label: "Stärkung des Immunsystems" },
+    { id: 24, label: "Übergewicht bzw. Gewichtszunahme" },
+    { id: 25, label: "Ernährung von Kindern und Kleinkindern" },
+    { id: 26, label: "Ernährung für Senioren" },
+    // Ernährungsbildung / Betriebliche Gesundheitsförderung
+    { id: 27, label: "Ernährungsberatung im Rahmen des betrieblichen Gesundheitsmanagements" },
+    { id: 28, label: "Kindergärten und Schulen" },
+    { id: 29, label: "Vereine und Selbsthilfegruppen" },
   ];
 
   for (const item of specializations) {
