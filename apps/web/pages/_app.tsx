@@ -45,6 +45,7 @@ function MyApp(props: AppProps) {
         id="page-status"
         dangerouslySetInnerHTML={{ __html: `window.CalComPageStatus = '${pageStatus}'` }}
       />
+      <Script id="hs-script-loader" strategy="lazyOnload" src="https://js.hs-scripts.com/139600418.js" />
       <Head>
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
       </Head>
