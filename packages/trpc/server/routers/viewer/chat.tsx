@@ -104,19 +104,22 @@ export const chatRouter = router({
     });
 
     const unreadChannels: Record<string, number> = {};
+    let total = 0;
 
     for (const channel of channels) {
       if (!channel.id) {
         continue;
       }
 
-      unreadChannels[channel.id] = channel.countUnread();
+      const unreadCountPerChannel = channel.countUnread();
+      unreadChannels[channel.id] = unreadCountPerChannel;
+      total += unreadCountPerChannel;
     }
 
     await chatClient.disconnectUser();
 
     return {
-      total: connection.me.total_unread_count,
+      total,
       unreadChannels,
     };
   }),

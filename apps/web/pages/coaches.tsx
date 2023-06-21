@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { generateChannelName } from "@calcom/features/chat/lib/generateChannelName";
 import Shell from "@calcom/features/shell/Shell";
+import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc";
 import { List, ListItem, Badge } from "@calcom/ui";
 
@@ -9,6 +10,7 @@ import { withQuery } from "@lib/QueryCell";
 import useMeQuery from "@lib/hooks/useMeQuery";
 
 export default function Coaches() {
+  const { t } = useLocale();
   const WithQuery = withQuery(trpc.viewer.clients.myCoaches);
   const { data: user } = useMeQuery();
   const { data: unreadCounts } = trpc.viewer.chat.unreadCounts.useQuery(undefined, {
@@ -34,7 +36,11 @@ export default function Coaches() {
                       className="h-full w-full">
                       <p>{coach?.coachProfile?.name}</p>
                       {(unreadCounts?.unreadChannels[chatId] ?? 0) > 0 && (
-                        <Badge className="absolute" variant="green">
+                        <Badge
+                          rounded
+                          title={t("lb_you_have_unread_messages")}
+                          variant="orange"
+                          className="absolute cursor-pointer hover:bg-orange-800 hover:text-orange-100">
                           {unreadCounts?.unreadChannels[chatId]}
                         </Badge>
                       )}

@@ -53,7 +53,11 @@ export default function Clients() {
                         <FiLink className="text-brand-500 text-3xl font-bold" />
                       </div>
                       {(unreadCounts?.unreadChannels[chatId] ?? 0) > 0 && (
-                        <Badge className="absolute" variant="green">
+                        <Badge
+                          rounded
+                          title={t("lb_you_have_unread_messages")}
+                          variant="orange"
+                          className="absolute cursor-pointer hover:bg-orange-800 hover:text-orange-100">
                           {unreadCounts?.unreadChannels[chatId]}
                         </Badge>
                       )}

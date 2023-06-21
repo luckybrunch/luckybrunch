@@ -1695,5 +1695,6 @@
   "lb_meeting_range": "Your range",
   "lb_meeting_range_value": "Distance range: {{range}} Kilometers",
   "lb_price_range_value": "Price range: {{price}}",
-  "lb_free": "Free"
+  "lb_free": "Free",
+  "lb_you_have_unread_messages": "You have unread messages"
 }
