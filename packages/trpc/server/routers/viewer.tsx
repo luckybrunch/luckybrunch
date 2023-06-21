@@ -43,6 +43,7 @@ import { appsRouter } from "./viewer/apps";
 import { authRouter } from "./viewer/auth";
 import { availabilityRouter } from "./viewer/availability";
 import { bookingsRouter } from "./viewer/bookings";
+import { chatRouter } from "./viewer/chat";
 import { clientsRouter } from "./viewer/clients";
 import { coachesRouter } from "./viewer/coaches";
 import { deploymentSetupRouter } from "./viewer/deploymentSetup";
@@ -1326,5 +1327,6 @@ export const viewerRouter = mergeRouters(
     userProfile: userProfileRouter,
     clients: clientsRouter,
     coaches: coachesRouter,
+    chat: chatRouter,
   })
 );

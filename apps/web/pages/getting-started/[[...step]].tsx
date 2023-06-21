@@ -25,6 +25,7 @@ import Lb_UserProfile from "@components/getting-started/steps-views/Lb_UserProfi
 import { MeetingOptions } from "@components/getting-started/steps-views/MeetingOptions";
 import { MeetingRange } from "@components/getting-started/steps-views/MeetingRange";
 import { PriceRange } from "@components/getting-started/steps-views/PriceRange";
+import { SetupAvailability } from "@components/getting-started/steps-views/SetupAvailability";
 import { UserGoals } from "@components/getting-started/steps-views/UserGoals";
 
 export type IOnboardingPageProps = inferSSRProps<typeof getServerSideProps>;
@@ -48,7 +49,7 @@ const stepLinks: StepLink = {
     next: "lb_specializations",
   },
   lb_specializations: {
-    next: "lb_almost-done",
+    next: "lb_setup-availability",
   },
   "lb_user-goals": {
     next: "lb_meeting-options",
@@ -58,6 +59,9 @@ const stepLinks: StepLink = {
   },
   "lb_meeting-range": {
     next: "lb_price-range",
+  },
+  "lb_setup-availability": {
+    next: "lb_almost-done",
   },
   "lb_meeting-options": {
     next: (params) => {
@@ -107,6 +111,7 @@ const availableUrls = [
   "lb_where-do-you-live",
   "lb_meeting-range",
   "lb_price-range",
+  "lb_setup-availability",
 ] as const;
 
 const clientUrls: OnboardingUrl[] = [
@@ -120,6 +125,7 @@ const coachUrls: OnboardingUrl[] = [
   "lb_user-profile",
   "lb_company-info",
   "lb_specializations",
+  "lb_setup-availability",
   "lb_almost-done",
 ];
 
@@ -133,6 +139,7 @@ const components: Record<OnboardingUrl, FC<IOnboardingComponentProps>> = {
   "lb_where-do-you-live": ClientLocation,
   "lb_meeting-range": MeetingRange,
   "lb_price-range": PriceRange,
+  "lb_setup-availability": SetupAvailability,
 };
 
 const availableSteps: Step[] = [
@@ -204,6 +211,15 @@ const availableSteps: Step[] = [
     headers: {
       title: { translationKey: "Price range" },
       subtitle: [{ translationKey: "Your prefered price range for coaches" }],
+    },
+  },
+  {
+    url: "lb_setup-availability",
+    headers: {
+      title: { translationKey: "Set up your prefered times for meetings" },
+      subtitle: [
+        { translationKey: "Make your available times known to clients who want to book an appointment" },
+      ],
     },
   },
 ];

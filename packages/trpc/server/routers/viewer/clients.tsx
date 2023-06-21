@@ -1,4 +1,5 @@
 import { Attendee } from "@prisma/client";
+import { UserType } from "@prisma/client";
 import { z } from "zod";
 
 import { authedCoachProcedure, authedProcedure, router } from "../../trpc";
@@ -146,4 +147,31 @@ export const clientsRouter = router({
         },
       });
     }),
+  myCoaches: authedProcedure.query(async ({ ctx }) => {
+    const { prisma, user } = ctx;
+
+    const bookings = await prisma.booking.findMany({
+      where: {
+        attendees: {
+          some: {
+            email: user.email,
+          },
+        },
+        user: {
+          userType: UserType.COACH,
+        },
+      },
+      select: {
+        user: {
+          select: {
+            id: true,
+            email: true,
+            coachProfile: true,
+          },
+        },
+      },
+    });
+
+    return bookings.map((booking) => booking.user).filter(Boolean);
+  }),
 });

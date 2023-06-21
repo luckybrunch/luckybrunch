@@ -1,0 +1,27 @@
+.mml-container {
+  padding: 15px;
+}
+
+.mml-container .mml-text {
+  font-size: 16px;
+  line-height: 15px;
+  margin: 10px 0px;
+  font-weight: bold;
+  text-decoration: underline;
+}
+
+.mml-container .mml-btnlist {
+  display: flex;
+  flex-direction: column;
+}
+
+.mml-container .mml-row {
+  padding: 5px;
+}
+
+.mml-container .mml-btn {
+  width: 100%;
+  background-color: rgb(97, 252, 110, 0.5);
+  padding: 10px;
+  border-radius: 10px;
+}

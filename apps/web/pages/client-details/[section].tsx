@@ -3,12 +3,14 @@ import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import { z } from "zod";
 
+import Chat from "@calcom/features/chat/components/Chat";
 import ClientLayout from "@calcom/features/clients/layout/ClientLayout";
 import { trpc } from "@calcom/trpc/react";
 import { EmptyScreen, SkeletonLoader } from "@calcom/ui";
 import { FiDelete } from "@calcom/ui/components/icon";
 
-import Chat from "@components/clients/Chat";
+import useMeQuery from "@lib/hooks/useMeQuery";
+
 import ClientBookings from "@components/clients/ClientBookings";
 import Information from "@components/clients/Information";
 import Notes from "@components/clients/Notes";
@@ -41,11 +43,21 @@ function SectionContent({
   user?: Attendee | User | null;
   queryStatus: "success" | "error" | "loading";
 } & ClientDetailsProps) {
+  const { data: me } = useMeQuery();
+  const { data: chatCredentials } = trpc.viewer.chat.getCredentials.useQuery(
+    { userChatId: me?.id.toString() || "" },
+    {
+      enabled: !!me,
+    }
+  );
+
   if (queryStatus === "success") {
     return (
       <>
         {section === "information" && <Information />}
-        {section === "chat" && <Chat />}
+        {section === "chat" && chatCredentials && (
+          <Chat chatCredentials={{ token: chatCredentials.token }} otherParty={user} />
+        )}
         {section === "bookings" && <ClientBookings clientEmail={user?.email} />}
         {section === "notes" && <Notes clientEmail={user?.email} />}
       </>
