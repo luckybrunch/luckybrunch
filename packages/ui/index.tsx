@@ -7,6 +7,7 @@ export { Button, LinkIconButton } from "./components/button";
 export type { ButtonBaseProps, ButtonProps } from "./components/button";
 export { ButtonGroup } from "./components/buttonGroup";
 export {
+  Combobox,
   Checkbox,
   EmailField,
   EmailInput,

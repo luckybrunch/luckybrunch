@@ -671,6 +671,7 @@ const loggedInViewerRouter = router({
       if (user.coachProfileDraft) {
         data.coachProfileDraft = {
           update: {
+            ...data.coachProfileDraft?.update,
             name: stuff.name,
             bio: stuff.bio,
             addressLine1,

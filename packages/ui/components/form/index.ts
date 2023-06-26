@@ -1,6 +1,7 @@
 export { Checkbox, MultiSelectCheckbox } from "./checkbox";
 export type { Option } from "./checkbox";
 export { HintsOrErrors } from "./inputs/HintOrErrors";
+export { Combobox } from "./combobox";
 export {
   EmailField,
   EmailInput,

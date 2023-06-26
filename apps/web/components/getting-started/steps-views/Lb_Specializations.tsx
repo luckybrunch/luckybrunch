@@ -1,9 +1,9 @@
 import { ArrowRightIcon } from "@heroicons/react/outline";
-import { useForm, Controller } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
-import { Button, Label, Select, Form } from "@calcom/ui";
+import { Button, Label, Combobox, Form } from "@calcom/ui";
 
 import type { IOnboardingComponentProps } from "../../../pages/getting-started/[[...step]]";
 
@@ -21,7 +21,7 @@ const Lb_Specializations = (props: IOnboardingComponentProps) => {
   const specializationsOptions =
     specializationsSet?.map((item) => ({
       label: item.label,
-      value: String(item.id),
+      value: item.id,
     })) ?? [];
 
   const defaultValues = {
@@ -34,7 +34,6 @@ const Lb_Specializations = (props: IOnboardingComponentProps) => {
 
   const mutation = trpc.viewer.updateProfile.useMutation({
     onSuccess: () => {
-      utils.viewer.profile.getSpecializations.invalidate();
       utils.viewer.me.refetch();
     },
     onError: (error) => {
@@ -55,32 +54,26 @@ const Lb_Specializations = (props: IOnboardingComponentProps) => {
         <Controller
           name="specializations"
           control={formMethods.control}
-          render={({ field: { value } }) => (
-            <>
-              <Label className="mt-8 text-gray-900">
-                <>{t("lb_specializations_label")}</>
-              </Label>
-              <Select
-                isMulti
-                placeholder={t("select")}
-                options={specializationsOptions}
-                value={value.map((v) => specializationsOptions.find((o) => o.value === String(v)))}
-                onChange={(value) => {
-                  if (value)
+          render={({ field: { value } }) => {
+            const selected = specializationsOptions.filter((item) => value.includes(item.value));
+            return (
+              <>
+                <Label className="mt-8 text-gray-900">
+                  <>{t("lb_specializations_label")}</>
+                </Label>
+                <Combobox
+                  list={specializationsOptions}
+                  selected={selected}
+                  setSelected={(v) =>
                     formMethods.setValue(
                       "specializations",
-                      value
-                        .map((v) => v?.value ?? "")
-                        .map(Number)
-                        .filter(Boolean),
-                      {
-                        shouldDirty: true,
-                      }
-                    );
-                }}
-              />
-            </>
-          )}
+                      v.map((item) => item.value)
+                    )
+                  }
+                />
+              </>
+            );
+          }}
         />
       </div>
       <Button
