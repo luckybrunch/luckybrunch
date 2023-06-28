@@ -66,7 +66,7 @@ export const profileRouter = router({
       z.object({
         certId: z.number().optional(),
         name: z.string(),
-        typeId: z.number().optional(),
+        typeId: z.number().nullable(),
         fileUrl: z.string(),
       })
     )

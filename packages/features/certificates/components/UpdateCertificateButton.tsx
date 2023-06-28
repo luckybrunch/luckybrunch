@@ -129,7 +129,7 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
       const certificateForm = {
         certId: certificate ? certificate.id : undefined,
         name: input.certificate_type.value !== -1 ? input.certificate_type.label : input.certificate_name,
-        typeId: input.certificate_type.value !== -1 ? input.certificate_type.value : undefined,
+        typeId: input.certificate_type.value !== -1 ? input.certificate_type.value : null,
         fileUrl: file ? fileUrl : certificate?.fileUrl ?? "",
       };
 
