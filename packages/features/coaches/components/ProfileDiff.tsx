@@ -20,7 +20,7 @@ const translationKeys = {
 
 type ProfileDiffProps = {
   diffMetadata: FieldDiffMetada;
-  revertChange: (type: "revertNew" | "revertChange", field: string) => void;
+  revertChange: (field: string) => void;
   isLoading: boolean;
 };
 
@@ -73,8 +73,7 @@ export function ProfileDiff(props: ProfileDiffProps) {
           disabled={isLoading}
           StartIcon={FiArrowLeft}
           onClick={() => {
-            const type = isNew ? "revertNew" : "revertChange";
-            revertChange(type, field);
+            revertChange(field);
           }}>
           {t("lb_revert")}
         </Button>

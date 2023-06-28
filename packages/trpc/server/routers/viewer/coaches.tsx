@@ -282,7 +282,7 @@ export const coachesRouter = router({
         data: {
           coachProfileDraft: {
             update: {
-              [input.field]: user.coachProfile?.[input.field as keyof Coach],
+              [input.field]: user.coachProfile?.[input.field as keyof Coach] ?? "",
             },
           },
         },
