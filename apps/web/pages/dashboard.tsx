@@ -1,6 +1,6 @@
-import { ClockIcon, DesktopComputerIcon } from "@heroicons/react/outline";
 import { ReviewStatus } from "@prisma/client";
 import React, { useMemo } from "react";
+import { HiCheckCircle, HiEye, HiExclamationCircle } from "react-icons/hi";
 
 import { withProfileDiffList } from "@calcom/features/coaches/lib/withProfileDiff";
 import Shell from "@calcom/features/shell/Shell";
@@ -8,28 +8,20 @@ import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
 import {
   Button,
-  Divider,
-  EmptyScreen,
   List,
   ListItem,
   ListItemText,
   ListItemTitle,
   SkeletonLoader,
+  TrafficLightBanner,
 } from "@calcom/ui";
-import {
-  FiCheck,
-  FiClock,
-  FiExternalLink,
-  FiFile,
-  FiInfo,
-  FiPlus,
-  FiUpload,
-} from "@calcom/ui/components/icon";
+import { FiCheck, FiClock, FiEye, FiFile, FiInfo, FiPlus, FiRotateCcw } from "@calcom/ui/components/icon";
 
 import { withQuery } from "@lib/QueryCell";
 
 function UnpublishedDashboard() {
   const { data } = trpc.viewer.profile.getOnboardingFlags.useQuery();
+  const { data: user } = trpc.viewer.me.useQuery();
   const { t } = useLocale();
 
   type Item = {
@@ -80,49 +72,96 @@ function UnpublishedDashboard() {
 
   const renderItem = ({ title, description, icon, href, isDone }: Item) => (
     <ListItem rounded={false} className="flex-col border-0 md:border-0" key={title}>
-      <div className="flex w-full flex-1 items-center space-x-2 rtl:space-x-reverse lg:p-2">
-        <div className="bg-brand-100 text-brand-500 flex h-10 w-10 items-center justify-center rounded-full">
-          {icon()}
-        </div>
-        <div className="flex-grow truncate pl-2">
-          <ListItemTitle
-            component="h3"
-            className="mb-1 space-x-2 truncate text-sm font-medium text-neutral-900">
-            {title}
-          </ListItemTitle>
-          {typeof description === "string" ? (
-            <ListItemText component="p">{description}</ListItemText>
-          ) : (
-            description()
-          )}
-        </div>
-        <div>
-          {isDone ? (
+      <div className="flex w-full items-center justify-between gap-8">
+        {isDone ? (
+          <>
+            <div className="ml-2 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400">
+              {icon()}
+            </div>
+            <div className="flex-grow pl-2 opacity-60">
+              <ListItemTitle component="h3" className="mb-1 space-x-2 text-sm font-medium text-gray-500">
+                {title}
+              </ListItemTitle>
+              {typeof description === "string" ? (
+                <ListItemText component="p">{description}</ListItemText>
+              ) : (
+                description()
+              )}
+            </div>
             <Button color="secondary" StartIcon={FiCheck} disabled>
               {t("done")}
             </Button>
-          ) : (
-            <Button color="primary" StartIcon={FiPlus} href={href}>
+          </>
+        ) : (
+          <>
+            <div className="bg-brand-100 text-brand-500 ml-2 flex h-10 w-10 items-center justify-center rounded-full">
+              {icon()}
+            </div>
+            <div className="flex-grow pl-2">
+              <ListItemTitle component="h3" className="mb-1 space-x-2 text-sm font-medium text-neutral-900">
+                {title}
+              </ListItemTitle>
+              {typeof description === "string" ? (
+                <ListItemText component="p">{description}</ListItemText>
+              ) : (
+                description()
+              )}
+            </div>
+            <Button color="secondary" StartIcon={FiPlus} href={href}>
               {t("add")}
             </Button>
-          )}
-        </div>
+          </>
+        )}
       </div>
     </ListItem>
   );
 
   return (
     <>
-      <Divider />
-      <div className="mb-6 mt-6 flex items-center text-sm">
+      {user?.coachProfileDraft?.reviewStatus === ReviewStatus.DRAFT &&
+      !user?.coachProfileDraft?.rejectionReason ? (
+        <TrafficLightBanner
+          color="red"
+          title={t("lb_banner_unpublished_title")}
+          text={t("lb_banner_unpublished_text")}
+          icon={<HiExclamationCircle className="text-lg" />}
+        />
+      ) : null}
+      {user?.coachProfileDraft?.reviewStatus === ReviewStatus.REVIEW_REQUESTED ||
+      user?.coachProfileDraft?.reviewStatus === ReviewStatus.REVIEW_STARTED ? (
+        <TrafficLightBanner
+          color="yellow"
+          date={user?.coachProfileDraft?.requestedReviewAt}
+          title={t("lb_banner_review_title")}
+          text={t("lb_banner_review_text")}
+          icon={<HiEye className="text-lg" />}
+          buttonRaw={
+            <Button color="secondary" href="#" StartIcon={FiRotateCcw}>
+              {t("withdraw")}
+            </Button>
+          }
+        />
+      ) : null}
+      {user?.coachProfileDraft?.rejectionReason && (
+        <TrafficLightBanner
+          color="red"
+          date={user?.coachProfileDraft?.requestedReviewAt}
+          rejectionReason={user?.coachProfileDraft?.rejectionReason}
+          title={t("lb_banner_rejection_title")}
+          text={t("lb_banner_rejection_text")}
+          icon={<HiExclamationCircle className="text-lg" />}
+        />
+      )}
+
+      <div className="mb-8 mt-6 flex items-center text-sm">
         <div>
-          <p className="font-semibold">{t("lb_add_more_information_to_get_clients")}</p>
-          <p className="text-gray-600">{`${t("lb_complete_elements_to_submit_for_review")}: `}</p>
+          <p className="font-semibold">{t("lb_required_information")}</p>
+          <p className="text-gray-500">{`${t("lb_complete_elements_to_submit_for_review")}`}</p>
         </div>
       </div>
-      <div className="w-full bg-white sm:mx-0 xl:mt-0">
+      <div className="w-full sm:mx-0 xl:mt-0">
         {undoneSteps.length > 0 && <List roundContainer>{undoneSteps.map(renderItem)}</List>}
-        {doneSteps.length > 0 && undoneSteps.length > 0 && <Divider className="mt-8 mb-8" />}
+        {doneSteps.length > 0 && undoneSteps.length > 0 && <div className="h-6" />}
         {doneSteps.length > 0 && <List roundContainer>{doneSteps.map(renderItem)}</List>}
       </div>
     </>
@@ -131,38 +170,69 @@ function UnpublishedDashboard() {
 
 function InReview() {
   const { t } = useLocale();
+  const { data: user } = trpc.viewer.me.useQuery();
+
   return (
-    <EmptyScreen
-      Icon={ClockIcon}
-      headline={t("lb_profile_in_review_header", {
-        category: t("calendar").toLowerCase(),
-      })}
-      description={t("lb_profile_in_review_subtitle")}
-      buttonRaw={
-        <Button color="primary" href="#" StartIcon={FiUpload}>
-          {t("lb_remove_from_review")}
-        </Button>
-        //check icon insertion on button
-      }
-    />
+    <>
+      <TrafficLightBanner
+        color="yellow"
+        date={user?.coachProfileDraft?.requestedReviewAt}
+        title={t("lb_banner_review_title")}
+        text={t("lb_banner_review_text")}
+        icon={<HiEye className="text-lg" />}
+        buttonRaw={
+          <Button color="secondary" href="#" StartIcon={FiRotateCcw}>
+            {t("withdraw")}
+          </Button>
+        }
+      />
+    </>
   );
 }
 
 function Published() {
   const { t } = useLocale();
+  const { data: user } = trpc.viewer.me.useQuery();
+
   return (
-    <EmptyScreen
-      Icon={DesktopComputerIcon}
-      headline={t("lb_profile_published_header", {
-        category: t("calendar").toLowerCase(),
-      })}
-      description={t("lb_profile_published_subtitle")}
-      buttonRaw={
-        <Button color="primary" href="#" StartIcon={FiExternalLink}>
-          {t("view_public_page")}
-        </Button>
-      }
-    />
+    <>
+      <TrafficLightBanner
+        color="green"
+        date={user?.coachProfileDraft?.requestedReviewAt}
+        title={t("lb_banner_published_title")}
+        text={t("lb_banner_published_text")}
+        icon={<HiCheckCircle className="text-lg" />}
+        buttonRaw={
+          <Button color="secondary" href="#" StartIcon={FiEye}>
+            {t("view_public_page")}
+          </Button>
+        }
+      />
+      {user?.coachProfileDraft?.reviewStatus === ReviewStatus.REVIEW_REQUESTED ||
+      user?.coachProfileDraft?.reviewStatus === ReviewStatus.REVIEW_STARTED ? (
+        <TrafficLightBanner
+          color="yellow"
+          date={user?.coachProfileDraft?.requestedReviewAt}
+          title={t("lb_banner_review_title")}
+          text={t("lb_banner_review_text")}
+          icon={<HiEye className="text-lg" />}
+          buttonRaw={
+            <Button color="secondary" href="#" StartIcon={FiRotateCcw}>
+              {t("withdraw")}
+            </Button>
+          }
+        />
+      ) : null}
+      {user?.coachProfileDraft?.rejectionReason && (
+        <TrafficLightBanner
+          color="red"
+          date={user?.coachProfileDraft?.requestedReviewAt}
+          title={t("lb_banner_rejection_title")}
+          text={t("lb_banner_rejection_text")}
+          icon={<HiExclamationCircle className="text-lg" />}
+        />
+      )}
+    </>
   );
 }
 
@@ -176,14 +246,16 @@ export default function DashboardPage() {
       <WithQuery
         customLoader={<SkeletonLoader />}
         success={({ data: user }) => {
-          if (user?.coachProfile && user.coachProfileDraft?.reviewStatus !== ReviewStatus.REVIEW_STARTED) {
+          if (user?.coachProfile) {
+            user?.coachProfile && user.coachProfileDraft?.reviewStatus !== ReviewStatus.REVIEW_STARTED;
             return withProfileDiffList(Published, profileDiff?.diffList);
           }
-
-          if (user?.coachProfileDraft?.reviewStatus === ReviewStatus.REVIEW_STARTED) {
+          if (
+            user?.coachProfileDraft?.reviewStatus === ReviewStatus.REVIEW_REQUESTED ||
+            user?.coachProfileDraft?.reviewStatus === ReviewStatus.REVIEW_STARTED
+          ) {
             return withProfileDiffList(InReview, profileDiff?.diffList);
           }
-
           return withProfileDiffList(UnpublishedDashboard, profileDiff?.diffList);
         }}
       />

@@ -742,7 +742,7 @@ function SideBarContainer() {
 function SideBar() {
   return (
     <div className="relative">
-      <aside className="desktop-transparent bg-beige-50 top-0 hidden h-full max-h-screen w-14 flex-col overflow-y-auto overflow-x-hidden border-r border-gray-100 md:sticky md:flex lg:w-56 lg:px-4">
+      <aside className="desktop-transparent top-0 hidden h-full max-h-screen w-14 flex-col overflow-y-auto overflow-x-hidden border-r border-neutral-200 bg-white md:sticky md:flex lg:w-56 lg:px-4">
         <div className="flex h-full flex-col justify-between py-3 lg:pt-6 ">
           <header className="items-center justify-between md:hidden lg:flex">
             <Link href="/event-types" className="px-2">
@@ -859,7 +859,7 @@ function MainContainer({
   ...props
 }: LayoutProps) {
   return (
-    <main className="relative z-0 flex-1 bg-white focus:outline-none">
+    <main className="relative z-0 flex-1 bg-gray-50 focus:outline-none">
       {/* show top navigation for md and smaller (tablet and phones) */}
       {TopNavContainerProp}
       <div className="max-w-full px-4 py-4 md:py-8 lg:px-12">

@@ -4,6 +4,7 @@ import type { FieldDiffMetada } from "coaches/lib/getDiffMetadata";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
 import useMeQuery from "@calcom/trpc/react/hooks/useMeQuery";
+import { Divider } from "@calcom/ui";
 import { List, Button } from "@calcom/ui";
 
 import { ProfileDiff } from "./ProfileDiff";
@@ -12,7 +13,11 @@ export const ProfileDiffList = ({ diffList }: { diffList: FieldDiffMetada[] }) =
   const { t } = useLocale();
   const { data: user } = useMeQuery();
   const ctx = trpc.useContext();
-  const requestReviewMutation = trpc.viewer.coaches.requestReview.useMutation();
+  const requestReviewMutation = trpc.viewer.coaches.requestReview.useMutation({
+    onSuccess: () => {
+      ctx.viewer.me.invalidate();
+    },
+  });
   const revertChangeMutation = trpc.viewer.coaches.revertProfileChange.useMutation({
     onSuccess: () => {
       ctx.viewer.coaches.getProfileDiff.invalidate();
@@ -26,17 +31,24 @@ export const ProfileDiffList = ({ diffList }: { diffList: FieldDiffMetada[] }) =
 
   return (
     <div className="my-2">
-      <div className="flex flex-row items-center">
-        <h2 className="m-4 font-bold capitalize">{t("lb_profile_changes")}</h2>
-        <Button
-          disabled={user?.coachProfileDraft?.reviewStatus !== ReviewStatus.DRAFT}
-          loading={requestReviewMutation.isLoading}
-          className="m-2 flex items-center justify-center"
-          onClick={() => requestReviewMutation.mutate()}>
-          {t("lb_request_review")}
-        </Button>
+      <Divider className="mt-10" />
+
+      <div className="mb-8 mt-6 flex items-center justify-between gap-8 text-sm">
+        <div>
+          <p className="font-semibold">{t("lb_profile_changes")}</p>
+          <p className="text-gray-500">{`${t("lb_recent_profile_changes")}`}</p>
+        </div>
+        <div>
+          <Button
+            disabled={user?.coachProfileDraft?.reviewStatus !== ReviewStatus.DRAFT}
+            loading={requestReviewMutation.isLoading}
+            onClick={() => requestReviewMutation.mutate()}>
+            {t("lb_request_review")}
+          </Button>
+        </div>
       </div>
-      <List className="border-none">
+
+      <List roundContainer>
         {diffList.map((profileDiff, index) => (
           <ProfileDiff
             isLoading={revertChangeMutation.isLoading}

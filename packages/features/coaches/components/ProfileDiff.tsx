@@ -1,5 +1,6 @@
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { Button, ListItem } from "@calcom/ui";
+import { Badge } from "@calcom/ui";
 import { FiArrowLeft, FiArrowRight } from "@calcom/ui/components/icon";
 
 import type { FieldDiffMetada } from "../lib/getDiffMetadata";
@@ -25,7 +26,7 @@ type ProfileDiffProps = {
 const NewAddition = (props: Pick<FieldDiffMetada, "newValue">) => {
   return (
     <>
-      <p className="inline bg-green-100 p-1">{props.newValue}</p>
+      <Badge variant="lb_green">{props.newValue}</Badge>
     </>
   );
 };
@@ -33,9 +34,9 @@ const NewAddition = (props: Pick<FieldDiffMetada, "newValue">) => {
 const Change = (props: Pick<FieldDiffMetada, "oldValue" | "newValue">) => {
   return (
     <>
-      <p className="inline bg-red-100 p-1 line-through">{props.oldValue}</p>
+      <Badge variant="lb_green">{props.oldValue}</Badge>
       <FiArrowRight className="inline-block h-[20px] w-[30px] px-1" />
-      <p className="inline bg-green-100 p-1">{props.newValue}</p>
+      <Badge variant="lb_green">{props.newValue}</Badge>
     </>
   );
 };
@@ -43,7 +44,9 @@ const Change = (props: Pick<FieldDiffMetada, "oldValue" | "newValue">) => {
 const Deletion = (props: Pick<FieldDiffMetada, "oldValue">) => {
   return (
     <>
-      <p className="inline bg-red-100 p-1 line-through">{props.oldValue}</p>
+      <Badge variant="red" withDot={true}>
+        {props.oldValue}
+      </Badge>
     </>
   );
 };
@@ -57,7 +60,7 @@ export function ProfileDiff(props: ProfileDiffProps) {
     <ListItem rounded={false} className="block flex-col border-0 md:border-0">
       <div className="flex items-center justify-between">
         <div className="flex max-w-[65%] flex-col p-1">
-          <h2 className="mb-2 font-semibold capitalize">{t(translationKeys[field])}</h2>
+          <h3 className="mb-1 text-sm font-medium text-neutral-900">{t(translationKeys[field])}</h3>
           <div>
             {isNew && <NewAddition newValue={newValue} />}
             {isDeleted && <Deletion oldValue={oldValue} />}
@@ -65,6 +68,7 @@ export function ProfileDiff(props: ProfileDiffProps) {
           </div>
         </div>
         <Button
+          color="secondary"
           disabled={isLoading}
           StartIcon={FiArrowLeft}
           onClick={() => {

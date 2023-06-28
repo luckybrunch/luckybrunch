@@ -47,7 +47,7 @@ module.exports = {
         },
         beige: {
           50: "#FDFCFA",
-          100: "#FDFBF7",
+          100: "#F9FAFB",
           200: "#fff6e3",
           300: "#fff0d3",
           400: "#ffe5b1",
@@ -58,7 +58,7 @@ module.exports = {
           900: "#7d6b47", //Added this beige
         },
         gray: {
-          50: "#F9FAFB",
+          50: "#FCFCFD",
           100: "#F3F4F6",
           200: "#E5E7EB",
           300: "#D1D5DB",

@@ -1,5 +1,6 @@
 import { ReviewStatus } from "@prisma/client";
 import { UserType } from "@prisma/client";
+import Link from "next/link";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
@@ -72,7 +73,15 @@ export default function ReviewStatusBanner() {
   if (banner.shouldDisplay) {
     return (
       <>
-        <TopBanner text={banner.title} variant={banner.variant} />
+        <TopBanner
+          text={banner.title}
+          variant={banner.variant}
+          actions={
+            <Link href="/dashboard" className="border-b border-b-black">
+              {t("lb_review_status_banner_action")}
+            </Link>
+          }
+        />
       </>
     );
   }
