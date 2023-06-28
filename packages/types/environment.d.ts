@@ -70,5 +70,6 @@ declare namespace NodeJS {
     readonly CHAT_SECRET: string | undefined;
     readonly CHAT_TOKEN_SECRET: string | undefined;
     readonly CHAT_WEBHOOK_URL: string | undefined;
+    readonly HUBSPOT_API_KEY: string | undefined;
   }
 }

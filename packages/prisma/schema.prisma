@@ -230,6 +230,9 @@ model User {
   coachProfileDraftId Int?     @unique
   coachProfileDraft   Coach?   @relation(name: "coachProfileDraft", fields: [coachProfileDraftId], references: [id])
 
+  firstName String?
+  lastName  String?
+
   clientNotes ClientNotes[]
   // LuckyBrunch - END
 
@@ -731,7 +734,8 @@ enum ReviewStatus {
 
 model Coach {
   id               Int     @id @default(autoincrement())
-  name             String
+  firstName        String
+  lastName         String
   bio              String?
   companyName      String?
   addressLine1     String?

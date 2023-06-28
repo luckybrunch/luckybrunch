@@ -56,10 +56,10 @@ export default function Search() {
                         <img
                           className="mb-3 h-24 w-24 rounded-full text-center shadow-lg"
                           src={avatar ?? ""}
-                          alt={coachProfile?.name ?? ""}
+                          alt={`${coachProfile?.firstName ?? ""} ${coachProfile?.lastName ?? ""}`}
                         />
                         <h5 className="mb-1 text-xl font-medium text-gray-900 dark:text-white">
-                          {coachProfile?.name}
+                          {`${coachProfile?.firstName ?? ""} ${coachProfile?.lastName ?? ""}`}
                         </h5>
 
                         <span className="text-sm text-gray-500 dark:text-gray-400">{coachProfile?.bio}</span>

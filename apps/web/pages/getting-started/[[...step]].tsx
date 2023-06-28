@@ -386,6 +386,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
         select: {
           username: true,
           name: true,
+          firstName: true,
+          lastName: true,
           email: true,
           avatar: true,
           bio: true,
@@ -405,7 +407,8 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
           coachProfileDraft: {
             select: {
               companyName: true,
-              name: true,
+              firstName: true,
+              lastName: true,
               bio: true,
               addressLine1: true,
               zip: true,

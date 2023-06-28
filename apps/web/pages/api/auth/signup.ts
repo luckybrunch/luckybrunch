@@ -22,7 +22,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
   const { email, password } = data;
   const username = slugify(data.username ?? generateRandomUsername());
   const userEmail = email.toLowerCase();
-  const name = data.name ?? "";
+  const firstName = data.firstName ?? "";
+  const lastName = data.lastName ?? "";
+  const name = `${firstName} ${lastName}`;
 
   if (!username) {
     res.status(422).json({ message: "Invalid username" });
@@ -67,6 +69,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     update: {
       username,
       name,
+      firstName,
+      lastName,
       password: hashedPassword,
       emailVerified: new Date(Date.now()),
       identityProvider: IdentityProvider.CAL,
@@ -75,6 +79,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     create: {
       username,
       name,
+      firstName,
+      lastName,
       email: userEmail,
       password: hashedPassword,
       identityProvider: IdentityProvider.CAL,
@@ -91,7 +97,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       data: {
         coachProfileDraft: {
           create: {
-            name: name ?? "",
+            firstName,
+            lastName,
           },
         },
       },

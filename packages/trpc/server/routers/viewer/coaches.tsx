@@ -42,7 +42,8 @@ export const coachesRouter = router({
         coachProfile: {
           select: {
             id: true,
-            name: true,
+            firstName: true,
+            lastName: true,
             bio: true,
             specializations: {
               select: {
@@ -220,7 +221,8 @@ export const coachesRouter = router({
 
     const diffList: FieldDiffMetada[] = [];
     const coachFieldsForShallowCompare: ComparableCoachField[] = [
-      "name",
+      "firstName",
+      "lastName",
       "bio",
       "companyName",
       "addressLine1",

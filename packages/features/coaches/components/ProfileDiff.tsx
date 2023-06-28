@@ -6,7 +6,8 @@ import { FiArrowLeft, FiArrowRight } from "@calcom/ui/components/icon";
 import type { FieldDiffMetada } from "../lib/getDiffMetadata";
 
 const translationKeys = {
-  name: "full_name",
+  firstName: "lb_first_name",
+  lastName: "lb_last_name",
   bio: "lb_biography",
   companyName: "lb_company_name",
   addressLine1: "address",

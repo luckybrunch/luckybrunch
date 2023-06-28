@@ -285,6 +285,7 @@
     "$CHAT_SECRET",
     "$CHAT_TOKEN_SECRET",
     "$CHAT_WEBHOOK_URL",
+    "$HUBSPOT_API_KEY",
     "yarn.lock"
   ]
 }

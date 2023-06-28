@@ -80,7 +80,8 @@ const createDraftProfileForCoachesMiddleware = t.middleware(async ({ ctx, next }
       data: {
         coachProfileDraft: {
           create: {
-            name: ctx.user.name ?? "",
+            firstName: ctx.user.firstName ?? "",
+            lastName: ctx.user.lastName ?? "",
           },
         },
       },

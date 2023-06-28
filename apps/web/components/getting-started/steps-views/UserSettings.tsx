@@ -30,7 +30,8 @@ const UserSettings = (props: IUserSettingsProps) => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      name: user?.name || "",
+      firstName: user?.firstName || "",
+      lastName: user?.lastName || "",
     },
     reValidateMode: "onChange",
   });
@@ -54,7 +55,8 @@ const UserSettings = (props: IUserSettingsProps) => {
 
   const onSubmit = handleSubmit((data) => {
     mutation.mutate({
-      name: data.name,
+      firstName: data.firstName,
+      lastName: data.lastName,
       timeZone: selectedTimeZone,
     });
   });
@@ -65,21 +67,41 @@ const UserSettings = (props: IUserSettingsProps) => {
         {/* Username textfield */}
         <UsernameAvailabilityField user={user} />
 
-        {/* Full name textfield */}
+        {/* First name textfield */}
         <div className="w-full">
-          <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
-            {t("full_name")}
+          <label htmlFor="firstName" className="mb-2 block text-sm font-medium text-gray-700">
+            {t("firstName")}
           </label>
           <input
-            {...register("name", defaultOptions)}
-            id="name"
-            name="name"
+            {...register("firstName", defaultOptions)}
+            id="firstName"
+            name="firstName"
             type="text"
             autoComplete="off"
             autoCorrect="off"
             className="w-full rounded-md border border-gray-300 text-sm"
           />
-          {errors.name && (
+          {errors.firstName && (
+            <p data-testid="required" className="py-2 text-xs text-red-500">
+              {t("required")}
+            </p>
+          )}
+        </div>
+        {/* Last name textfield */}
+        <div className="w-full">
+          <label htmlFor="lastName" className="mb-2 block text-sm font-medium text-gray-700">
+            {t("lb_last_name")}
+          </label>
+          <input
+            {...register("lastName", defaultOptions)}
+            id="lastName"
+            name="lastName"
+            type="text"
+            autoComplete="off"
+            autoCorrect="off"
+            className="w-full rounded-md border border-gray-300 text-sm"
+          />
+          {errors.lastName && (
             <p data-testid="required" className="py-2 text-xs text-red-500">
               {t("required")}
             </p>

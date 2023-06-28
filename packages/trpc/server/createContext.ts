@@ -29,7 +29,8 @@ async function getUserFromSession({
 
   const coachSelect: Prisma.CoachSelect = {
     id: true,
-    name: true,
+    firstName: true,
+    lastName: true,
     bio: true,
     companyName: true,
     addressLine1: true,
@@ -52,6 +53,8 @@ async function getUserFromSession({
       id: true,
       username: true,
       name: true,
+      firstName: true,
+      lastName: true,
       email: true,
       bio: true,
       timeZone: true,

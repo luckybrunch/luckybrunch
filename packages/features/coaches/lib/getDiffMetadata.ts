@@ -4,7 +4,8 @@ import { TRPCError } from "@trpc/server";
 
 export type ComparableCoachField = keyof Pick<
   Coach,
-  | "name"
+  | "firstName"
+  | "lastName"
   | "bio"
   | "companyName"
   | "addressLine1"

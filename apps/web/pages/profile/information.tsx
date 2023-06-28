@@ -46,7 +46,8 @@ const SkeletonLoader = () => {
 
 type FormValues = {
   avatar: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   companyName: string;
   bio: string;
@@ -103,7 +104,8 @@ const InformationPage = () => {
   const defaultValues = {
     avatar: avatar.avatar ?? "",
     email: user.email ?? "",
-    name: user.coachProfileDraft?.name ?? "",
+    firstName: user.coachProfileDraft?.firstName ?? "",
+    lastName: user.coachProfileDraft?.lastName ?? "",
     bio: user.coachProfileDraft?.bio ?? "",
     companyName: user.coachProfileDraft?.companyName ?? "",
     addressLine1: user.coachProfileDraft?.addressLine1 ?? "",
@@ -197,8 +199,15 @@ const ProfileForm = ({
         />
       </div>
       <div className=" lg:flex">
-        <div className="mt-8 lg:w-2/4">
-          <TextField className="lg:w-full" label={t("full_name")} {...formMethods.register("name")} />
+        <div className="mt-8 mr-2 lg:w-1/4">
+          <TextField
+            className="lg:w-full"
+            label={t("lb_first_name")}
+            {...formMethods.register("firstName")}
+          />
+        </div>
+        <div className="mt-8 lg:w-1/4">
+          <TextField className="lg:w-full" label={t("lb_last_name")} {...formMethods.register("lastName")} />
         </div>
       </div>
 

@@ -23,6 +23,7 @@ import { ErrorCode, verifyPassword } from "@calcom/lib/auth";
 import { symmetricDecrypt } from "@calcom/lib/crypto";
 import getPaymentAppData from "@calcom/lib/getPaymentAppData";
 import hasKeyInMetadata from "@calcom/lib/hasKeyInMetadata";
+import hubspotClient from "@calcom/lib/hubspot";
 import { deletePayment } from "@calcom/lib/payment/deletePayment";
 import { checkUsername } from "@calcom/lib/server/checkUsername";
 import { getTranslation } from "@calcom/lib/server/i18n";
@@ -159,6 +160,8 @@ const loggedInViewerRouter = router({
     return {
       id: user.id,
       name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       username: user.username,
       email: user.email,
       startTime: user.startTime,
@@ -261,6 +264,9 @@ const loggedInViewerRouter = router({
         },
       });
 
+      // Hubspot sync
+      await hubspotClient.deleteUser(ctx.user.email);
+
       // Sync Services
       syncServicesDeleteWebUser(deletedUser);
       return;
@@ -333,7 +339,7 @@ const loggedInViewerRouter = router({
     const connectedCalendars = await getConnectedCalendars(calendarCredentials, user.selectedCalendars);
 
     // store email of the destination calendar to display
-    let destinationCalendarEmail = null;
+    let destinationCalendarEmail: string | null = null;
 
     if (connectedCalendars.length === 0) {
       /* As there are no connected calendars, delete the destination calendar if it exists */
@@ -615,7 +621,8 @@ const loggedInViewerRouter = router({
         country: z.string().optional(),
         appointmentTypes: z.string().optional(),
         specializations: z.number().array().optional(),
-        name: z.string().optional(),
+        firstName: z.string().optional(),
+        lastName: z.string().optional(),
         bio: z.string().optional(),
         avatar: z.string().optional(),
         timeZone: z.string().optional(),
@@ -658,6 +665,10 @@ const loggedInViewerRouter = router({
         metadata: input.metadata as Prisma.InputJsonValue,
       };
 
+      if (stuff.firstName && stuff.lastName) {
+        data.name = `${stuff.firstName} ${stuff.lastName}`;
+      }
+
       if (specializations) {
         data.coachProfileDraft = {
           update: {
@@ -672,7 +683,8 @@ const loggedInViewerRouter = router({
         data.coachProfileDraft = {
           update: {
             ...data.coachProfileDraft?.update,
-            name: stuff.name,
+            firstName: stuff.firstName,
+            lastName: stuff.lastName,
             bio: stuff.bio,
             addressLine1,
             addressLine2,
@@ -766,6 +778,49 @@ const loggedInViewerRouter = router({
           completedProfileInformations: true,
         },
       });
+
+      // Hubspot sync for coaches
+      if (user.coachProfileDraft) {
+        const coach = await prisma.user.findUnique({
+          where: { id: user.id },
+          select: {
+            email: true,
+            username: true,
+            coachProfileDraft: {
+              select: {
+                bio: true,
+                companyName: true,
+                city: true,
+                addressLine1: true,
+                addressLine2: true,
+                appointmentTypes: true,
+                firstName: true,
+                lastName: true,
+                zip: true,
+                specializations: true,
+              },
+            },
+          },
+        });
+
+        if (coach && coach.coachProfileDraft) {
+          await hubspotClient.updateUser({
+            contactGroup: "coach",
+            email: coach.email,
+            username: coach.username,
+            bio: coach.coachProfileDraft.bio,
+            city: coach.coachProfileDraft.city,
+            companyName: coach.coachProfileDraft.companyName,
+            appointmentTypes: coach.coachProfileDraft.appointmentTypes,
+            firstName: coach.coachProfileDraft.firstName,
+            lastName: coach.coachProfileDraft.lastName,
+            zip: coach.coachProfileDraft.zip,
+            addressLine1: coach.coachProfileDraft.addressLine1,
+            addressLine2: coach.coachProfileDraft.addressLine2,
+            specializations: coach.coachProfileDraft.specializations,
+          });
+        }
+      }
 
       // Sync Services
       await syncServicesUpdateWebUser(updatedUser);

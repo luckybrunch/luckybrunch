@@ -18,6 +18,8 @@ async function createUserAndEventType(opts: {
     password: string;
     username: string;
     name: string;
+    firstName: string;
+    lastName: string;
     completedOnboarding?: boolean;
     timeZone?: string;
     role?: UserPermissionRole;
@@ -176,6 +178,8 @@ async function main() {
       password: "delete-me",
       username: "delete-me",
       name: "delete-me",
+      firstName: "delete",
+      lastName: "me",
     },
     eventTypes: [],
   });
@@ -186,6 +190,8 @@ async function main() {
       password: "onboarding",
       username: "onboarding",
       name: "onboarding",
+      firstName: "onboarding",
+      lastName: "onboarding",
       completedOnboarding: false,
     },
     eventTypes: [],
@@ -197,6 +203,8 @@ async function main() {
       password: "free-first-hidden",
       username: "free-first-hidden",
       name: "Free First Hidden Example",
+      firstName: "Free First Hidden",
+      lastName: "Example",
     },
     eventTypes: [
       {
@@ -216,6 +224,8 @@ async function main() {
     user: {
       email: "pro@example.com",
       name: "Pro Example",
+      firstName: "Pro",
+      lastName: "Example",
       password: "pro",
       username: "pro",
     },
@@ -441,6 +451,8 @@ async function main() {
       password: "trial",
       username: "trial",
       name: "Trial Example",
+      firstName: "Trial",
+      lastName: "Example",
     },
     eventTypes: [
       {
@@ -462,6 +474,8 @@ async function main() {
       password: "free",
       username: "free",
       name: "Free Example",
+      firstName: "Free",
+      lastName: "Example",
     },
     eventTypes: [
       {
@@ -483,6 +497,8 @@ async function main() {
       password: "usa",
       username: "usa",
       name: "USA Timezone Example",
+      firstName: "USA Timezone",
+      lastName: "Example",
       timeZone: "America/Phoenix",
     },
     eventTypes: [
@@ -500,6 +516,8 @@ async function main() {
       password: "teamfree",
       username: "teamfree",
       name: "Team Free Example",
+      firstName: "Team Free",
+      lastName: "Example",
     },
     eventTypes: [],
   });
@@ -510,6 +528,8 @@ async function main() {
       password: "teampro",
       username: "teampro",
       name: "Team Pro Example",
+      firstName: "Team Pro",
+      lastName: "Example",
     },
     eventTypes: [],
   });
@@ -521,6 +541,8 @@ async function main() {
       password: "ADMINadmin2022!",
       username: "admin",
       name: "Admin Example",
+      firstName: "Admin",
+      lastName: "Example",
       role: "ADMIN",
     },
     eventTypes: [
@@ -568,6 +590,8 @@ async function main() {
       password: "teampro2",
       username: "teampro2",
       name: "Team Pro Example 2",
+      firstName: "Team Pro",
+      lastName: "Example 2",
     },
     eventTypes: [],
   });
@@ -578,6 +602,8 @@ async function main() {
       password: "teampro3",
       username: "teampro3",
       name: "Team Pro Example 3",
+      firstName: "Team Pro",
+      lastName: "Example 3",
     },
     eventTypes: [],
   });
@@ -588,6 +614,8 @@ async function main() {
       password: "teampro4",
       username: "teampro4",
       name: "Team Pro Example 4",
+      firstName: "Team Pro",
+      lastName: "Example 4",
     },
     eventTypes: [],
   });

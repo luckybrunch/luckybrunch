@@ -34,7 +34,7 @@ export default function Coaches() {
                     <Link
                       href={`/clients/${user?.email}/chat?coachId=${coach?.id}`}
                       className="h-full w-full">
-                      <p>{coach?.coachProfile?.name}</p>
+                      <p>{`${coach?.coachProfile?.firstName} ${coach?.coachProfile?.lastName}`}</p>
                       {(unreadCounts?.unreadChannels[chatId] ?? 0) > 0 && (
                         <Badge
                           rounded

@@ -15,7 +15,8 @@ const md = new MarkdownIt("default", { html: true, breaks: true });
 
 type FormData = {
   bio: string;
-  name: string;
+  firstName: string;
+  lastName: string;
 };
 
 const Lb_UserProfile = (props: IOnboardingComponentProps) => {
@@ -60,13 +61,14 @@ const Lb_UserProfile = (props: IOnboardingComponentProps) => {
     getValues,
     formState: { errors },
   } = useForm<FormData>({
-    defaultValues: { bio: user?.bio || "", name: user?.name || "" },
+    defaultValues: { bio: user?.bio || "", firstName: user?.firstName || "", lastName: user?.lastName || "" },
   });
 
-  const onSubmit = handleSubmit((data: { bio: string; name: string }) => {
-    const { bio, name } = data;
+  const onSubmit = handleSubmit((data: { bio: string; firstName: string; lastName: string }) => {
+    const { bio, firstName, lastName } = data;
     mutation.mutate({
-      name,
+      firstName,
+      lastName,
       bio,
     });
   });
@@ -176,19 +178,38 @@ const Lb_UserProfile = (props: IOnboardingComponentProps) => {
       </div>
       {/* Full name textfield */}
       <div className="mt-8 w-full">
-        <label htmlFor="name" className="mb-2 block text-sm font-medium text-gray-700">
-          {t("full_name")}
+        <label htmlFor="firstName" className="mb-2 block text-sm font-medium text-gray-700">
+          {t("lb_first_name")}
         </label>
         <input
-          {...register("name", defaultOptions)}
-          id="name"
-          name="name"
+          {...register("firstName", defaultOptions)}
+          id="firstName"
+          name="firstName"
           type="text"
           autoComplete="off"
           autoCorrect="off"
           className="w-full rounded-md border border-gray-300 text-sm"
         />
-        {errors.name && (
+        {errors.firstName && (
+          <p data-testid="required" className="py-2 text-xs text-red-500">
+            {t("required")}
+          </p>
+        )}
+      </div>
+      <div className="mt-8 w-full">
+        <label htmlFor="lastName" className="mb-2 block text-sm font-medium text-gray-700">
+          {t("lb_last_name")}
+        </label>
+        <input
+          {...register("lastName", defaultOptions)}
+          id="lastName"
+          name="lastName"
+          type="text"
+          autoComplete="off"
+          autoCorrect="off"
+          className="w-full rounded-md border border-gray-300 text-sm"
+        />
+        {errors.lastName && (
           <p data-testid="required" className="py-2 text-xs text-red-500">
             {t("required")}
           </p>

@@ -71,7 +71,8 @@ interface DeleteAccountValues {
 type FormValues = {
   username: string;
   avatar: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   bio: string;
 };
@@ -193,7 +194,8 @@ const ProfileView = () => {
   const defaultValues = {
     username: user.username || "",
     avatar: avatar.avatar || "",
-    name: user.name || "",
+    firstName: user.firstName || "",
+    lastName: user.lastName || "",
     email: user.email || "",
     bio: user.bio || "",
   };
@@ -360,7 +362,10 @@ const ProfileForm = ({
       </div>
       {extraField}
       <div className="mt-8">
-        <TextField label={t("full_name")} {...formMethods.register("name")} />
+        <TextField label={t("lb_first_name")} {...formMethods.register("firstName")} />
+      </div>
+      <div className="mt-8">
+        <TextField label={t("lb_last_name")} {...formMethods.register("lastName")} />
       </div>
       <div className="mt-8">
         <TextField label={t("email")} {...formMethods.register("email")} />
