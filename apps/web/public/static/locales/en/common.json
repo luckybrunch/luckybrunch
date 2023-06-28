@@ -1630,7 +1630,7 @@
   "lb_website_view": "Website view",
   "lb_certificate_name": "Certificate Name",
   "lb_certificate_document_type": "Document Type",
-  "lb_certificate_desc": "Description",
+  "lb_certificate_type_other": "Other",
   "lb_certificate_file_label": "Certificate File",
   "lb_add_certificate_dialog_title": "Add a new certificate",
   "lb_edit_certificate_dialog_title": "Edit your certificate",

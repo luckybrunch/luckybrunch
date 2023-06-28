@@ -13,7 +13,6 @@ export const profileRouter = router({
       select: {
         id: true,
         name: true,
-        description: true,
         fileUrl: true,
         type: {
           select: {
@@ -67,8 +66,7 @@ export const profileRouter = router({
       z.object({
         certId: z.number().optional(),
         name: z.string(),
-        description: z.string(),
-        typeId: z.number(),
+        typeId: z.number().optional(),
         fileUrl: z.string(),
       })
     )
@@ -83,7 +81,6 @@ export const profileRouter = router({
           },
           data: {
             name: input.name,
-            description: input.description,
             typeId: input.typeId,
             fileUrl: input.fileUrl,
           },
@@ -93,7 +90,6 @@ export const profileRouter = router({
           data: {
             coachId: user.coachProfileDraft!.id!,
             name: input.name,
-            description: input.description,
             typeId: input.typeId,
             fileUrl: input.fileUrl,
           },

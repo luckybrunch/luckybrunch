@@ -700,16 +700,14 @@ model VerifiedNumber {
 // LUCKYBRANCH
 
 model Certificate {
-  id          Int             @id @default(autoincrement())
-  createdAt   DateTime        @default(now())
-  coachId     Int
-  coach       Coach           @relation(fields: [coachId], references: [id], onDelete: Cascade)
-  name        String
-  description String?
-  // what type will the upload be? Is it a string that points to some data?
-  fileUrl     String
-  type        CertificateType @relation(fields: [typeId], references: [id])
-  typeId      Int
+  id        Int              @id @default(autoincrement())
+  createdAt DateTime         @default(now())
+  coachId   Int
+  coach     Coach            @relation(fields: [coachId], references: [id], onDelete: Cascade)
+  fileUrl   String
+  name      String
+  type      CertificateType? @relation(fields: [typeId], references: [id])
+  typeId    Int?
 }
 
 model CertificateType {

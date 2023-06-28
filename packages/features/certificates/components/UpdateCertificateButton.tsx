@@ -1,5 +1,5 @@
 import type { PresignedPost } from "@aws-sdk/s3-presigned-post";
-import { useState, FormEvent } from "react";
+import { useState, useMemo, FormEvent } from "react";
 import { Controller, useForm } from "react-hook-form";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -15,7 +15,6 @@ import {
   Form,
   Label,
   Select,
-  TextArea,
   showToast,
 } from "@calcom/ui";
 import { FiEdit, FiPlus } from "@calcom/ui/components/icon";
@@ -23,13 +22,12 @@ import { FiAlertTriangle } from "@calcom/ui/components/icon";
 
 type Cert = {
   id: number;
-  description: string | null;
-  type: {
+  name: string;
+  fileUrl: string;
+  type?: {
     id: number;
     name: string;
   };
-  name: string;
-  fileUrl: string;
 };
 
 export function UpdateCertificateButton({ certificate }: { certificate?: Cert }) {
@@ -44,6 +42,12 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
   const ctx = trpc.useContext();
   const certificateTypeOptions = certificateTypes?.map((item) => ({ label: item.name, value: item.id }));
 
+  const certificateTypeOptionOther = useMemo(
+    () => ({ label: t("lb_certificate_type_other"), value: -1 }),
+    [t]
+  );
+  certificateTypeOptions?.push(certificateTypeOptionOther);
+
   type CertificateTypeOption = {
     value: number;
     label: string;
@@ -52,13 +56,15 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
   type FormValues = {
     certificate_name: string;
     certificate_type: CertificateTypeOption | null;
-    certificate_desc: string;
   };
 
   const defaultValues = {
-    certificate_name: certificate?.name || "",
-    certificate_type: certificate ? { value: certificate.type.id, label: certificate.type.name } : undefined,
-    certificate_desc: certificate?.description || "",
+    certificate_name: certificate?.type ? "" : certificate?.name || "",
+    certificate_type: certificate?.type
+      ? { value: certificate.type.id, label: certificate.type.name }
+      : certificate?.name
+      ? certificateTypeOptionOther
+      : null,
   };
 
   const formMethods = useForm<FormValues>({
@@ -122,9 +128,8 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
 
       const certificateForm = {
         certId: certificate ? certificate.id : undefined,
-        name: input.certificate_name,
-        description: input.certificate_desc,
-        typeId: input.certificate_type.value,
+        name: input.certificate_type.value !== -1 ? input.certificate_type.label : input.certificate_name,
+        typeId: input.certificate_type.value !== -1 ? input.certificate_type.value : undefined,
         fileUrl: file ? fileUrl : certificate?.fileUrl ?? "",
       };
 
@@ -205,13 +210,6 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
                 </label>
               </div>
             </div>
-            <div className="mt-8">
-              <TextField
-                label={t("lb_certificate_name")}
-                required
-                {...formMethods.register("certificate_name")}
-              />
-            </div>
 
             <Controller
               name="certificate_type"
@@ -231,15 +229,18 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
                     }}
                   />
                   {error?.type === "required" && <div className="text-red-500">Missing</div>}
+                  {value?.value === -1 && (
+                    <div className="mt-8">
+                      <TextField
+                        label={t("lb_certificate_name")}
+                        required
+                        {...formMethods.register("certificate_name")}
+                      />
+                    </div>
+                  )}
                 </>
               )}
             />
-            <div className="mt-8">
-              <Label className="mt-8 text-gray-900">
-                <>{t("lb_certificate_desc")}</>
-              </Label>
-              <TextArea {...formMethods.register("certificate_desc")} />
-            </div>
 
             <DialogFooter>
               <Button loading={isLoading} disabled={isDisabled} color="primary" type="submit">
