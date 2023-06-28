@@ -1707,5 +1707,18 @@
   "lb_meeting_range_value": "Distance range: {{range}} Kilometers",
   "lb_price_range_value": "Price range: {{price}}",
   "lb_free": "Free",
-  "lb_you_have_unread_messages": "You have unread messages"
+  "lb_you_have_unread_messages": "You have unread messages",
+  "lb_user_goals_title": "What are you interested in?",
+  "lb_user_goals_subtitle_1": "What would you like to achieve?",
+  "lb_meeting_options_title": "Where would you like to meet with your coach",
+  "lb_meeting_options_subtitle_1": "Select your prefered way of meeting your coach",
+  "lb_where_do_you_live_title": "Where do you live?",
+  "lb_where_do_you_live_subtitle_1": "Provide your location to help us find the best match for you",
+  "lb_meeting_range_title": "Prefered meeting distance range",
+  "lb_meeting_range_subtitle_1": "What's the maximum distance that you'd want us to match you",
+  "lb_price_range_title": "Price range",
+  "lb_price_range_subtitle_1": "Available budget for services you'll recieve",
+  "lb_setup_availability_title": "Set up your prefered times for meetings",
+  "lb_setup_availability_subtitle_1": "Make your available times known to clients who want to book an appointment",
+  "lb_password_hint": "At least 7 characters"
 }

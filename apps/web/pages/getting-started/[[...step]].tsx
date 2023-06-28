@@ -33,7 +33,7 @@ export type IOnboardingComponentProps = {
   user: IOnboardingPageProps["user"];
   nextStep: (queryParams?: ParsedUrlQueryInput) => void;
 };
-export type OnboardingUrl = (typeof availableUrls)[number];
+export type OnboardingUrl = typeof availableUrls[number];
 
 type StepLink = {
   [key in OnboardingUrl]: {
@@ -181,45 +181,43 @@ const availableSteps: Step[] = [
   {
     url: "lb_user-goals",
     headers: {
-      title: { translationKey: "What are you interested in?" },
-      subtitle: [{ translationKey: "What would you like to achieve?" }],
+      title: { translationKey: "lb_user_goals_title" },
+      subtitle: [{ translationKey: "lb_user_goals_subtitle_1" }],
     },
   },
   {
     url: "lb_meeting-options",
     headers: {
-      title: { translationKey: "Where would you like to meet with your coach" },
-      subtitle: [{ translationKey: "Select your prefered way of meeting your coach" }],
+      title: { translationKey: "lb_meeting_options_title" },
+      subtitle: [{ translationKey: "lb_meeting_options_subtitle_1" }],
     },
   },
   {
     url: "lb_where-do-you-live",
     headers: {
-      title: { translationKey: "Where do you live?" },
-      subtitle: [{ translationKey: "Provide your location to help us find the best match for you" }],
+      title: { translationKey: "lb_where_do_you_live_title" },
+      subtitle: [{ translationKey: "lb_where_do_you_live_subtitle_1" }],
     },
   },
   {
     url: "lb_meeting-range",
     headers: {
-      title: { translationKey: "Prefered distance range" },
-      subtitle: [{ translationKey: "What's the maximum distance that you'd want us to match you" }],
+      title: { translationKey: "lb_meeting_range_title" },
+      subtitle: [{ translationKey: "lb_meeting_range_subtitle_1" }],
     },
   },
   {
     url: "lb_price-range",
     headers: {
-      title: { translationKey: "Price range" },
-      subtitle: [{ translationKey: "Your prefered price range for coaches" }],
+      title: { translationKey: "lb_price_range_title" },
+      subtitle: [{ translationKey: "lb_price_range_subtitle_1" }],
     },
   },
   {
     url: "lb_setup-availability",
     headers: {
-      title: { translationKey: "Set up your prefered times for meetings" },
-      subtitle: [
-        { translationKey: "Make your available times known to clients who want to book an appointment" },
-      ],
+      title: { translationKey: "lb_setup_availability_title" },
+      subtitle: [{ translationKey: "lb_setup_availability_subtitle_1" }],
     },
   },
 ];
