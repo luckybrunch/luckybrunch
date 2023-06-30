@@ -14,6 +14,9 @@ export default function ClientChat() {
     { userChatId: normalizeIdForChat(me?.email) || "" },
     { enabled: !!me }
   );
+  const { data: coachName } = trpc.viewer.chat.getNameIfExists.useQuery({
+    id: Number(query.coachId),
+  });
 
   return (
     <Shell
@@ -23,7 +26,7 @@ export default function ClientChat() {
       {chatCredentials && (
         <Chat
           chatCredentials={{ token: chatCredentials.token }}
-          otherParty={{ id: query.coachId as string }}
+          otherParty={{ id: query.coachId as string, name: coachName }}
         />
       )}
     </Shell>

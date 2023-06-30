@@ -283,7 +283,6 @@
     "$NEXT_PUBLIC_CHAT_API_KEY",
     "$NEXT_PUBLIC_CHAT_APP_ID",
     "$CHAT_SECRET",
-    "$CHAT_TOKEN_SECRET",
     "$CHAT_WEBHOOK_URL",
     "$HUBSPOT_API_KEY",
     "yarn.lock"

@@ -68,7 +68,6 @@ declare namespace NodeJS {
     readonly NEXT_PUBLIC_CHAT_API_KEY: string | undefined;
     readonly NEXT_PUBLIC_CHAT_APP_ID: string | undefined;
     readonly CHAT_SECRET: string | undefined;
-    readonly CHAT_TOKEN_SECRET: string | undefined;
     readonly CHAT_WEBHOOK_URL: string | undefined;
     readonly HUBSPOT_API_KEY: string | undefined;
   }

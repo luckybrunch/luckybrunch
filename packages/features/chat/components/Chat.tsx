@@ -5,7 +5,7 @@ import { Chat, Channel, ChannelHeader, MessageInput, MessageList, Thread, Window
 import "stream-chat-react/dist/css/v2/index.css";
 
 import { generateChannelName, normalizeIdForChat } from "@calcom/features/chat/lib/generateChannelName";
-import { useClient } from "@calcom/features/chat/lib/useChatClient";
+import { useChatClient } from "@calcom/features/chat/lib/useChatClient";
 import { trpc } from "@calcom/trpc";
 import useMeQuery from "@calcom/trpc/react/hooks/useMeQuery";
 import { SkeletonLoader } from "@calcom/ui";
@@ -13,7 +13,7 @@ import { SkeletonLoader } from "@calcom/ui";
 import "../styles/mml-styles.css";
 
 type ChatViewProps = {
-  otherParty?: { id?: number | string; email?: string } | null;
+  otherParty?: { id?: number | string; email?: string; name?: string } | null;
   chatCredentials: { token: string };
 };
 
@@ -27,6 +27,7 @@ export default function ChatView(props: ChatViewProps) {
     {
       otherPartyId:
         (currentUser?.userType === UserType.COACH ? otherParty?.email : currentUser?.id.toString()) ?? "",
+      name: otherParty?.name,
     },
     { enabled: !!otherParty && !channel }
   );
@@ -34,8 +35,14 @@ export default function ChatView(props: ChatViewProps) {
   const currentUserChatId =
     currentUser?.userType === UserType.COACH ? currentUser?.id.toString() : currentUser?.email;
 
-  const client = useClient({
-    user: { id: normalizeIdForChat(currentUserChatId) },
+  const client = useChatClient({
+    user: {
+      id: normalizeIdForChat(currentUserChatId),
+      name:
+        currentUser?.firstName && currentUser?.lastName
+          ? `${currentUser?.firstName} ${currentUser?.lastName}`
+          : undefined,
+    },
     token: chatCredentials.token,
     apiKey: process.env.NEXT_PUBLIC_CHAT_API_KEY || "",
   });

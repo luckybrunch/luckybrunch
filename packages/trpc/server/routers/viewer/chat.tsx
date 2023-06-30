@@ -1,5 +1,4 @@
 import { UserType } from "@prisma/client";
-import { sign } from "jsonwebtoken";
 import { StreamChat, DefaultGenerics } from "stream-chat";
 import { z } from "zod";
 
@@ -8,9 +7,6 @@ import { normalizeIdForChat } from "@calcom/features/chat/lib/generateChannelNam
 import { authedProcedure, router } from "../../trpc";
 
 const CUSTOM_SERVICE_COMMAND = "services";
-
-const getToken = (normalizedId: string) =>
-  sign({ user_id: normalizedId }, process.env.CHAT_TOKEN_SECRET || "");
 
 const getChatClient = (() => {
   let chatClient: StreamChat<DefaultGenerics> | null = null;
@@ -22,7 +18,10 @@ const getChatClient = (() => {
 
     chatClient = StreamChat.getInstance(
       process.env.NEXT_PUBLIC_CHAT_API_KEY || "",
-      process.env.CHAT_SECRET || ""
+      process.env.CHAT_SECRET || "",
+      {
+        allowServerSideConnect: true,
+      }
     );
 
     try {
@@ -51,6 +50,7 @@ const getChatClient = (() => {
           typing_events: true,
           quotes: true,
           replies: true,
+          url_enrichment: true,
         });
       }
 
@@ -65,29 +65,28 @@ const getChatClient = (() => {
 
 export const chatRouter = router({
   connectOtherParty: authedProcedure
-    .input(z.object({ otherPartyId: z.string() }))
+    .input(z.object({ otherPartyId: z.string(), name: z.string().optional() }))
     .query(async ({ input }) => {
       const normalizedId = normalizeIdForChat(input.otherPartyId);
       const chatClient = await getChatClient();
-      const queryResponse = await chatClient.queryUsers({ id: normalizedId });
 
-      if (queryResponse.users.length > 0) {
+      try {
+        await chatClient.upsertUser({
+          id: normalizedId,
+          name: input.name ?? undefined,
+        });
+
         return true;
+      } catch (err) {
+        return false;
       }
-
-      const token = getToken(normalizedId);
-      const connectionResponse = await chatClient.connectUser({ id: normalizedId }, token);
-
-      await chatClient.disconnectUser();
-
-      return Boolean(connectionResponse?.connection_id);
     }),
   unreadCounts: authedProcedure.query(async ({ ctx }) => {
     const userChatId = ctx.user.userType === UserType.COACH ? ctx.user.id.toString() : ctx.user.email;
     const normalizedId = normalizeIdForChat(userChatId);
 
-    const token = getToken(normalizedId);
     const chatClient = await getChatClient();
+    const token = chatClient.createToken(normalizedId);
     const connection = await chatClient.connectUser({ id: normalizedId }, token);
 
     if (!connection || !connection.me) {
@@ -123,12 +122,33 @@ export const chatRouter = router({
       unreadChannels,
     };
   }),
-  getCredentials: authedProcedure.input(z.object({ userChatId: z.string() })).query(({ input }) => {
+  getCredentials: authedProcedure.input(z.object({ userChatId: z.string() })).query(async ({ input }) => {
     const { userChatId } = input;
-    const token = getToken(userChatId);
+    const chatClient = await getChatClient();
 
     return {
-      token,
+      token: chatClient.createToken(userChatId),
     };
   }),
+  getNameIfExists: authedProcedure
+    .input(
+      z.object({
+        id: z.number().optional(),
+        email: z.string().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { prisma } = ctx;
+
+      const user = await prisma.user.findFirst({
+        where: {
+          OR: [{ id: input.id }, { email: input.email }],
+        },
+        select: {
+          name: true,
+        },
+      });
+
+      return user?.name ?? undefined;
+    }),
 });

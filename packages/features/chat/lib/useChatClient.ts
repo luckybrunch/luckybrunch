@@ -7,7 +7,7 @@ type ClientParams = {
   apiKey: string;
 };
 
-export const useClient = ({ user, token, apiKey }: ClientParams) => {
+export const useChatClient = ({ user, token, apiKey }: ClientParams) => {
   const [chatClient, setChatClient] = useState<StreamChat<DefaultGenerics> | null>(null);
 
   useEffect(() => {
