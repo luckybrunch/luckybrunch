@@ -126,7 +126,7 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
                           : `${WEBAPP_URL}/getting-started`,
                       })
                     }>
-                    {t("login_instead")}
+                    {t("login")}
                   </Button>
                 </div>
               </form>
