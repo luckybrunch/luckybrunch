@@ -1720,5 +1720,8 @@
   "lb_price_range_subtitle_1": "Available budget for services you'll recieve",
   "lb_setup_availability_title": "Set up your prefered times for meetings",
   "lb_setup_availability_subtitle_1": "Make your available times known to clients who want to book an appointment",
-  "lb_password_hint": "At least 7 characters"
+  "lb_password_hint": "At least 7 characters",
+  "lb_client_list_empty_title": "No clients were found",
+  "lb_client_list_empty_description": "Currently, there are no clients that booked a meeting with you. Make sure you have a published profile, and make your profile stand out to get clients.",
+  "lb_client_list_empty_action": "Go to dashboard"
 }
