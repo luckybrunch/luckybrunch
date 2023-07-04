@@ -1721,6 +1721,9 @@
   "lb_setup_availability_title": "Set up your prefered times for meetings",
   "lb_setup_availability_subtitle_1": "Make your available times known to clients who want to book an appointment",
   "lb_password_hint": "At least 7 characters",
+  "lb_certificate_upload_error_certificate_not_selected": "Certificate isn't selected or an error occurred while uploading",
+  "lb_certificate_upload_error_max_file_size_exceeded": "Provided certificate is exceeding the maximum allowed limit (5 MB)",
+  "lb_certificate_upload_error_unknown_error": "An unexpected error occurred!",
   "lb_client_list_empty_title": "No clients were found",
   "lb_client_list_empty_description": "Currently, there are no clients that booked a meeting with you. Make sure you have a published profile, and make your profile stand out to get clients.",
   "lb_client_list_empty_action": "Go to dashboard"

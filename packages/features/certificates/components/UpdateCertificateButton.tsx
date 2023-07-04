@@ -85,12 +85,24 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
       formData.append(key, value);
     });
 
-    const upload = await fetch(url, {
-      method: "POST",
-      body: formData,
-    });
+    try {
+      const upload = await fetch(url, {
+        method: "POST",
+        body: formData,
+      });
 
-    return upload.ok;
+      return upload.ok;
+    } catch (err) {
+      let errorMessage = "";
+      // This error is thrown when S3 conditions are not met for the signed url
+      if (err instanceof TypeError) {
+        errorMessage = t("lb_certificate_upload_error_max_file_size_exceeded");
+      } else {
+        errorMessage = t("lb_certificate_upload_error_unknown_error");
+      }
+
+      throw new Error(errorMessage);
+    }
   };
 
   const mutation = trpc.viewer.profile.updateCertificate.useMutation({
@@ -145,11 +157,8 @@ export function UpdateCertificateButton({ certificate }: { certificate?: Cert })
     if (!e.currentTarget.files?.length) {
       return;
     }
-    if (file) {
-      setFile([...file, e.currentTarget.files[0]]);
-    } else {
-      setFile([e.currentTarget.files[0]]);
-    }
+
+    setFile([e.currentTarget.files[0]]);
   };
 
   function getRandomInt(max: number) {

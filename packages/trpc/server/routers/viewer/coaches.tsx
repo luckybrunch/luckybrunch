@@ -127,7 +127,7 @@ export const coachesRouter = router({
     const s3Region = process.env.S3_REGION || "";
     const s3Key = process.env.S3_KEY || "";
     const s3Secret = process.env.S3_SECRET || "";
-    const maxBytes = 1048576 /* 1MB */ * 2;
+    const maxBytes = 1048576 /* 1MB */ * 5;
 
     const key = `c/${uuidv4()}`;
     const fileUrl = `https://${s3Bucket}.${s3Endpoint}/${key}`;
