@@ -6,8 +6,7 @@ import { useCoachFilterQuery } from "@calcom/features/coaches/lib/useCoachFilter
 import Shell from "@calcom/features/shell/Shell";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { trpc } from "@calcom/trpc/react";
-import { EmptyScreen, List, Button, ListItem, SkeletonLoader, showToast } from "@calcom/ui";
-import { FiLink } from "@calcom/ui/components/icon";
+import { EmptyScreen, List, ListItem, SkeletonLoader, showToast } from "@calcom/ui";
 
 import { withQuery } from "@lib/QueryCell";
 
@@ -85,13 +84,8 @@ export default function Search() {
           return (
             <EmptyScreen
               Icon={DesktopComputerIcon}
-              headline="Checkback later to meet with coaches"
-              description="Currently there are no coaches registered"
-              buttonRaw={
-                <Button color="primary" href="/" StartIcon={FiLink}>
-                  {t("lb_go_to_homepage")}
-                </Button>
-              }
+              headline={t("lb_search_coach_empty_title")}
+              description={t("lb_search_coach_empty_subtitle")}
             />
           );
         }}
