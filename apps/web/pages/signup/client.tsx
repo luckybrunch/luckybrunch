@@ -16,7 +16,8 @@ import { ssrInit } from "../../server/lib/ssr";
 
 type FormValues = {
   username: string;
-  name: string;
+  firstName: string;
+  lastName: string;
   email: string;
   password: string;
   passwordcheck: string;
@@ -85,7 +86,8 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
               <form onSubmit={methods.handleSubmit(signUp)} className="space-y-6 bg-white">
                 {errors.apiError && <Alert severity="error" message={errors.apiError?.message} />}
                 <div className="space-y-2">
-                  <TextField {...register("name")} required />
+                  <TextField {...register("firstName")} required label={t("lb_first_name")} />
+                  <TextField {...register("lastName")} required label={t("lb_last_name")} />
                   <EmailField
                     {...register("email")}
                     disabled={prepopulateFormValues?.email}

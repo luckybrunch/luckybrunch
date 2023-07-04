@@ -27,7 +27,7 @@ const UserProfile = (props: IUserProfileProps) => {
   const { t } = useLocale();
   const avatarRef = useRef<HTMLInputElement>(null!);
   const { setValue, handleSubmit, getValues } = useForm<FormData>({
-    defaultValues: { bio: user.bio || "" },
+    defaultValues: { bio: user?.bio || "" },
   });
 
   const { data: eventTypes } = trpc.viewer.eventTypes.list.useQuery();
@@ -190,7 +190,7 @@ const UserProfile = (props: IUserProfileProps) => {
       <fieldset className="mt-8">
         <Label className="mb-2 block text-sm font-medium text-gray-700">{t("about")}</Label>
         <Editor
-          getText={() => md.render(getValues("bio") || user.bio || "")}
+          getText={() => md.render(getValues("bio") || user?.bio || "")}
           setText={(value: string) => setValue("bio", turndown(value))}
           excludedToolbarItems={["blockType"]}
         />
