@@ -62,7 +62,7 @@ function UnpublishedDashboard() {
       },
       {
         title: t("lb_add_your_services"),
-        description: t("lb_certificate_empty_state_desc"),
+        description: t("lb_add_your_services_description"),
         icon: () => <FiClock />,
         href: "/profile/services",
         isDone: data.completedProfileServices,
@@ -121,7 +121,7 @@ function UnpublishedDashboard() {
       {user?.coachProfileDraft?.reviewStatus === ReviewStatus.DRAFT &&
       !user?.coachProfileDraft?.rejectionReason ? (
         <TrafficLightBanner
-          color="red"
+          color="yellow"
           title={t("lb_banner_unpublished_title")}
           text={t("lb_banner_unpublished_text")}
           icon={<HiExclamationCircle className="text-lg" />}
