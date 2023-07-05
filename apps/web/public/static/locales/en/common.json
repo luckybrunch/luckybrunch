@@ -1728,5 +1728,11 @@
   "lb_certificate_upload_error_unknown_error": "An unexpected error occurred!",
   "lb_client_list_empty_title": "No clients were found",
   "lb_client_list_empty_description": "Currently, there are no clients that booked a meeting with you. Make sure you have a published profile, and make your profile stand out to get clients.",
-  "lb_client_list_empty_action": "Go to dashboard"
+  "lb_client_list_empty_action": "Go to Dashboard",
+  "lb_my_coaches": "My coaches",
+  "lb_coaches": "Coaches",
+  "lb_chat_with_your_coaches": "Chat with your coaches",
+  "lb_coach_list_empty_title": "No coaches were found",
+  "lb_coach_list_empty_description": "Currently, you haven't booked any meetings with a coach, when you do, your coaches will be listed here.",
+  "lb_coach_list_empty_action": "Search for a Coach"
 }
