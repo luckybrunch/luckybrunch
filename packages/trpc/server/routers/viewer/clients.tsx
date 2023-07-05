@@ -1,60 +1,74 @@
 import { Attendee } from "@prisma/client";
 import { UserType } from "@prisma/client";
+import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
 
+import { TRPCError } from "@trpc/server";
+
 import { authedCoachProcedure, authedProcedure, router } from "../../trpc";
+
+const getClientListForCoach = async (prisma: PrismaClient, coachId: number) => {
+  const bookings = await prisma.booking.findMany({
+    where: {
+      userId: coachId,
+    },
+    include: {
+      attendees: {
+        select: {
+          name: true,
+          email: true,
+        },
+      },
+    },
+  });
+
+  const clients: Pick<Attendee, "name" | "email">[] = [];
+
+  // Prevent duplicate records of attendees
+  bookings
+    .map((booking) => booking.attendees)
+    .flat()
+    .forEach((attendee) => {
+      // If the attendee is present in the unique client list, skip them
+      if (clients.findIndex((client) => client.email === attendee.email) !== -1) {
+        return;
+      }
+
+      clients.push(attendee);
+    });
+
+  return clients;
+};
 
 export const clientsRouter = router({
   myClients: authedProcedure.query(async ({ ctx }) => {
     const { prisma, user } = ctx;
 
-    const bookings = await prisma.booking.findMany({
-      where: {
-        userId: user.id,
-      },
-      include: {
-        attendees: {
-          select: {
-            name: true,
-            email: true,
-          },
-        },
-      },
-    });
-
-    const clients: Pick<Attendee, "name" | "email">[] = [];
-
-    // Prevent duplicate records of attendees
-    bookings
-      .map((booking) => booking.attendees)
-      .flat()
-      .forEach((attendee) => {
-        // If the attendee is present in the unique client list, skip them
-        if (clients.findIndex((client) => client.email === attendee.email) !== -1) {
-          return;
-        }
-
-        clients.push(attendee);
-      });
-
-    return clients;
+    return await getClientListForCoach(prisma, user.id);
   }),
-  clientDetails: authedProcedure
+  clientDetails: authedCoachProcedure
     .input(
       z.object({
         email: z.string(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { prisma } = ctx;
+      const { prisma, user } = ctx;
       const { email } = input;
+
+      const clientList = await getClientListForCoach(prisma, user.id);
+
+      if (clientList.findIndex((client) => client.email === email) === -1) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Details for the specified client are not found",
+        });
+      }
 
       let clientDetails;
 
-      clientDetails = await prisma.user.findFirst({
-        where: {
-          email,
-        },
+      clientDetails = await prisma.user.findUnique({
+        where: { email },
       });
 
       // Queried email may not be a user in the db yet i.e the user didn't complete the signup process

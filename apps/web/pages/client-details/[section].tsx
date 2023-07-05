@@ -39,9 +39,11 @@ function SectionContent({
   user,
   section,
   queryStatus,
+  errorMessage,
 }: {
-  user?: Attendee | User | null;
   queryStatus: "success" | "error" | "loading";
+  user?: Attendee | User | null;
+  errorMessage?: string;
 } & ClientDetailsProps) {
   const { data: me } = useMeQuery();
   const { data: chatCredentials } = trpc.viewer.chat.getCredentials.useQuery(
@@ -69,7 +71,7 @@ function SectionContent({
       <EmptyScreen
         Icon={FiDelete}
         headline="An error occurred"
-        description="An error occurred while listing client information"
+        description={errorMessage ?? "An error occurred while listing client information"}
       />
     </div>
   );
@@ -100,7 +102,12 @@ export default function ClientDetails(props: ClientDetailsProps) {
       title={user?.name ?? "N/A"}
       heading={user?.name ?? "N/A"}
       email={email}>
-      <SectionContent user={user} queryStatus={query.status} section={section as ValidSectionEnum} />
+      <SectionContent
+        user={user}
+        errorMessage={query.error?.message}
+        queryStatus={query.status}
+        section={section as ValidSectionEnum}
+      />
     </ClientLayout>
   );
 }
