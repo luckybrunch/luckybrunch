@@ -38,6 +38,7 @@ export const coachesRouter = router({
 
       const userSelect = Prisma.validator<Prisma.UserSelect>()({
         id: true,
+        username: true,
         avatar: true,
         coachProfile: {
           select: {

@@ -1735,5 +1735,7 @@
   "lb_chat_with_your_coaches": "Chat with your coaches",
   "lb_coach_list_empty_title": "No coaches were found",
   "lb_coach_list_empty_description": "Currently, you haven't booked any meetings with a coach, when you do, your coaches will be listed here.",
-  "lb_coach_list_empty_action": "Search for a Coach"
+  "lb_coach_list_empty_action": "Search for a Coach",
+  "lb_coach_view_profile": "View Profile",
+  "LB_ADD_NEW_STRINGS_ABOVE_THIS_LINE_TO_PREVENT_MERGE_CONFLICTS": "↑↑↑↑↑↑↑↑↑↑↑↑↑ Add your new strings above here ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
 }
