@@ -1708,6 +1708,15 @@
   "lb_price_range_value": "Price range: {{price}}",
   "lb_free": "Free",
   "lb_you_have_unread_messages": "You have unread messages",
+  "lb_choose_appointment": "Choose one of the offered appointments and a suitable time",
+  "lb_on_lb_since": "On LuckyBrunch since {{date}}",
+  "lb_meet_coach": "You can meet this Coach here",
+  "lb_review_base": "Based on {{totalReviews}} reviews",
+  "lb_review_data": "Review data",
+  "lb_out_of_stars": "{{number}} out of 5 stars",
+  "lb_star_reviews": "star reviews",
+  "lb_share_thoughts_title": "Share your thoughts",
+  "lb_share_thoughts_text": "If you’ve used this product, share your thoughts with other customers",
   "lb_user_goals_title": "What are you interested in?",
   "lb_user_goals_subtitle_1": "What would you like to achieve?",
   "lb_meeting_options_title": "Where would you like to meet with your coach",
@@ -1737,5 +1746,7 @@
   "lb_coach_list_empty_description": "Currently, you haven't booked any meetings with a coach, when you do, your coaches will be listed here.",
   "lb_coach_list_empty_action": "Search for a Coach",
   "lb_coach_view_profile": "View Profile",
+  "lb_verified_coach": "Verified Coach",
+  "lb_view_more": "View more",
   "LB_ADD_NEW_STRINGS_ABOVE_THIS_LINE_TO_PREVENT_MERGE_CONFLICTS": "↑↑↑↑↑↑↑↑↑↑↑↑↑ Add your new strings above here ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
 }

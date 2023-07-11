@@ -67,7 +67,7 @@ export default function Search() {
                       <div className="flex border-t border-gray-200">
                         <div className="flex w-0 flex-1">
                           <a
-                            href={`/${username}`}
+                            href={`/coach/${username}`}
                             className="relative -mr-px inline-flex w-0 flex-1 items-center justify-center gap-x-3 rounded-bl-lg border border-transparent py-4 text-sm font-semibold text-gray-900">
                             <FiEye className="h-4 w-4 text-gray-400" aria-hidden="true" />
                             {t("lb_coach_view_profile")}

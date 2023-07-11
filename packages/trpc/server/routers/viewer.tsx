@@ -53,7 +53,6 @@ import { profileRouter } from "./viewer/profile";
 import { slotsRouter } from "./viewer/slots";
 import { ssoRouter } from "./viewer/sso";
 import { viewerTeamsRouter } from "./viewer/teams";
-import { userProfileRouter } from "./viewer/userProfiles";
 import { webhookRouter } from "./viewer/webhook";
 import { workflowsRouter } from "./viewer/workflows";
 
@@ -1380,7 +1379,6 @@ export const viewerRouter = mergeRouters(
     appsRouter,
     // LuckyBrunch
     profile: profileRouter,
-    userProfile: userProfileRouter,
     clients: clientsRouter,
     coaches: coachesRouter,
     chat: chatRouter,

@@ -122,6 +122,55 @@ export const coachesRouter = router({
         list: publishedCoaches,
       };
     }),
+
+  publicCoachProfile: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const { prisma } = ctx;
+
+    const userSelect = Prisma.validator<Prisma.UserSelect>()({
+      id: true,
+      username: true,
+      emailVerified: true,
+      avatar: true,
+      coachProfile: {
+        select: {
+          id: true,
+          firstName: true,
+          lastName: true,
+          bio: true,
+          addressLine1: true,
+          zip: true,
+          city: true,
+          appointmentTypes: true,
+          specializations: {
+            select: {
+              id: true,
+              icon: true,
+              label: true,
+            },
+          },
+          certificates: {
+            select: {
+              id: true,
+              name: true,
+              fileUrl: true,
+            },
+          },
+        },
+      },
+    });
+
+    const user = await prisma.user.findUnique({
+      where: { username: input },
+      select: userSelect,
+    });
+
+    if (!user || !user.coachProfile) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Coach not found" });
+    }
+
+    return user;
+  }),
+
   getSignedUrl: authedCoachProcedure.query(async () => {
     const s3Bucket = process.env.S3_BUCKET || "";
     const s3Endpoint = process.env.S3_ENDPOINT || "";
