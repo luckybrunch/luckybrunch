@@ -20,7 +20,7 @@ export const UserGoals = (props: IOnboardingComponentProps) => {
 
   const { t } = useLocale();
   const { handleSubmit } = useForm();
-  const { query, push } = useRouter();
+  const { query } = useRouter();
 
   const { options, toggleSelection } = useCheckboxOptions(
     (() => {
@@ -38,7 +38,6 @@ export const UserGoals = (props: IOnboardingComponentProps) => {
 
   const onSubmit = handleSubmit(async () => {
     const params = { goals: options.filter((o) => o._isSelected).map((o) => o.value) };
-    await push({ query: { ...query, ...params } });
     nextStep(params);
   });
 

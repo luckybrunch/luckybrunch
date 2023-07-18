@@ -285,13 +285,15 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
     const { next } = stepLinks[currentStep.url];
     const allParams = { ...previousParams, ...newParams };
 
+    await router.push({ query: { ...router.query, ...newParams } }, undefined, { shallow: true });
+
     let nextStep: OnboardingUrl | null = null;
 
     if (typeof next === "function") {
-      nextStep = next({ ...allParams } ?? {});
+      nextStep = next(allParams);
     }
 
-    // Last step if null
+    // Last step if both of them null
     if (next == null && nextStep == null) {
       if (user) {
         mutation.mutate({
@@ -308,7 +310,7 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
 
     router.push({
       pathname: `/getting-started/${nextStep ?? next}`,
-      query: { ...allParams },
+      query: allParams,
     });
   };
 

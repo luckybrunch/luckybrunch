@@ -11,7 +11,7 @@ import { StepCheckbox, useCheckboxOptions } from "../components/StepCheckbox";
 
 export const MeetingOptions = (props: IOnboardingComponentProps) => {
   const { nextStep } = props;
-  const { query, push } = useRouter();
+  const { query } = useRouter();
 
   const { t } = useLocale();
   const { options, toggleSelection } = useCheckboxOptions(
@@ -28,7 +28,6 @@ export const MeetingOptions = (props: IOnboardingComponentProps) => {
 
   const onSubmit = handleSubmit(async () => {
     const params = { meetingOptions: options.filter((o) => o._isSelected).map((o) => o.value) };
-    await push({ query: { ...query, ...params } });
     nextStep(params);
   });
 

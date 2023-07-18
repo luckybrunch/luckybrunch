@@ -13,7 +13,7 @@ type FormData = {
 export const PriceRange = (props: IOnboardingComponentProps) => {
   const { nextStep } = props;
 
-  const { query, push } = useRouter();
+  const { query } = useRouter();
 
   const { t } = useLocale();
   const formMethods = useForm<FormData>({
@@ -21,8 +21,6 @@ export const PriceRange = (props: IOnboardingComponentProps) => {
   });
 
   const onSubmit = async () => {
-    const maxPrice = formMethods.getValues("priceRange");
-    await push({ query: { ...query, maxPrice } });
     nextStep({ maxPrice: formMethods.getValues("priceRange") });
   };
 

@@ -14,16 +14,14 @@ export const MeetingRange = (props: IOnboardingComponentProps) => {
   const { nextStep } = props;
   const { t } = useLocale();
 
-  const { query, push } = useRouter();
+  const { query } = useRouter();
 
   const formMethods = useForm<FormData>({
     defaultValues: { distance: (query.maxDistance as string) ?? "35" },
   });
 
   const onSubmit = async () => {
-    const maxDistance = formMethods.getValues("distance");
-    await push({ query: { ...query, maxDistance } });
-    nextStep({ maxDistance });
+    nextStep({ maxDistance: formMethods.getValues("distance") });
   };
 
   return (
