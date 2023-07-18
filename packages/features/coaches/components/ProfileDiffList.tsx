@@ -33,12 +33,12 @@ export const ProfileDiffList = ({ diffList }: { diffList: FieldDiffMetada[] }) =
     <div className="my-2">
       <Divider className="mt-10" />
 
-      <div className="mb-8 mt-6 flex items-center justify-between gap-8 text-sm">
+      <div className="mb-8 mt-6 flex flex-wrap items-center justify-between gap-8 text-sm">
         <div>
           <p className="font-semibold">{t("lb_profile_changes")}</p>
           <p className="text-gray-500">{`${t("lb_recent_profile_changes")}`}</p>
         </div>
-        <div>
+        <div className="flex w-full xl:w-[22%] xl:justify-end">
           <Button
             disabled={user?.coachProfileDraft?.reviewStatus !== ReviewStatus.DRAFT}
             loading={requestReviewMutation.isLoading}
