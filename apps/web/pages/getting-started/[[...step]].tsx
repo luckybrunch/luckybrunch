@@ -165,10 +165,7 @@ const availableSteps: Step[] = [
     url: "lb_specializations",
     headers: {
       title: { translationKey: "lb_specialization_onboarding" },
-      subtitle: [
-        { translationKey: "lb_set_specialization_onboarding_subtitle_1" },
-        { translationKey: "lb_set_specialization_onboarding_subtitle_2" },
-      ],
+      subtitle: [{ translationKey: "lb_set_specialization_onboarding_subtitle_1" }],
     },
   },
   {
