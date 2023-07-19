@@ -6,14 +6,14 @@ import { useForm } from "react-hook-form";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import turndown from "@calcom/lib/turndownService";
 import { trpc } from "@calcom/trpc/react";
-import { Button, Editor, ImageUploader, Label } from "@calcom/ui";
+import { Button, Form, Editor, ImageUploader, Label } from "@calcom/ui";
 import { Avatar } from "@calcom/ui";
 
 import type { IOnboardingComponentProps } from "../../../pages/getting-started/[[...step]]";
 
 const md = new MarkdownIt("default", { html: true, breaks: true });
 
-type FormData = {
+type FormValues = {
   bio: string;
   firstName: string;
   lastName: string;
@@ -57,21 +57,22 @@ const Lb_UserProfile = (props: IOnboardingComponentProps) => {
   const {
     setValue,
     register,
-    handleSubmit,
     getValues,
-    formState: { errors },
-  } = useForm<FormData>({
+    formState: { errors, ...formStateRest },
+    ...form
+  } = useForm<FormValues>({
     defaultValues: { bio: user?.bio || "", firstName: user?.firstName || "", lastName: user?.lastName || "" },
   });
 
-  const onSubmit = handleSubmit((data: { bio: string; firstName: string; lastName: string }) => {
+  const onSubmit = (data: { bio: string; firstName: string; lastName: string }) => {
+    form.clearErrors();
     const { bio, firstName, lastName } = data;
     mutation.mutate({
       firstName,
       lastName,
       bio,
     });
-  });
+  };
 
   async function updateProfileHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -135,7 +136,9 @@ const Lb_UserProfile = (props: IOnboardingComponentProps) => {
   ];
 
   return (
-    <form onSubmit={onSubmit}>
+    <Form
+      form={{ formState: { ...formStateRest, errors }, getValues, setValue, register, ...form }}
+      handleSubmit={onSubmit}>
       {/* image upload */}
       <div className="flex flex-row items-center justify-start rtl:justify-end">
         {user && (
@@ -233,7 +236,7 @@ const Lb_UserProfile = (props: IOnboardingComponentProps) => {
         {t("next_step_text")}
         <ArrowRightIcon className="ml-2 h-4 w-4 self-center" aria-hidden="true" />
       </Button>
-    </form>
+    </Form>
   );
 };
 

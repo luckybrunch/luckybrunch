@@ -4,7 +4,7 @@ import { IOnboardingComponentProps } from "pages/getting-started/[[...step]]";
 import { useForm } from "react-hook-form";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { Button } from "@calcom/ui";
+import { Button, Form } from "@calcom/ui";
 
 import { StepCheckbox, useCheckboxOptions } from "../components/StepCheckbox";
 
@@ -19,6 +19,7 @@ export const UserGoals = (props: IOnboardingComponentProps) => {
   const { nextStep } = props;
 
   const { t } = useLocale();
+
   const { handleSubmit } = useForm();
   const { query } = useRouter();
 
@@ -36,13 +37,13 @@ export const UserGoals = (props: IOnboardingComponentProps) => {
     })()
   );
 
-  const onSubmit = handleSubmit(async () => {
+  const onSubmit = async () => {
     const params = { goals: options.filter((o) => o._isSelected).map((o) => o.value) };
     nextStep(params);
-  });
+  };
 
   return (
-    <form onSubmit={onSubmit}>
+    <Form form={form} handleSubmit={onSubmit}>
       <div className="flex flex-wrap justify-center">
         {options.map((userGoal, index) => {
           return (
@@ -59,6 +60,6 @@ export const UserGoals = (props: IOnboardingComponentProps) => {
         {t("next_step_text")}
         <ArrowRightIcon className="ml-2 h-4 w-4 self-center" aria-hidden="true" />
       </Button>
-    </form>
+    </Form>
   );
 };

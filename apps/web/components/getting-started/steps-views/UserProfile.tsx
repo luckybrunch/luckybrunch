@@ -8,7 +8,7 @@ import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { telemetryEventTypes, useTelemetry } from "@calcom/lib/telemetry";
 import turndown from "@calcom/lib/turndownService";
 import { trpc } from "@calcom/trpc/react";
-import { Button, Editor, ImageUploader, Label, showToast } from "@calcom/ui";
+import { Button, Form, Editor, ImageUploader, Label, showToast } from "@calcom/ui";
 import { Avatar } from "@calcom/ui";
 
 import type { IOnboardingPageProps } from "../../../pages/getting-started/[[...step]]";
@@ -26,7 +26,7 @@ const UserProfile = (props: IUserProfileProps) => {
   const { user } = props;
   const { t } = useLocale();
   const avatarRef = useRef<HTMLInputElement>(null!);
-  const { setValue, handleSubmit, getValues } = useForm<FormData>({
+  const form = useForm<FormData>({
     defaultValues: { bio: user?.bio || "" },
   });
 
@@ -73,7 +73,7 @@ const UserProfile = (props: IUserProfileProps) => {
     },
   });
 
-  const onSubmit = handleSubmit((data: { bio: string }) => {
+  const onSubmit = (data: { bio: string }) => {
     const { bio } = data;
 
     telemetry.event(telemetryEventTypes.onboardingFinished);
@@ -83,7 +83,7 @@ const UserProfile = (props: IUserProfileProps) => {
       completedOnboarding: true,
     });
     mutation2.mutate({ completedProfileServices: true });
-  });
+  };
 
   async function updateProfileHandler(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -147,7 +147,7 @@ const UserProfile = (props: IUserProfileProps) => {
   ];
 
   return (
-    <form onSubmit={onSubmit}>
+    <Form form={form} handleSubmit={onSubmit}>
       <div className="flex flex-row items-center justify-start rtl:justify-end">
         {user && (
           <Avatar
@@ -190,8 +190,8 @@ const UserProfile = (props: IUserProfileProps) => {
       <fieldset className="mt-8">
         <Label className="mb-2 block text-sm font-medium text-gray-700">{t("about")}</Label>
         <Editor
-          getText={() => md.render(getValues("bio") || user?.bio || "")}
-          setText={(value: string) => setValue("bio", turndown(value))}
+          getText={() => md.render(form.getValues("bio") || user?.bio || "")}
+          setText={(value: string) => form.setValue("bio", turndown(value))}
           excludedToolbarItems={["blockType"]}
         />
         <p className="mt-2 font-sans text-sm font-normal text-gray-600 dark:text-white">
@@ -204,7 +204,7 @@ const UserProfile = (props: IUserProfileProps) => {
         {t("finish")}
         <ArrowRightIcon className="ml-2 h-4 w-4 self-center" aria-hidden="true" />
       </Button>
-    </form>
+    </Form>
   );
 };
 

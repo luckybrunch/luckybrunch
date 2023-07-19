@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 
 import { AppointmentType } from "@calcom/features/coaches/types";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { Button } from "@calcom/ui";
+import { Button, Form } from "@calcom/ui";
 
 import { StepCheckbox, useCheckboxOptions } from "../components/StepCheckbox";
 
@@ -24,15 +24,15 @@ export const MeetingOptions = (props: IOnboardingComponentProps) => {
     })()
   );
 
-  const { handleSubmit } = useForm();
+  const form = useForm();
 
-  const onSubmit = handleSubmit(async () => {
+  const onSubmit = async () => {
     const params = { meetingOptions: options.filter((o) => o._isSelected).map((o) => o.value) };
     nextStep(params);
-  });
+  };
 
   return (
-    <form onSubmit={onSubmit}>
+    <Form form={form} handleSubmit={onSubmit}>
       <div className="flex flex-wrap justify-center">
         {options.map((option, index) => {
           return (
@@ -49,6 +49,6 @@ export const MeetingOptions = (props: IOnboardingComponentProps) => {
         {t("next_step_text")}
         <ArrowRightIcon className="ml-2 h-4 w-4 self-center" aria-hidden="true" />
       </Button>
-    </form>
+    </Form>
   );
 };

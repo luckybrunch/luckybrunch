@@ -6,7 +6,7 @@ import dayjs from "@calcom/dayjs";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { telemetryEventTypes, useTelemetry } from "@calcom/lib/telemetry";
 import { trpc } from "@calcom/trpc/react";
-import { Button, TimezoneSelect } from "@calcom/ui";
+import { Button, Form, TimezoneSelect } from "@calcom/ui";
 
 import { UsernameAvailabilityField } from "@components/ui/UsernameAvailability";
 
@@ -17,6 +17,11 @@ interface IUserSettingsProps {
   nextStep: () => void;
 }
 
+type FormValues = {
+  firstName: string;
+  lastName: string;
+};
+
 const UserSettings = (props: IUserSettingsProps) => {
   const { user, nextStep } = props;
   const { t } = useLocale();
@@ -26,9 +31,9 @@ const UserSettings = (props: IUserSettingsProps) => {
 
   const {
     register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm({
+    formState: { errors, ...formStateRest },
+    ...form
+  } = useForm<FormValues>({
     defaultValues: {
       firstName: user?.firstName || "",
       lastName: user?.lastName || "",
@@ -53,16 +58,17 @@ const UserSettings = (props: IUserSettingsProps) => {
     onSuccess: onSuccess,
   });
 
-  const onSubmit = handleSubmit((data) => {
+  const onSubmit = (data: FormValues) => {
+    form.clearErrors();
     mutation.mutate({
       firstName: data.firstName,
       lastName: data.lastName,
       timeZone: selectedTimeZone,
     });
-  });
+  };
 
   return (
-    <form onSubmit={onSubmit}>
+    <Form form={{ register, formState: { errors, ...formStateRest }, ...form }} handleSubmit={onSubmit}>
       <div className="space-y-6">
         {/* Username textfield */}
         <UsernameAvailabilityField user={user} />
@@ -132,7 +138,7 @@ const UserSettings = (props: IUserSettingsProps) => {
         {t("next_step_text")}
         <ArrowRightIcon className="ml-2 h-4 w-4 self-center" aria-hidden="true" />
       </Button>
-    </form>
+    </Form>
   );
 };
 

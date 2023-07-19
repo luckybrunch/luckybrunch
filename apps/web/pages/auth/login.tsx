@@ -15,7 +15,7 @@ import { getSafeRedirectUrl } from "@calcom/lib/getSafeRedirectUrl";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { collectPageParameters, telemetryEventTypes, useTelemetry } from "@calcom/lib/telemetry";
 import prisma from "@calcom/prisma";
-import { Alert, Button, EmailField, PasswordField } from "@calcom/ui";
+import { Alert, Form, Button, EmailField, PasswordField } from "@calcom/ui";
 import { FiArrowLeft } from "@calcom/ui/components/icon";
 
 import { inferSSRProps } from "@lib/types/inferSSRProps";
@@ -125,7 +125,7 @@ export default function Login({
             : null
         }>
         <FormProvider {...methods}>
-          <form onSubmit={methods.handleSubmit(onSubmit)} data-testid="login-form">
+          <Form form={methods} handleSubmit={onSubmit} data-testid="login-form">
             <div>
               <input defaultValue={csrfToken || undefined} type="hidden" hidden {...register("csrfToken")} />
             </div>
@@ -169,7 +169,7 @@ export default function Login({
                 {twoFactorRequired ? t("submit") : t("sign_in")}
               </Button>
             </div>
-          </form>
+          </Form>
           {!twoFactorRequired && (
             <>
               {(isGoogleLoginEnabled || isSAMLLoginEnabled) && <hr className="my-8" />}

@@ -8,7 +8,7 @@ import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { collectPageParameters, telemetryEventTypes, useTelemetry } from "@calcom/lib/telemetry";
 import prisma from "@calcom/prisma";
 import { inferSSRProps } from "@calcom/types/inferSSRProps";
-import { Alert, Button, EmailField, HeadSeo, PasswordField, TextField } from "@calcom/ui";
+import { Alert, Form, Button, EmailField, HeadSeo, PasswordField, TextField } from "@calcom/ui";
 
 import { asStringOrNull } from "../../lib/asStringOrNull";
 import { IS_GOOGLE_LOGIN_ENABLED } from "../../server/lib/constants";
@@ -45,6 +45,7 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
   };
 
   const signUp: SubmitHandler<FormValues> = async (data) => {
+    methods.clearErrors();
     await fetch("/api/auth/signup?is_client=true", {
       body: JSON.stringify({
         ...data,
@@ -83,7 +84,7 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
         <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
           <div className="mx-2 bg-white px-4 py-8 shadow sm:rounded-lg sm:px-10">
             <FormProvider {...methods}>
-              <form onSubmit={methods.handleSubmit(signUp)} className="space-y-6 bg-white">
+              <Form form={methods} handleSubmit={signUp} className="space-y-6 bg-white">
                 {errors.apiError && <Alert severity="error" message={errors.apiError?.message} />}
                 <div className="space-y-2">
                   <TextField {...register("firstName")} required label={t("lb_first_name")} />
@@ -126,7 +127,7 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
                     {t("login")}
                   </Button>
                 </div>
-              </form>
+              </Form>
             </FormProvider>
           </div>
         </div>
