@@ -44,7 +44,6 @@ export type FormValues = {
   eventName: string;
   slug: string;
   length: number;
-  price: number;
   description: string;
   disableGuests: boolean;
   requiresConfirmation: boolean;
@@ -330,7 +329,6 @@ const EventTypePage = (props: EventTypeSetupProps) => {
             seatsShowAttendees,
             metadata,
             customInputs,
-            price: Number(input.price) * 100,
           });
         }}>
         <div ref={animationParentRef} className="space-y-6">

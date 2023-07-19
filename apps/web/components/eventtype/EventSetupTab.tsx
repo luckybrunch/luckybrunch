@@ -284,14 +284,6 @@ export const EventSetupTab = (
           {...formMethods.register("description")}
         />
         <TextField
-          label={t("price")}
-          type="number"
-          placeholder={t("price")}
-          addOnLeading="€"
-          defaultValue={eventType.price ?? 0}
-          {...formMethods.register("price")}
-        />
-        <TextField
           required
           label={t("URL")}
           defaultValue={eventType.slug}
