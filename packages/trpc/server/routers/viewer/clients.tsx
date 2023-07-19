@@ -1,6 +1,7 @@
 import { Attendee } from "@prisma/client";
 import { UserType } from "@prisma/client";
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, BookingStatus } from "@prisma/client";
+import Stripe from "stripe";
 import { z } from "zod";
 
 import { TRPCError } from "@trpc/server";
@@ -188,4 +189,91 @@ export const clientsRouter = router({
 
     return bookings.map((booking) => booking.user).filter(Boolean);
   }),
+  generateStripeCheckoutSession: authedProcedure
+    .input(
+      z.object({
+        eventTypeId: z.number(),
+        bookingUid: z.string(),
+        bookerEmail: z.string(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { prisma } = ctx;
+
+      const stripe = new Stripe(process.env.STRIPE_PRIVATE_KEY ?? "", {
+        apiVersion: "2020-08-27",
+      });
+
+      const eventType = await prisma.eventType.findUnique({
+        where: {
+          id: input.eventTypeId,
+        },
+        select: {
+          title: true,
+          price: true,
+          currency: true,
+          slug: true,
+        },
+      });
+
+      if (!eventType) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Event type not found",
+        });
+      }
+
+      const URL = process.env.NEXT_PUBLIC_WEBAPP_URL;
+      let successUrl = `${URL}/booking/${input.bookingUid}?isSuccessBookingPage=true&eventTypeSlug=${eventType.slug}`;
+
+      if (input.bookerEmail) {
+        successUrl += `&email=${input.bookerEmail}`;
+      }
+
+      const session = await stripe.checkout.sessions.create({
+        line_items: [
+          {
+            quantity: 1,
+            price_data: {
+              currency: eventType.currency,
+              unit_amount: eventType.price,
+              product_data: {
+                name: eventType.title,
+              },
+            },
+          },
+        ],
+        mode: "payment",
+        success_url: successUrl,
+        cancel_url: `${URL}/bookings/upcoming`,
+      });
+
+      if (!session.url) {
+        throw new TRPCError({
+          message: "Failed to generate checkout url for Stripe with the given input",
+          code: "BAD_REQUEST",
+        });
+      }
+
+      return session.url;
+    }),
+  validatePayment: authedProcedure
+    .input(
+      z.object({
+        uid: z.string(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { prisma } = ctx;
+
+      await prisma.booking.update({
+        where: {
+          uid: input.uid,
+        },
+        data: {
+          paid: true,
+          status: BookingStatus.ACCEPTED,
+        },
+      });
+    }),
 });
