@@ -20,7 +20,7 @@ export const UserGoals = (props: IOnboardingComponentProps) => {
 
   const { t } = useLocale();
 
-  const { handleSubmit } = useForm();
+  const form = useForm();
   const { query } = useRouter();
 
   const { options, toggleSelection } = useCheckboxOptions(
