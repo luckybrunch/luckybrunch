@@ -9,6 +9,7 @@ const translationKeys = {
   firstName: "lb_first_name",
   lastName: "lb_last_name",
   bio: "lb_biography",
+  avatar: "avatar",
   companyName: "lb_company_name",
   addressLine1: "address",
   addressLine2: "address",
@@ -61,7 +62,9 @@ export function ProfileDiff(props: ProfileDiffProps) {
     <ListItem rounded={false} className="block flex-col border-0 md:border-0">
       <div className="flex items-center justify-between">
         <div className="flex max-w-[65%] flex-col p-1">
-          <h3 className="mb-1 text-sm font-medium text-neutral-900">{t(translationKeys[field])}</h3>
+          <h3 className="mb-1 text-sm font-medium capitalize text-neutral-900">
+            {t(translationKeys[field])}
+          </h3>
           <div>
             {isNew && <NewAddition newValue={newValue} />}
             {isDeleted && <Deletion oldValue={oldValue} />}

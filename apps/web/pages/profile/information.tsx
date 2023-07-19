@@ -102,7 +102,7 @@ const InformationPage = () => {
     );
 
   const defaultValues = {
-    avatar: avatar.avatar ?? "",
+    avatar: user.coachProfileDraft?.avatar ?? "",
     email: user.email ?? "",
     firstName: user.coachProfileDraft?.firstName ?? "",
     lastName: user.coachProfileDraft?.lastName ?? "",

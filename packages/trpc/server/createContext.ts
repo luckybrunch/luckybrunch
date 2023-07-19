@@ -32,6 +32,7 @@ async function getUserFromSession({
     firstName: true,
     lastName: true,
     bio: true,
+    avatar: true,
     companyName: true,
     addressLine1: true,
     addressLine2: true,

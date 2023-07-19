@@ -710,7 +710,14 @@ const loggedInViewerRouter = router({
         }
       }
       if (input.avatar) {
-        data.avatar = await resizeBase64Image(input.avatar);
+        const image = await resizeBase64Image(input.avatar);
+        data.avatar = image;
+
+        if (data.coachProfileDraft) {
+          data.coachProfileDraft.update = {
+            avatar: image,
+          };
+        }
       }
       const userToUpdate = await prisma.user.findUnique({
         where: {

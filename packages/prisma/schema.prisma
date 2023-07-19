@@ -735,6 +735,7 @@ model Coach {
   firstName        String
   lastName         String
   bio              String?
+  avatar           String?
   companyName      String?
   addressLine1     String?
   addressLine2     String?

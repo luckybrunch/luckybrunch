@@ -274,6 +274,7 @@ export const coachesRouter = router({
       "firstName",
       "lastName",
       "bio",
+      "avatar",
       "companyName",
       "addressLine1",
       "addressLine2",

@@ -14,6 +14,7 @@ export type ComparableCoachField = keyof Pick<
   | "city"
   | "country"
   | "appointmentTypes"
+  | "avatar"
 >;
 
 export type FieldDiffMetada = {
@@ -25,6 +26,15 @@ export type FieldDiffMetada = {
 };
 
 export const isEmpty = (value?: string | null) => value == null || value.length === 0;
+
+const getDisplayValue = (field: ComparableCoachField, value: string | null | undefined) => {
+  // Hide base64
+  if (field === "avatar") {
+    return "Image";
+  }
+
+  return value ?? "";
+};
 
 export const getFieldDiffMetadata = ({
   field,
@@ -49,7 +59,7 @@ export const getFieldDiffMetadata = ({
       field,
       isNew: true,
       isDeleted: false,
-      newValue: draftProfile[field] ?? "",
+      newValue: getDisplayValue(field, draftProfile[field]),
       oldValue: "",
     };
   }
@@ -58,8 +68,8 @@ export const getFieldDiffMetadata = ({
   if (isEmpty(draftProfile[field])) {
     return {
       field,
-      oldValue: publishedProfile[field] ?? "",
-      newValue: draftProfile[field] ?? "",
+      oldValue: getDisplayValue(field, publishedProfile[field]),
+      newValue: getDisplayValue(field, draftProfile[field]),
       isDeleted: true,
       isNew: false,
     };
@@ -69,8 +79,8 @@ export const getFieldDiffMetadata = ({
   // Change
   return {
     field,
-    oldValue: publishedProfile[field] ?? "",
-    newValue: draftProfile[field] ?? "",
+    oldValue: getDisplayValue(field, publishedProfile[field]),
+    newValue: getDisplayValue(field, draftProfile[field]),
     isDeleted: false,
     isNew: false,
   };
