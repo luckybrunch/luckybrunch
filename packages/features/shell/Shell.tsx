@@ -614,9 +614,7 @@ const NavigationItem: React.FC<{
         className={classNames(
           "group flex items-center rounded-md py-2 px-3 text-sm font-medium text-gray-600 hover:bg-gray-100 [&[aria-current='page']]:bg-gray-100 [&[aria-current='page']]:hover:text-gray-900",
           isChild
-            ? `[&[aria-current='page']]:text-brand-900 hidden h-8 pl-16 lg:flex lg:pl-11 [&[aria-current='page']]:bg-transparent ${
-                props.index === 0 ? "mt-0" : "mt-px"
-              }`
+            ? `[&[aria-current='page']]:text-brand-900 mt-px hidden h-8 pl-16 lg:flex lg:pl-11`
             : "[&[aria-current='page']]:text-brand-900 mt-0.5 text-sm"
         )}
         aria-current={current ? "page" : undefined}>
