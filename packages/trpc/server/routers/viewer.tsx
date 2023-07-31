@@ -774,16 +774,28 @@ const loggedInViewerRouter = router({
           metadata: true,
           name: true,
           createdDate: true,
+          coachProfileDraft: {
+            include: { specializations: true },
+          },
         },
       });
 
-      // LuckyBrunch: Set complete profile info to true
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          completedProfileInformations: true,
-        },
-      });
+      if (updatedUser.coachProfileDraft) {
+        if (
+          [
+            updatedUser.coachProfileDraft?.firstName,
+            updatedUser.coachProfileDraft?.lastName,
+            updatedUser.coachProfileDraft.avatar,
+          ].every(Boolean) &&
+          updatedUser.coachProfileDraft?.specializations.length > 0
+        )
+          await prisma.user.update({
+            where: { id: user.id },
+            data: {
+              completedProfileInformations: true,
+            },
+          });
+      }
 
       // Hubspot sync for coaches
       if (user.coachProfileDraft) {
