@@ -58,8 +58,6 @@ import { HttpError } from "@lib/core/http/error";
 import { EmbedButton, EmbedDialog } from "@components/Embed";
 import SkeletonLoader from "@components/eventtype/SkeletonLoader";
 
-import { ssrInit } from "@server/lib/ssr";
-
 type EventTypeGroups = RouterOutputs["viewer"]["eventTypes"]["getByViewer"]["eventTypeGroups"];
 type EventTypeGroupProfile = EventTypeGroups[number]["profile"];
 
@@ -668,13 +666,8 @@ const EventTypesPage = () => {
 };
 
 export const getServerSideProps = async (context: GetServerSidePropsContext) => {
-  const ssr = await ssrInit(context);
-
-  return {
-    props: {
-      trpcState: ssr.dehydrate(),
-    },
-  };
+  const queryParams = new URLSearchParams(context.query as Record<string, string>);
+  return { redirect: { permanent: true, destination: `/profile/services?${queryParams}` } };
 };
 
 export default EventTypesPage;

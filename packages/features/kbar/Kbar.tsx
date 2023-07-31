@@ -96,7 +96,7 @@ export const KBarRoot = ({ children }: { children: React.ReactNode }) => {
       section: "event_types_page_title",
       shortcut: ["e", "t"],
       keywords: "event types",
-      perform: () => router.push("/event-types"),
+      perform: () => router.push("/profile/services"),
     },
     {
       id: "app-store",

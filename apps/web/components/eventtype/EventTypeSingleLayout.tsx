@@ -143,7 +143,7 @@ function EventTypeSingleLayout({
     onSuccess: async () => {
       await utils.viewer.eventTypes.invalidate();
       showToast(t("event_type_deleted_successfully"), "success");
-      await router.push("/event-types");
+      await router.push("/profile/services");
       setDeleteDialogOpen(false);
     },
     onError: (err) => {
@@ -192,7 +192,7 @@ function EventTypeSingleLayout({
 
   return (
     <Shell
-      backPath="/event-types"
+      backPath="/profile/services"
       title={eventType.title + " | " + t("event_type")}
       heading={eventType.title}
       CTA={
