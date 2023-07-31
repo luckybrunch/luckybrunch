@@ -1,10 +1,14 @@
 import { ReviewStatus } from "@prisma/client";
+import { UserType } from "@prisma/client";
+import { GetServerSidePropsContext } from "next";
+import { getSession } from "next-auth/react";
 import React, { useMemo } from "react";
 import { HiCheckCircle, HiEye, HiExclamationCircle } from "react-icons/hi";
 
 import { withProfileDiffList } from "@calcom/features/coaches/lib/withProfileDiff";
 import Shell from "@calcom/features/shell/Shell";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
+import prisma from "@calcom/prisma";
 import { trpc } from "@calcom/trpc/react";
 import {
   Button,
@@ -262,3 +266,25 @@ export default function DashboardPage() {
     </Shell>
   );
 }
+
+export const getServerSideProps = async (context: GetServerSidePropsContext) => {
+  const session = await getSession(context);
+  const redirect = { redirect: { permanent: false, destination: "/search" } };
+
+  if (!session) {
+    return redirect;
+  }
+
+  const user = await prisma.user.findUnique({
+    where: { id: session.user.id },
+    select: {
+      userType: true,
+    },
+  });
+
+  if (!user || user.userType !== UserType.COACH) {
+    return redirect;
+  }
+
+  return { props: {} };
+};
