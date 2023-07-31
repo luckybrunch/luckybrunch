@@ -24,6 +24,8 @@ import {
   Checkbox,
 } from "@calcom/ui";
 
+import { TabLayoutForMdAndLess } from "../../components/profile/TabLayoutForMdAndLess";
+
 const md = new MarkdownIt("default", { html: true, breaks: true });
 
 const SkeletonLoader = () => {
@@ -121,17 +123,19 @@ const InformationPage = () => {
 
   return (
     <Shell heading={t("lb_information_title")} subtitle={t("lb_information_subtitle")}>
-      <ProfileForm
-        key={JSON.stringify(defaultValues)}
-        defaultValues={defaultValues}
-        onSubmit={(values) => {
-          const { appointmentTypes, ...rest } = values;
-          mutation.mutate({
-            ...rest,
-            appointmentTypes: appointmentTypes.join(","),
-          });
-        }}
-      />
+      <TabLayoutForMdAndLess tabsFor="profile">
+        <ProfileForm
+          key={JSON.stringify(defaultValues)}
+          defaultValues={defaultValues}
+          onSubmit={(values) => {
+            const { appointmentTypes, ...rest } = values;
+            mutation.mutate({
+              ...rest,
+              appointmentTypes: appointmentTypes.join(","),
+            });
+          }}
+        />
+      </TabLayoutForMdAndLess>
     </Shell>
   );
 };

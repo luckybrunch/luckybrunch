@@ -57,6 +57,7 @@ import { HttpError } from "@lib/core/http/error";
 
 import { EmbedButton, EmbedDialog } from "@components/Embed";
 import SkeletonLoader from "@components/eventtype/SkeletonLoader";
+import { TabLayoutForMdAndLess } from "@components/profile/TabLayoutForMdAndLess";
 
 import { ssrInit } from "@server/lib/ssr";
 
@@ -620,8 +621,8 @@ const ServicesPage = () => {
   const isMobile = useMediaQuery("(max-width: 768px)");
 
   return (
-    <div>
-      <Shell heading={t("lb_services_page_title")} subtitle={t("lb_services_page_subtitle")} CTA={<CTA />}>
+    <Shell heading={t("lb_services_page_title")} subtitle={t("lb_services_page_subtitle")} CTA={<CTA />}>
+      <TabLayoutForMdAndLess tabsFor="profile">
         <WithQuery
           customLoader={<SkeletonLoader />}
           success={({ data }) => (
@@ -664,8 +665,8 @@ const ServicesPage = () => {
             </>
           )}
         />
-      </Shell>
-    </div>
+      </TabLayoutForMdAndLess>
+    </Shell>
   );
 };
 

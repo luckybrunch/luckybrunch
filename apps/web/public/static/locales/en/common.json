@@ -1747,5 +1747,8 @@
   "lb_coach_view_profile": "View Profile",
   "lb_verified_coach": "Verified Coach",
   "lb_view_more": "View more",
+  "lb_tab_services": "Services",
+  "lb_tab_information": "Information",
+  "lb_tab_certificates": "Certificates",
   "LB_ADD_NEW_STRINGS_ABOVE_THIS_LINE_TO_PREVENT_MERGE_CONFLICTS": "↑↑↑↑↑↑↑↑↑↑↑↑↑ Add your new strings above here ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
 }
