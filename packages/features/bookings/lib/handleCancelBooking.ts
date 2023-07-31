@@ -9,7 +9,7 @@ import {
 } from "@prisma/client";
 import { NextApiRequest } from "next";
 
-// import appStore from "@calcom/app-store";
+import appStore from "@calcom/app-store";
 import { getCalendar } from "@calcom/app-store/_utils/getCalendar";
 import { FAKE_DAILY_CREDENTIAL } from "@calcom/app-store/dailyvideo/lib/VideoApiAdapter";
 import { DailyLocationType } from "@calcom/app-store/locations";
@@ -24,7 +24,7 @@ import getWebhooks from "@calcom/features/webhooks/lib/getWebhooks";
 import sendPayload, { EventTypeInfo } from "@calcom/features/webhooks/lib/sendPayload";
 import { isPrismaObjOrUndefined, parseRecurringEvent } from "@calcom/lib";
 import { HttpError } from "@calcom/lib/http-error";
-// import { handleRefundError } from "@calcom/lib/payment/handleRefundError";
+import { handleRefundError } from "@calcom/lib/payment/handleRefundError";
 import { getTranslation } from "@calcom/lib/server/i18n";
 import prisma, { bookingMinimalSelect } from "@calcom/prisma";
 import { schemaBookingCancelParams } from "@calcom/prisma/zod-utils";
@@ -382,10 +382,10 @@ async function handler(req: NextApiRequest & { userId?: number }) {
       destinationCalendar: bookingToDelete?.destinationCalendar || bookingToDelete?.user.destinationCalendar,
     };
 
-    // const successPayment = bookingToDelete.payment.find((payment) => payment.success);
-    // if (!successPayment) {
-    //   throw new Error("Cannot reject a booking without a successful payment");
-    // }
+    const successPayment = bookingToDelete.payment.find((payment) => payment.success);
+    if (!successPayment) {
+      throw new Error("Cannot reject a booking without a successful payment");
+    }
 
     let eventTypeOwnerId;
     if (bookingToDelete.eventType?.owner) {
@@ -407,49 +407,49 @@ async function handler(req: NextApiRequest & { userId?: number }) {
       throw new Error("Event Type owner not found for obtaining payment app credentials");
     }
 
-    // const paymentAppCredentials = await prisma.credential.findMany({
-    //   where: {
-    //     userId: eventTypeOwnerId,
-    //     appId: successPayment.appId,
-    //   },
-    //   select: {
-    //     key: true,
-    //     appId: true,
-    //     app: {
-    //       select: {
-    //         categories: true,
-    //         dirName: true,
-    //       },
-    //     },
-    //   },
-    // });
+    const paymentAppCredentials = await prisma.credential.findMany({
+      where: {
+        userId: eventTypeOwnerId,
+        appId: successPayment.appId,
+      },
+      select: {
+        key: true,
+        appId: true,
+        app: {
+          select: {
+            categories: true,
+            dirName: true,
+          },
+        },
+      },
+    });
 
-    // const paymentAppCredential = paymentAppCredentials.find((credential) => {
-    //   return credential.appId === successPayment.appId;
-    // });
+    const paymentAppCredential = paymentAppCredentials.find((credential) => {
+      return credential.appId === successPayment.appId;
+    });
 
-    // if (!paymentAppCredential) {
-    //   throw new Error("Payment app credentials not found");
-    // }
+    if (!paymentAppCredential) {
+      throw new Error("Payment app credentials not found");
+    }
 
-    // // Posible to refactor TODO:
-    // const paymentApp = appStore[paymentAppCredential?.app?.dirName as keyof typeof appStore];
-    // if (!(paymentApp && "lib" in paymentApp && "PaymentService" in paymentApp.lib)) {
-    //   console.warn(`payment App service of type ${paymentApp} is not implemented`);
-    //   return null;
-    // }
+    // Posible to refactor TODO:
+    const paymentApp = appStore[paymentAppCredential?.app?.dirName as keyof typeof appStore];
+    if (!(paymentApp && "lib" in paymentApp && "PaymentService" in paymentApp.lib)) {
+      console.warn(`payment App service of type ${paymentApp} is not implemented`);
+      return null;
+    }
 
-    // const PaymentService = paymentApp.lib.PaymentService;
-    // const paymentInstance = new PaymentService(paymentAppCredential);
-    // try {
-    //   await paymentInstance.refund(successPayment.id);
-    // } catch (error) {
-    //   await handleRefundError({
-    //     event: evt,
-    //     reason: error?.toString() || "unknown",
-    //     paymentId: successPayment.externalId,
-    //   });
-    // }
+    const PaymentService = paymentApp.lib.PaymentService;
+    const paymentInstance = new PaymentService(paymentAppCredential);
+    try {
+      await paymentInstance.refund(successPayment.id);
+    } catch (error) {
+      await handleRefundError({
+        event: evt,
+        reason: error?.toString() || "unknown",
+        paymentId: successPayment.externalId,
+      });
+    }
 
     await prisma.booking.update({
       where: {

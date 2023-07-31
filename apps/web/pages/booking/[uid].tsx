@@ -1,4 +1,4 @@
-import { BookingStatus, WorkflowActions, UserType } from "@prisma/client";
+import { BookingStatus, WorkflowActions } from "@prisma/client";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@radix-ui/react-collapsible";
 import classNames from "classnames";
 import { createEvent } from "ics";
@@ -40,12 +40,10 @@ import prisma from "@calcom/prisma";
 import { Prisma } from "@calcom/prisma/client";
 import { bookingMetadataSchema } from "@calcom/prisma/zod-utils";
 import { customInputSchema, EventTypeMetaDataSchema } from "@calcom/prisma/zod-utils";
-import { trpc } from "@calcom/trpc";
 import { Button, EmailInput, HeadSeo } from "@calcom/ui";
 import { FiX, FiExternalLink, FiChevronLeft, FiCheck, FiCalendar } from "@calcom/ui/components/icon";
 
 import { timeZone } from "@lib/clock";
-import useMeQuery from "@lib/hooks/useMeQuery";
 import { inferSSRProps } from "@lib/types/inferSSRProps";
 
 import CancelBooking from "@components/booking/CancelBooking";
@@ -191,18 +189,6 @@ export default function Success(props: SuccessProps) {
     email,
   } = querySchema.parse(router.query);
 
-  const { data: me } = useMeQuery();
-  const validatePaymentMutation = trpc.viewer.clients.validatePayment.useMutation();
-
-  useEffect(() => {
-    if (isSuccessBookingPage) {
-      validatePaymentMutation.mutate({
-        uid: props.bookingInfo.uid,
-      });
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSuccessBookingPage]);
-
   if ((isCancellationMode || changes) && typeof window !== "undefined") {
     window.scrollTo(0, document.body.scrollHeight);
   }
@@ -264,11 +250,6 @@ export default function Success(props: SuccessProps) {
 
   const eventName = getEventName(eventNameObject, true);
   const needsConfirmation = eventType.requiresConfirmation && reschedule != true;
-  const { data: checkoutLink } = trpc.viewer.clients.generateStripeCheckoutSession.useQuery({
-    bookingUid: bookingInfo.uid,
-    eventTypeId: bookingInfo.eventTypeId ?? -1,
-    bookerEmail: email ?? "",
-  });
   const isCancelled = status === "CANCELLED" || status === "REJECTED";
   const telemetry = useTelemetry();
   useEffect(() => {
@@ -423,10 +404,7 @@ export default function Success(props: SuccessProps) {
                 <div
                   className={classNames(
                     "mx-auto flex items-center justify-center",
-                    !giphyImage &&
-                      !isCancelled &&
-                      !needsConfirmation &&
-                      (bookingInfo.paid || eventType.price === 0)
+                    !giphyImage && !isCancelled && !needsConfirmation
                       ? "h-12 w-12 rounded-full bg-green-100"
                       : "",
                     !giphyImage && !isCancelled && needsConfirmation
@@ -438,12 +416,9 @@ export default function Success(props: SuccessProps) {
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={giphyImage} alt="Gif from Giphy" />
                   )}
-                  {!giphyImage &&
-                    !needsConfirmation &&
-                    !isCancelled &&
-                    (bookingInfo.paid || eventType.price === 0) && (
-                      <FiCheck className="h-5 w-5 text-green-600" />
-                    )}
+                  {!giphyImage && !needsConfirmation && !isCancelled && (
+                    <FiCheck className="h-5 w-5 text-green-600" />
+                  )}
                   {needsConfirmation && !isCancelled && <FiCalendar className="h-5 w-5 text-gray-900" />}
                   {isCancelled && <FiX className="h-5 w-5 text-red-600" />}
                 </div>
@@ -460,18 +435,8 @@ export default function Success(props: SuccessProps) {
                       ? t("event_cancelled")
                       : props.recurringBookings
                       ? t("meeting_is_scheduled_recurring")
-                      : !bookingInfo.paid && eventType.price > 0 && !isSuccessBookingPage
-                      ? "Payment for the meeting is pending"
                       : t("meeting_is_scheduled")}
                   </h3>
-                  {!bookingInfo.paid &&
-                    eventType.price > 0 &&
-                    !isSuccessBookingPage &&
-                    me?.userType === UserType.CLIENT && (
-                      <Button role="link" href={checkoutLink} className="m-3" color="primary">
-                        {t("checkout")}
-                      </Button>
-                    )}
                   <div className="mt-3">
                     <p className="text-gray-600 dark:text-gray-300">{getTitle()}</p>
                   </div>
@@ -1050,7 +1015,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       id: true,
       uid: true,
       description: true,
-      paid: true,
       customInputs: true,
       smsReminderNumber: true,
       recurringEventId: true,
@@ -1090,9 +1054,6 @@ export async function getServerSideProps(context: GetServerSidePropsContext) {
       notFound: true,
     };
   }
-
-  // To prevent displaying not-paid after the payment
-  context.res.setHeader("Cache-Control", "no-store");
 
   // @NOTE: had to do this because Server side cant return [Object objects]
   // probably fixable with json.stringify -> json.parse

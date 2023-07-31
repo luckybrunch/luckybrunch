@@ -773,8 +773,7 @@ async function handler(req: NextApiRequest & { userId?: number | undefined }) {
   // Otherwise, an owner rescheduling should be always accepted.
   // Before comparing make sure that userId is set, otherwise undefined === undefined
   const userReschedulingIsOwner = userId && originalRescheduledBooking?.user?.id === userId;
-  const isConfirmedByDefault =
-    (!requiresConfirmation && !paymentAppData.price && !eventType.price) || userReschedulingIsOwner;
+  const isConfirmedByDefault = (!requiresConfirmation && !paymentAppData.price) || userReschedulingIsOwner;
 
   async function createBooking() {
     if (originalRescheduledBooking) {

@@ -20,7 +20,6 @@ import {
   locationKeyToString,
 } from "@calcom/app-store/locations";
 import { createPaymentLink } from "@calcom/app-store/stripepayment/lib/client";
-import getStripe from "@calcom/app-store/stripepayment/lib/client";
 import { getEventTypeAppData } from "@calcom/app-store/utils";
 import { LocationObject, LocationType } from "@calcom/core/location";
 import dayjs from "@calcom/dayjs";
@@ -40,7 +39,6 @@ import { HttpError } from "@calcom/lib/http-error";
 import { getEveryFreqFor } from "@calcom/lib/recurringStrings";
 import slugify from "@calcom/lib/slugify";
 import { collectPageParameters, telemetryEventTypes, useTelemetry } from "@calcom/lib/telemetry";
-import { trpc } from "@calcom/trpc";
 import {
   AddressInput,
   Button,
@@ -97,9 +95,6 @@ type BookingFormValues = {
   smsReminderNumber?: string;
 };
 
-// Suggested to load in the step before the checkout page
-getStripe();
-
 const BookingPage = ({
   eventType,
   booking,
@@ -118,7 +113,6 @@ const BookingPage = ({
   const shouldAlignCentrally = !isEmbed || shouldAlignCentrallyInEmbed;
   const router = useRouter();
   const { data: session } = useSession();
-  const utils = trpc.useContext();
   const isBackgroundTransparent = useIsBackgroundTransparent();
   const telemetry = useTelemetry();
   const [gateState, gateDispatcher] = useReducer(
@@ -153,7 +147,7 @@ const BookingPage = ({
 
   const mutation = useMutation(createBooking, {
     onSuccess: async (responseData) => {
-      const { eventTypeId, attendees, uid, paymentUid } = responseData;
+      const { uid, paymentUid } = responseData;
 
       if (paymentUid) {
         return await router.push(
@@ -165,16 +159,6 @@ const BookingPage = ({
             absolute: false,
           })
         );
-      }
-
-      if (eventType.price > 0 && attendees.length > 0 && eventTypeId) {
-        const checkoutLink = await utils.viewer.clients.generateStripeCheckoutSession.fetch({
-          eventTypeId,
-          bookingUid: uid,
-          bookerEmail: attendees[0].email,
-        });
-
-        return router.push(checkoutLink);
       }
 
       return router.push({
@@ -574,14 +558,14 @@ const BookingPage = ({
             {showEventTypeDetails && (
               <div className="sm:dark:border-darkgray-300 dark:text-darkgray-600 flex flex-col px-6 pt-6 pb-0 text-gray-600 sm:w-1/2 sm:border-r sm:pb-6">
                 <BookingDescription isBookingPage profile={profile} eventType={eventType}>
-                  {eventType.price > 0 && (
+                  {paymentAppData.price > 0 && (
                     <p className="text-bookinglight -ml-2 px-2 text-sm ">
                       <FiCreditCard className="ml-[2px] -mt-1 inline-block h-4 w-4 ltr:mr-[10px] rtl:ml-[10px]" />
                       <IntlProvider locale="en">
                         <FormattedNumber
-                          value={eventType.price / 100.0}
+                          value={paymentAppData.price / 100.0}
                           style="currency"
-                          currency={eventType?.currency?.toUpperCase()}
+                          currency={paymentAppData?.currency?.toUpperCase()}
                         />
                       </IntlProvider>
                     </p>
