@@ -287,13 +287,6 @@ function UserDropdown({ small }: { small?: boolean }) {
                   <span className="mb-1 block truncate font-medium leading-none text-gray-900">
                     {user.name || "Nameless User"}
                   </span>
-                  <span className="block truncate font-normal leading-none text-gray-600">
-                    {user.username
-                      ? process.env.NEXT_PUBLIC_WEBSITE_URL === "https://cal.com"
-                        ? `cal.com/${user.username}`
-                        : `/${user.username}`
-                      : "No public page"}
-                  </span>
                 </span>
                 <FiMoreVertical
                   className="h-4 w-4 flex-shrink-0 text-gray-400 group-hover:text-gray-500 ltr:mr-2 rtl:ml-2 rtl:mr-4"
