@@ -1,3 +1,4 @@
+import { UserType } from "@prisma/client";
 import classNames from "classnames";
 import MarkdownIt from "markdown-it";
 import { GetServerSidePropsContext } from "next";
@@ -337,6 +338,10 @@ export const getServerSideProps = async (context: GetServerSidePropsContext) => 
     where: {
       username: {
         in: usernameList,
+      },
+      userType: UserType.COACH,
+      NOT: {
+        coachProfile: null,
       },
     },
     select: {
