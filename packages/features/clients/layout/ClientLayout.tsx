@@ -13,19 +13,19 @@ const translationKeys = {
 const tabs: (VerticalTabItemProps | HorizontalTabItemProps)[] = [
   {
     name: translationKeys.information,
-    href: "/client-details/information",
+    href: "/clients/client-details/information",
   },
   {
     name: translationKeys.chat,
-    href: "/client-details/chat",
+    href: "/clients/client-details/chat",
   },
   {
     name: translationKeys.clientBookings,
-    href: "/client-details/bookings",
+    href: "/clients/client-details/bookings",
   },
   {
     name: translationKeys.notes,
-    href: "/client-details/notes",
+    href: "/clients/client-details/notes",
   },
 ];
 

@@ -54,7 +54,7 @@ export default function Clients() {
                     key={client.email}>
                     <Link
                       className="flex w-full content-center justify-between rounded-2xl"
-                      href={`/client-details/information?email=${client.email}`}>
+                      href={`/clients/client-details/information?email=${client.email}`}>
                       <div className="flex flex-row">
                         <img
                           className="mr-2 h-10 w-10 rounded-full"
