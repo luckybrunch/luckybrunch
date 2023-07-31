@@ -1750,5 +1750,10 @@
   "lb_tab_services": "Services",
   "lb_tab_information": "Information",
   "lb_tab_certificates": "Certificates",
+  "lb_almost_done_paragraph_1": "Welcome to the community of the possible-makers.",
+  "lb_almost_done_paragraph_2": "We know what it means to be there for patients and to provide them with the best possible service.",
+  "lb_almost_done_paragraph_3": "With us, you can focus 100% on your vocation. We take care of everything around it and help patients as well as you, the consultants, to find an optimal match.",
+  "lb_almost_done_paragraph_4": "Now click on \"Finish\" to complete your registration and make yourself comfortable in your account. Once you have uploaded your certificates, you can get started right away after our verification.",
+  "lb_almost_done_paragraph_5": "Grab the veggies, preheat the oven and.... GO!",
   "LB_ADD_NEW_STRINGS_ABOVE_THIS_LINE_TO_PREVENT_MERGE_CONFLICTS": "↑↑↑↑↑↑↑↑↑↑↑↑↑ Add your new strings above here ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
 }

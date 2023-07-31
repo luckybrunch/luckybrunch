@@ -21,15 +21,11 @@ const Lb_AlmostDone = (props: IOnboardingComponentProps) => {
   return (
     <Form form={form} handleSubmit={onSubmit}>
       <div className="flex flex-col items-center justify-start rtl:justify-end">
-        <li>Stet clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.</li>
-        <li>
-          Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy eirmod tempor invidunt ut
-          labore et dolore magna aliquyam erat, sed diam voluptua.
-        </li>
-        <li>
-          At vero eos et accusam et justo duo dolores et ea rebum. Stet clita kasd gubergren, no sea takimata
-          sanctus est Lorem ipsum dolor sit amet.
-        </li>
+        <p className="bold my-4 w-full">{t("lb_almost_done_paragraph_1")}</p>
+        <p className="bold my-4 w-full">{t("lb_almost_done_paragraph_2")}</p>
+        <p className="bold my-4 w-full">{t("lb_almost_done_paragraph_3")}</p>
+        <p className="bold text-brand-500 my-4 w-full">{t("lb_almost_done_paragraph_4")}</p>
+        <p className="bold my-4 w-full">{t("lb_almost_done_paragraph_5")}</p>
         <Button type="submit" className="mt-8 flex w-full flex-row justify-center">
           {t("finish")}
           <ArrowRightIcon className="ml-2 h-4 w-4 self-center" aria-hidden="true" />
