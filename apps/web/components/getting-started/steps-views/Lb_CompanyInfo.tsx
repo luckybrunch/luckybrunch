@@ -75,7 +75,7 @@ const Lb_CompanyInfo = (props: IOnboardingComponentProps) => {
         {/* Company Name */}
         <div className="w-full">
           <label htmlFor="companyName" className="mb-2 block text-sm font-medium text-gray-700">
-            {t("lb_company_name")}
+            {t("lb_company_name")} ({t("optional")})
           </label>
           <input
             {...formMethods.register("companyName", defaultOptions)}
