@@ -43,37 +43,14 @@ async function seedCertificateTypes() {
 async function seedSpecilazations() {
   const specializations = [
     // Ernährungstherapie
-    { id: 1, label: "Adipositas | Übergewicht" },
-    { id: 2, label: "Arteriosklerose | KHK" },
-    { id: 3, label: "Darmerkrankungen" },
-    { id: 4, label: "Diabetes Typ 1 oder 2" },
-    { id: 5, label: "Essstörung" },
-    { id: 6, label: "Fettstoffwechselstörung" },
-    { id: 7, label: "Fettleber | Leberzirrhose | Hepatitis" },
-    { id: 8, label: "Gastritis" },
-    { id: 9, label: "Herzinsuffizienz" },
-    { id: 10, label: "Hypertonie" },
-    { id: 11, label: "Hyperurikämie | Gicht" },
-    { id: 12, label: "Nahrungsmittelallergie" },
-    { id: 13, label: "Nahrungsmittelintoleranz | Unverträglichkeit" },
-    { id: 14, label: "Nephrologische Erkrankungen" },
-    { id: 15, label: "Onkologische Erkrankungen" },
-    { id: 16, label: "Pankreaserkrankungen" },
-    { id: 17, label: "Rheuma" },
-    { id: 18, label: "Schilddrüsenerkrankung" },
-    { id: 19, label: "Untergewicht | Mangelernährung" },
-    { id: 20, label: "Glutenunverträglichkeit" },
-    { id: 21, label: "Sonstiges" },
-    // Präventive Ernährungsberatung
-    { id: 22, label: "Sportlerernährung" },
-    { id: 23, label: "Stärkung des Immunsystems" },
-    { id: 24, label: "Übergewicht bzw. Gewichtszunahme" },
-    { id: 25, label: "Ernährung von Kindern und Kleinkindern" },
-    { id: 26, label: "Ernährung für Senioren" },
-    // Ernährungsbildung / Betriebliche Gesundheitsförderung
-    { id: 27, label: "Ernährungsberatung im Rahmen des betrieblichen Gesundheitsmanagements" },
-    { id: 28, label: "Kindergärten und Schulen" },
-    { id: 29, label: "Vereine und Selbsthilfegruppen" },
+    { id: 1, label: "Unter- und Übergewicht" },
+    { id: 2, label: "Erkrankungen des Verdauungssystems" },
+    { id: 3, label: "Herz-Kreislauferkrankungen" },
+    { id: 4, label: "Stoffwechselerkrankungen" },
+    { id: 5, label: "Allergien und Intoleranzen" },
+    { id: 6, label: "Schwangere und Kinderernährung" },
+    { id: 7, label: "Sportlerernährung" },
+    { id: 8, label: "Alternative Ernährungsformen" },
   ];
 
   for (const item of specializations) {
