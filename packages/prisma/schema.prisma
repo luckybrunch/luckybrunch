@@ -175,7 +175,6 @@ model User {
   theme                String?
   createdDate          DateTime                @default(now()) @map(name: "created")
   trialEndsAt          DateTime?
-  // What does this relation mean
   eventTypes           EventType[]             @relation("user_eventtype")
   credentials          Credential[]
   teams                Membership[]
@@ -233,7 +232,8 @@ model User {
   firstName String?
   lastName  String?
 
-  clientNotes ClientNotes[]
+  clientNotes    ClientNotes[]
+  billingDetails BillingDetails?
   // LuckyBrunch - END
 
   @@map(name: "users")
@@ -765,4 +765,21 @@ model ClientNotes {
   coach User @relation(fields: [coachUserId], references: [id], onDelete: Cascade)
 
   @@unique([coachUserId, clientEmail])
+}
+
+model BillingDetails {
+  userId Int @id
+
+  name         String?
+  addressLine1 String?
+  addressLine2 String?
+  zip          String?
+  city         String?
+  country      String?
+
+  accountHolder String?
+  iban          String?
+  bic           String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

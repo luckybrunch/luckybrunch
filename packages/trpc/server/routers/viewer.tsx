@@ -188,6 +188,7 @@ const loggedInViewerRouter = router({
       userType: user.userType,
       coachProfileDraft: user.coachProfileDraft,
       coachProfile: user.coachProfile,
+      billingDetails: user.billingDetails,
     };
   }),
   avatar: authedProcedure.query(({ ctx }) => ({
@@ -636,6 +637,19 @@ const loggedInViewerRouter = router({
         timeFormat: z.number().optional(),
         disableImpersonation: z.boolean().optional(),
         metadata: userMetadata.optional(),
+        billingDetails: z
+          .object({
+            name: z.string().optional(),
+            addressLine1: z.string().optional(),
+            addressLine2: z.string().optional(),
+            zip: z.string().optional(),
+            city: z.string().optional(),
+            country: z.string().optional(),
+            accountHolder: z.string().optional(),
+            iban: z.string().optional(),
+            bic: z.string().optional(),
+          })
+          .optional(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -657,6 +671,7 @@ const loggedInViewerRouter = router({
         zip,
         city,
         country,
+        billingDetails,
         ...stuff
       } = input;
       const data: Prisma.UserUpdateInput = {
@@ -693,6 +708,12 @@ const loggedInViewerRouter = router({
             city,
             country,
           },
+        };
+      }
+
+      if (billingDetails) {
+        data.billingDetails = {
+          upsert: { create: billingDetails, update: billingDetails },
         };
       }
 
@@ -804,6 +825,7 @@ const loggedInViewerRouter = router({
           select: {
             email: true,
             username: true,
+            billingDetails: true,
             coachProfileDraft: {
               select: {
                 bio: true,
@@ -833,9 +855,21 @@ const loggedInViewerRouter = router({
             firstName: coach.coachProfileDraft.firstName,
             lastName: coach.coachProfileDraft.lastName,
             zip: coach.coachProfileDraft.zip,
-            addressLine1: coach.coachProfileDraft.addressLine1,
-            addressLine2: coach.coachProfileDraft.addressLine2,
+            addressLine: coach.coachProfileDraft.addressLine1 + "\n" + coach.coachProfileDraft.addressLine2,
             specializations: coach.coachProfileDraft.specializations,
+            accountHolder: coach.billingDetails?.accountHolder ?? "",
+            iban: coach.billingDetails?.iban ?? "",
+            bic: coach.billingDetails?.bic ?? "",
+            billingAddress: coach.billingDetails
+              ? [
+                  coach.billingDetails.name,
+                  coach.billingDetails.addressLine1,
+                  coach.billingDetails.addressLine2,
+                  coach.billingDetails.zip + " " + coach.billingDetails.city,
+                  coach.billingDetails.country,
+                  "",
+                ].join("\n")
+              : "",
           });
         }
       }

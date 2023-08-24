@@ -9,12 +9,15 @@ interface UserData {
   lastName?: string | null;
   bio?: string | null;
   companyName?: string | null;
-  addressLine1?: string | null;
-  addressLine2?: string | null;
+  addressLine?: string | null;
   zip?: string | null;
   city?: string | null;
   appointmentTypes?: string | null;
   specializations?: Specialization[] | null;
+  billingAddress?: string | null;
+  accountHolder?: string | null;
+  iban?: string | null;
+  bic?: string | null;
 }
 
 interface HubspotGetUserResponse {
@@ -32,31 +35,37 @@ const keys = [
   "lastName",
   "bio",
   "companyName",
-  "addressLine1",
-  "addressLine2",
+  "addressLine",
+  "billingAddress",
   "zip",
   "city",
   "appointmentTypes",
   "specializations",
   "contactGroup",
+  "accountHolder",
+  "iban",
+  "bic",
 ] as const;
 
 type Key = typeof keys[number];
 
 const labels: Record<Key, string> = {
   email: "email",
-  username: "benutzername",
-  firstName: "vorname",
-  lastName: "nachname",
-  bio: "beschreibung",
-  companyName: "unternehmensname",
-  addressLine1: "adresszeile1",
-  addressLine2: "adresszeile2",
-  zip: "postleitzahl",
-  city: "stadt",
-  appointmentTypes: "terminarten",
-  specializations: "fachgebiete",
-  contactGroup: "kontaktgruppe",
+  firstName: "firstname",
+  lastName: "lastname",
+  companyName: "company",
+  addressLine: "address",
+  zip: "zip",
+  city: "city",
+  bio: "beschreibung", // custom
+  username: "benutzername", // custom
+  billingAddress: "rechnungsadresse", // custom
+  appointmentTypes: "terminarten", // custom
+  specializations: "fachgebiete", // custom
+  contactGroup: "kontaktgruppe", // custom
+  accountHolder: "kontoinhaber", // custom
+  iban: "iban", // custom
+  bic: "bic", // custom
 };
 
 class Hubspot {
@@ -73,7 +82,7 @@ class Hubspot {
     for (const key of keys) {
       const hsLabel = labels[key];
 
-      if (!hsLabel || !user[key]) {
+      if (!hsLabel) {
         continue;
       }
 
@@ -114,12 +123,16 @@ class Hubspot {
 
   async createUser(newUser: UserData) {
     try {
-      await this.client.crm.contacts.basicApi.create({
+      console.log("Create user being called");
+      const f = await this.client.crm.contacts.basicApi.create({
         properties: this.constructProperties(newUser),
       });
 
+      console.log("Created success", f);
+
       return true;
     } catch (err) {
+      console.log("[ERRO] err", err);
       return false;
     }
   }
@@ -127,7 +140,7 @@ class Hubspot {
   async updateUser(userToUpdate: UserData) {
     const user = await this.getUserByEmail(userToUpdate.email);
     if (!user) {
-      return false;
+      return this.createUser(userToUpdate);
     }
 
     try {
@@ -142,13 +155,10 @@ class Hubspot {
   }
 
   async updateOrCreateUsers(users: UserData[]): Promise<boolean> {
-    console.log("[HUBBY] called");
     // Base condition
-    if (users.length === 0) {
+    if ((users ?? []).length === 0) {
       return true;
     }
-
-    console.log("[HUBBY] running");
 
     // Hubspot API limit
     const currentUsers = users.slice(0, 100);
@@ -156,7 +166,6 @@ class Hubspot {
     const hubspotUserIdsWithData: Record<string, string> = {};
 
     try {
-      console.log("[HUBBY] reading hs users");
       const hsUsers = await this.client.crm.contacts.batchApi.read({
         idProperty: "email",
         inputs: currentUsers.map((user) => ({ id: user.email })),
@@ -164,13 +173,10 @@ class Hubspot {
         propertiesWithHistory: [],
       });
 
-      console.log("[HUBBY] reading hs users completed", hsUsers);
-
       if (!hsUsers) {
         return false;
       }
 
-      console.log("[HUBBY] going throguh list");
       for (const hsUser of hsUsers.results) {
         if (!hsUser.properties.email) {
           continue;
@@ -178,7 +184,6 @@ class Hubspot {
 
         hubspotUserIdsWithData[hsUser.properties.email] = hsUser.id;
       }
-      console.log("[HUBBY] list constructed", hubspotUserIdsWithData);
 
       const usersToUpdate: (UserData & { internalId: string })[] = [];
       const usersToCreate: UserData[] = [];
@@ -192,9 +197,6 @@ class Hubspot {
         }
       });
 
-      console.log("[HUBBY]: users to update", usersToUpdate);
-      console.log("[HUBBY]: users to create", usersToCreate);
-
       await this.client.crm.contacts.batchApi.update({
         inputs: usersToUpdate.map((user) => {
           const { internalId, ...properties } = user;
@@ -205,10 +207,9 @@ class Hubspot {
               [labels.contactGroup]: properties.contactGroup,
               [labels.username]: properties.username ?? "",
               [labels.firstName]: properties.firstName ?? "",
-              [labels.lastName]: properties.lastName ?? "",
               [labels.bio]: properties.bio ?? "",
-              [labels.addressLine1]: properties.addressLine1 ?? "",
-              [labels.addressLine2]: properties.addressLine2 ?? "",
+              [labels.addressLine]: properties.addressLine ?? "",
+              [labels.billingAddress]: properties.billingAddress ?? "",
               [labels.appointmentTypes]: properties.appointmentTypes ?? "",
               [labels.city]: properties.city ?? "",
               [labels.zip]: properties.zip ?? "",
@@ -229,8 +230,8 @@ class Hubspot {
               [labels.firstName]: user.firstName ?? "",
               [labels.lastName]: user.lastName ?? "",
               [labels.bio]: user.bio ?? "",
-              [labels.addressLine1]: user.addressLine1 ?? "",
-              [labels.addressLine2]: user.addressLine2 ?? "",
+              [labels.addressLine]: user.addressLine ?? "",
+              [labels.billingAddress]: user.billingAddress ?? "",
               [labels.appointmentTypes]: user.appointmentTypes ?? "",
               [labels.city]: user.city ?? "",
               [labels.zip]: user.zip ?? "",
@@ -240,13 +241,11 @@ class Hubspot {
           };
         }),
       });
-      console.log("[HUBBY]: operation succeded");
     } catch (err) {
-      console.log("[HUBBY]: an error occurred", err);
       return false;
     }
 
-    // Hubspot API limit, making separate call
+    // Hubspot API limit, making separate recursive call
     return this.updateOrCreateUsers(users.slice(100));
   }
 

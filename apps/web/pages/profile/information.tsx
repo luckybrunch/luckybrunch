@@ -1,4 +1,3 @@
-import crypto from "crypto";
 import MarkdownIt from "markdown-it";
 import { Controller, useForm } from "react-hook-form";
 
@@ -6,7 +5,7 @@ import { AppointmentType } from "@calcom/features/coaches/types";
 import Shell from "@calcom/features/shell/Shell";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import turndown from "@calcom/lib/turndownService";
-import { trpc } from "@calcom/trpc/react";
+import { RouterInputs, trpc } from "@calcom/trpc/react";
 import {
   Avatar,
   Button,
@@ -19,9 +18,9 @@ import {
   SkeletonButton,
   SkeletonContainer,
   SkeletonText,
+  Switch,
   TextField,
   Editor,
-  Checkbox,
 } from "@calcom/ui";
 
 import { TabLayoutForMdAndLess } from "../../components/profile/TabLayoutForMdAndLess";
@@ -46,6 +45,14 @@ const SkeletonLoader = () => {
   );
 };
 
+type Address = {
+  addressLine1: string;
+  addressLine2: string;
+  zip: string;
+  city: string;
+  country: string;
+};
+
 type FormValues = {
   avatar: string;
   firstName: string;
@@ -53,13 +60,16 @@ type FormValues = {
   email: string;
   companyName: string;
   bio: string;
-  addressLine1: string;
-  addressLine2: string;
-  zip: string;
-  city: string;
-  country: string;
   appointmentTypes: string[];
   specializations: number[];
+  address: Address;
+  isIdenticalBillingAddress: boolean;
+  billingAddress: { name: string } & Address;
+  billingDetails: {
+    accountHolder: string;
+    iban: string;
+    bic: string;
+  };
 };
 
 const AppointmentTypes = {
@@ -103,22 +113,60 @@ const InformationPage = () => {
       </Shell>
     );
 
-  const defaultValues = {
+  const isIdenticalBillingAddress = (() => {
+    // For backwards-compatibility reasons, we assume that when the billing details are not set,
+    // the user wants to use the same address as the work address.
+    if (!user.billingDetails) return true;
+
+    const name =
+      user.coachProfileDraft?.companyName ||
+      ((user.coachProfileDraft?.firstName ?? "") + " " + (user.coachProfileDraft?.lastName ?? "")).trim();
+    if (
+      name === user.billingDetails?.name &&
+      user.coachProfileDraft?.addressLine1 === user.billingDetails?.addressLine1 &&
+      user.coachProfileDraft?.addressLine2 === user.billingDetails?.addressLine2 &&
+      user.coachProfileDraft?.zip === user.billingDetails?.zip &&
+      user.coachProfileDraft?.city === user.billingDetails?.city &&
+      user.coachProfileDraft?.country === user.billingDetails?.country
+    ) {
+      return true;
+    } else {
+      return false;
+    }
+  })();
+
+  const defaultValues: FormValues = {
     avatar: user.coachProfileDraft?.avatar ?? "",
     email: user.email ?? "",
     firstName: user.coachProfileDraft?.firstName ?? "",
     lastName: user.coachProfileDraft?.lastName ?? "",
     bio: user.coachProfileDraft?.bio ?? "",
     companyName: user.coachProfileDraft?.companyName ?? "",
-    addressLine1: user.coachProfileDraft?.addressLine1 ?? "",
-    addressLine2: user.coachProfileDraft?.addressLine2 ?? "",
-    zip: user.coachProfileDraft?.zip ?? "",
-    city: user.coachProfileDraft?.city ?? "",
-    country: user.coachProfileDraft?.country ?? "",
     appointmentTypes: (user.coachProfileDraft?.appointmentTypes ?? "")
       .split(",")
       .filter((v) => Object.keys(AppointmentTypes).includes(v)),
     specializations: specializations?.map((item) => item.id) || [],
+    address: {
+      addressLine1: user.coachProfileDraft?.addressLine1 ?? "",
+      addressLine2: user.coachProfileDraft?.addressLine2 ?? "",
+      zip: user.coachProfileDraft?.zip ?? "",
+      city: user.coachProfileDraft?.city ?? "",
+      country: user.coachProfileDraft?.country ?? "DE",
+    },
+    isIdenticalBillingAddress,
+    billingAddress: {
+      name: user.billingDetails?.name ?? "",
+      addressLine1: user.billingDetails?.addressLine1 ?? "",
+      addressLine2: user.billingDetails?.addressLine2 ?? "",
+      zip: user.billingDetails?.zip ?? "",
+      city: user.billingDetails?.city ?? "",
+      country: user.billingDetails?.country ?? "DE",
+    },
+    billingDetails: {
+      accountHolder: user.billingDetails?.accountHolder ?? "",
+      iban: user.billingDetails?.iban ?? "",
+      bic: user.billingDetails?.bic ?? "",
+    },
   };
 
   return (
@@ -128,13 +176,39 @@ const InformationPage = () => {
           key={JSON.stringify(defaultValues)}
           defaultValues={defaultValues}
           onSubmit={(values) => {
-            const { appointmentTypes, ...rest } = values;
-            mutation.mutate({
+            const {
+              appointmentTypes,
+              address,
+              isIdenticalBillingAddress,
+              billingAddress,
+              billingDetails,
+              ...rest
+            } = values;
+
+            const input: RouterInputs["viewer"]["updateProfile"] = {
               ...rest,
+              ...address,
               appointmentTypes: appointmentTypes.join(","),
-            });
+            };
+
+            if (isIdenticalBillingAddress) {
+              input.billingDetails = {
+                name: rest.companyName || (rest.firstName + " " + rest.lastName).trim(),
+                ...address,
+                ...billingDetails,
+              };
+            } else {
+              input.billingDetails = {
+                ...billingAddress,
+                ...billingDetails,
+              };
+            }
+
+            mutation.mutate(input);
           }}
         />
+        {/* Spacer */}
+        <div className="mt-24" />
       </TabLayoutForMdAndLess>
     </Shell>
   );
@@ -148,11 +222,6 @@ const ProfileForm = ({
   onSubmit: (values: FormValues) => void;
 }) => {
   const { t } = useLocale();
-
-  const emailMd5 = crypto
-    .createHash("md5")
-    .update(defaultValues.email || "example@example.com")
-    .digest("hex");
 
   const formMethods = useForm<FormValues>({
     defaultValues,
@@ -184,7 +253,7 @@ const ProfileForm = ({
           name="avatar"
           render={({ field: { value } }) => (
             <>
-              <Avatar alt="" imageSrc={value} gravatarFallbackMd5={emailMd5} size="lg" />
+              <Avatar alt="" imageSrc={value} size="lg" />
 
               <div className="ltr:ml-4 rtl:mr-4">
                 {/* button color is already set inside component */}
@@ -202,7 +271,7 @@ const ProfileForm = ({
           )}
         />
       </div>
-      <div className=" lg:flex">
+      <div className="lg:flex">
         <div className="mt-8 mr-2 lg:w-1/4">
           <TextField
             className="lg:w-full"
@@ -228,31 +297,18 @@ const ProfileForm = ({
           excludedToolbarItems={["blockType"]}
         />
       </div>
-      <div className="mt-8">
+
+      <div className="mt-8 mb-4">
         <h4 className="text-lg font-bold">{t("lb_work_address")}</h4>
         <h6 className="text-sm text-gray-700">{t("lb_place_work")}</h6>
       </div>
-      <div className="lg:flex">
-        <div className="mt-8 lg:w-2/4">
-          <TextField label={t("lb_street_name_number")} {...formMethods.register("addressLine1")} />
-        </div>
-        <div className="mt-8 lg:ml-2 lg:w-2/4">
-          <TextField label={t("lb_zip_code")} {...formMethods.register("zip")} />
-        </div>
-      </div>
-      <div className="mt-8 lg:mt-2">
-        <TextField label={t("lb_city")} {...formMethods.register("city")} />
-      </div>
-
-      {/*what logic to implement here? maybe the one commented below*/}
-      <div>
-        <Checkbox description={t("lb_work_equals_billing_address")} />
-        {/* 
-        defaultChecked={form.getValues(`steps.${step.stepNumber - 1}.numberRequired`) || false
-        }          
-        onChange={(e) =>form.setValue(`steps.${step.stepNumber - 1}.numberRequired`, e.target.checked)
-        } */}
-      </div>
+      <AddressFields
+        addressLine1={formMethods.register("address.addressLine1")}
+        addressLine2={formMethods.register("address.addressLine2")}
+        zip={formMethods.register("address.zip")}
+        city={formMethods.register("address.city")}
+        country={formMethods.register("address.country")}
+      />
 
       <div className="mt-8">
         <h4 className="text-lg font-bold">{t("lb_specializations")}</h4>
@@ -321,6 +377,74 @@ const ProfileForm = ({
         )}
       />
 
+      <div className="mt-8 mb-4">
+        <h4 className="text-lg font-bold">{t("lb_billing_account_data_header")}</h4>
+        <h6 className="text-sm text-gray-700">{t("lb_billing_account_data_description")}</h6>
+      </div>
+
+      <div className="mt-8 lg:mt-2">
+        <TextField
+          label={t("lb_billing_account_data_account_holder")}
+          {...formMethods.register("billingDetails.accountHolder")}
+        />
+      </div>
+
+      <div className="mt-8 lg:mt-2">
+        <TextField
+          label={t("lb_billing_account_data_iban")}
+          placeholder="DE89414..."
+          {...formMethods.register("billingDetails.iban")}
+        />
+      </div>
+      <div className="mt-8 lg:mt-2">
+        <TextField
+          label={t("lb_billing_account_data_bic")}
+          placeholder="370..."
+          {...formMethods.register("billingDetails.bic")}
+        />
+      </div>
+
+      <div className="my-4">
+        <Controller
+          name="isIdenticalBillingAddress"
+          control={formMethods.control}
+          render={({ field: { ref, value, onChange, onBlur } }) => (
+            <Switch
+              ref={ref}
+              checked={value}
+              onCheckedChange={onChange}
+              onBlur={onBlur}
+              label={t("lb_work_equals_billing_address")}
+            />
+          )}
+        />
+      </div>
+
+      <Controller
+        name="isIdenticalBillingAddress"
+        control={formMethods.control}
+        render={({ field: { value } }) => {
+          if (value) return <></>;
+          return (
+            <>
+              <div className="mt-8 lg:mt-2">
+                <TextField
+                  label={t("lb_billing_address_name")}
+                  {...formMethods.register("billingAddress.name")}
+                />
+              </div>
+              <AddressFields
+                addressLine1={formMethods.register("billingAddress.addressLine1")}
+                addressLine2={formMethods.register("billingAddress.addressLine2")}
+                zip={formMethods.register("billingAddress.zip")}
+                city={formMethods.register("billingAddress.city")}
+                country={formMethods.register("billingAddress.country")}
+              />
+            </>
+          );
+        }}
+      />
+
       <div className="text-right">
         <Button disabled={isDisabled} color="primary" className="mt-8" type="submit">
           {t("update")}
@@ -329,5 +453,35 @@ const ProfileForm = ({
     </Form>
   );
 };
+
+type TextFieldProps = React.ComponentPropsWithRef<typeof TextField>;
+
+function AddressFields({
+  addressLine1,
+  // addressLine2,
+  city,
+  zip,
+}: { [key in keyof Address]: TextFieldProps }) {
+  const { t } = useLocale();
+  return (
+    <>
+      <div className="mt-4 lg:mt-2">
+        <TextField label={t("lb_street_name_number")} {...addressLine1} />
+      </div>
+      {/* Note: Address line 2 is hidden, because it is quite unusual on German addresses */}
+      {/* <div className="mt-4 lg:mt-2">
+        <TextField label={t("lb_address_line_2")} {...addressLine2} />
+      </div> */}
+      <div className="mt-4 lg:mt-2 lg:flex">
+        <div className="lg:w-1/2">
+          <TextField label={t("lb_zip_code")} {...zip} />
+        </div>
+        <div className="lg:ml-2 lg:w-1/2">
+          <TextField label={t("lb_city")} {...city} />
+        </div>
+      </div>
+    </>
+  );
+}
 
 export default InformationPage;

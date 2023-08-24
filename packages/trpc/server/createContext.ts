@@ -107,6 +107,7 @@ async function getUserFromSession({
       coachProfileDraft: {
         select: coachSelect,
       },
+      billingDetails: true,
     },
   });
 
