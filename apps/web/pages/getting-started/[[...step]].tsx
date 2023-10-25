@@ -322,9 +322,7 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
       data-testid="onboarding"
       key={router.asPath}>
       <Head>
-        <title>
-          {APP_NAME} - {t("getting_started")}
-        </title>
+        <title>{`${t("getting_started")} | ${APP_NAME}`}</title>
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
