@@ -56,7 +56,7 @@ function SectionContent({
   if (queryStatus === "success") {
     return (
       <>
-        {section === "information" && <Information />}
+        {section === "information" && <Information user={user} />}
         {section === "chat" && chatCredentials && (
           <Chat chatCredentials={{ token: chatCredentials.token }} otherParty={user} />
         )}
@@ -97,11 +97,7 @@ export default function ClientDetails(props: ClientDetailsProps) {
   }
 
   return (
-    <ClientLayout
-      subtitle="Manage settings for your nutritionist profile"
-      title={user?.name ?? "N/A"}
-      heading={user?.name ?? "N/A"}
-      email={email}>
+    <ClientLayout title={user?.name ?? ""} heading={user?.name ?? "N/A"} email={email}>
       <SectionContent
         user={user}
         errorMessage={query.error?.message}

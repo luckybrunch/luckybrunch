@@ -14,7 +14,7 @@ import {
   EmptyScreen,
   Button,
 } from "@calcom/ui";
-import { FiFile, FiLink } from "@calcom/ui/components/icon";
+import { FiFile } from "@calcom/ui/components/icon";
 
 import { withQuery } from "@lib/QueryCell";
 import useMeQuery from "@lib/hooks/useMeQuery";
@@ -56,18 +56,10 @@ export default function Clients() {
                       className="flex w-full content-center justify-between rounded-2xl"
                       href={`/clients/client-details/information?email=${client.email}`}>
                       <div className="flex flex-row">
-                        <img
-                          className="mr-2 h-10 w-10 rounded-full"
-                          src="https://picsum.photos/200/300"
-                          alt={client.name}
-                        />
                         <div className="flex flex-col content-start">
                           <ListItemTitle>{client.name}</ListItemTitle>
                           <ListItemText>{client.email}</ListItemText>
                         </div>
-                      </div>
-                      <div className="border-brand-200 rounded-lg border-2 p-1">
-                        <FiLink className="text-brand-500 text-3xl font-bold" />
                       </div>
                       {(unreadCounts?.unreadChannels[chatId] ?? 0) > 0 && (
                         <Badge
