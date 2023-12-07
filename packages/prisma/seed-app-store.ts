@@ -7,6 +7,9 @@ import prisma from ".";
 
 dotEnv.config({ path: "../../.env.appStore" });
 
+// eslint-disable-next-line prettier/prettier
+const enabledApps = ["jitsi", "qr_code", "google-calendar", "google-meet", "stripe"];
+
 export const seededForm = {
   id: "948ae412-d995-4865-875a-48302588de03",
   name: "Seeded Form - Pro",
@@ -157,10 +160,11 @@ async function createApp(
   keys?: Prisma.AppCreateInput["keys"],
   isTemplate?: boolean
 ) {
+  const enabled = enabledApps.includes(slug);
   await prisma.app.upsert({
     where: { slug },
-    create: { slug, dirName, categories, keys, enabled: true },
-    update: { dirName, categories, keys, enabled: true },
+    create: { slug, dirName, categories, keys, enabled },
+    update: { dirName, categories, keys, enabled },
   });
   await prisma.credential.updateMany({
     where: { type },
