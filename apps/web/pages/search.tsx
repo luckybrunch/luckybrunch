@@ -1,5 +1,6 @@
 import { DesktopComputerIcon } from "@heroicons/react/outline";
 import { Rating } from "@smastrom/react-rating";
+import MarkdownIt from "markdown-it";
 import { GetServerSidePropsContext } from "next/types";
 import { useState } from "react";
 
@@ -13,6 +14,8 @@ import { FiEye } from "@calcom/ui/components/icon";
 import { withQuery } from "@lib/QueryCell";
 
 import { ssrInit } from "@server/lib/ssr";
+
+const md = new MarkdownIt("default", { html: true, breaks: true, linkify: true });
 
 export default function Search() {
   const { data: queryFilters } = useCoachFilterQuery();
@@ -58,7 +61,14 @@ export default function Search() {
                       <h3 className="text-m mt-4 font-medium text-gray-900">
                         {coachProfile?.firstName ?? ""} {coachProfile?.lastName ?? ""}
                       </h3>
-                      <p className="text-sm text-gray-500">{coachProfile?.bio}</p>
+                      {coachProfile?.bio ? (
+                        <>
+                          <div
+                            className="dark:text-darkgray-600 text-sm text-gray-500 [&_a]:text-blue-500 [&_a]:underline [&_a]:hover:text-blue-600"
+                            dangerouslySetInnerHTML={{ __html: md.render(coachProfile?.bio || "") }}
+                          />
+                        </>
+                      ) : null}
                       <div className="mt-2 flex items-center justify-center">
                         <Rating style={{ maxWidth: 180 }} value={3} readOnly />
                       </div>
