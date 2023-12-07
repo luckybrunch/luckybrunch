@@ -207,7 +207,7 @@ function Published() {
         text={t("lb_banner_published_text")}
         icon={<HiCheckCircle className="text-lg" />}
         buttonRaw={
-          <Button color="secondary" href="#" StartIcon={FiEye}>
+          <Button color="secondary" href={user ? `/coach/${user.username}` : "#"} StartIcon={FiEye}>
             {t("view_public_page")}
           </Button>
         }
