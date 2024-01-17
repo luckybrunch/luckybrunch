@@ -442,7 +442,7 @@ enum DashboardItem {
 const navigation: ({ itemId: DashboardItem } & NavigationItemType)[] = [
   {
     itemId: DashboardItem.DASHBOARD,
-    name: "Dashboard" /* TODO: localize */,
+    name: "lb_dashboard",
     href: "/dashboard",
     icon: FiTrello,
   },
@@ -459,14 +459,14 @@ const navigation: ({ itemId: DashboardItem } & NavigationItemType)[] = [
   },
   {
     itemId: DashboardItem.CLIENTS,
-    name: "Clients",
+    name: "lb_clients",
     href: "/clients",
     badge: <UnreadMessageBadge />,
     icon: FiUsers,
   },
   {
     itemId: DashboardItem.PROFILE,
-    name: "Profile",
+    name: "lb_profile",
     href: "/profile/information",
     icon: FiUser,
     isCurrent: ({ router }) => {
@@ -474,9 +474,9 @@ const navigation: ({ itemId: DashboardItem } & NavigationItemType)[] = [
       return path.startsWith("/profile");
     },
     child: [
-      { name: "Information", href: "/profile/information" },
-      { name: "Certificates", href: "/profile/certificates" },
-      { name: "Services", href: "/profile/services" },
+      { name: "lb_tab_information", href: "/profile/information" },
+      { name: "lb_tab_certificates", href: "/profile/certificates" },
+      { name: "lb_tab_services", href: "/profile/services" },
     ],
   },
   {
@@ -493,13 +493,13 @@ const navigation: ({ itemId: DashboardItem } & NavigationItemType)[] = [
   },
   {
     itemId: DashboardItem.DISCOVER,
-    name: "Discover",
+    name: "lb_discover",
     href: "/search",
     icon: FiSettings,
   },
   {
     itemId: DashboardItem.COACHES,
-    name: "Coaches",
+    name: "lb_coaches",
     href: "/coaches",
     badge: <UnreadMessageBadge />,
     icon: FiUsers,
