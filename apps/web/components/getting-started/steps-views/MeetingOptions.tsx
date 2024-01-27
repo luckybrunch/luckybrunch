@@ -1,5 +1,4 @@
 import { ArrowRightIcon } from "@heroicons/react/solid";
-import { useRouter } from "next/router";
 import { IOnboardingComponentProps } from "pages/getting-started/[[...step]]";
 import { useForm } from "react-hook-form";
 
@@ -7,40 +6,36 @@ import { AppointmentType } from "@calcom/features/coaches/types";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { Button, Form } from "@calcom/ui";
 
-import { StepCheckbox, useCheckboxOptions } from "../components/StepCheckbox";
+import { StepCheckbox } from "../components/StepCheckbox";
+
+const MEETING_OPTIONS_QUERY_KEY = "meetingOptions";
 
 export const MeetingOptions = (props: IOnboardingComponentProps) => {
   const { nextStep } = props;
-  const { query } = useRouter();
-
   const { t } = useLocale();
-  const { options, toggleSelection } = useCheckboxOptions(
-    (() => {
-      return [
-        { title: t("lb_appointmenttype_online"), value: AppointmentType.ONLINE },
-        { title: t("lb_appointmenttype_home"), value: AppointmentType.HOME },
-        { title: t("lb_appointmenttype_office"), value: AppointmentType.OFFICE },
-      ].map((o) => ({ ...o, _isSelected: query.meetingOptions?.includes(o.value) }));
-    })()
-  );
+
+  const options = [
+    { title: t("lb_appointmenttype_online"), value: AppointmentType.ONLINE },
+    { title: t("lb_appointmenttype_home"), value: AppointmentType.HOME },
+    { title: t("lb_appointmenttype_office"), value: AppointmentType.OFFICE },
+  ];
 
   const form = useForm();
 
-  const onSubmit = async () => {
-    const params = { meetingOptions: options.filter((o) => o._isSelected).map((o) => o.value) };
-    nextStep(params);
-  };
-
   return (
-    <Form form={form} handleSubmit={onSubmit}>
-      <div className="flex flex-wrap justify-center">
+    <Form
+      form={form}
+      handleSubmit={async () => {
+        nextStep();
+      }}>
+      <div className="grid grid-flow-row grid-cols-1 sm:grid-cols-3">
         {options.map((option, index) => {
           return (
             <StepCheckbox
               key={index}
-              isActive={option._isSelected}
               title={option.title}
-              toggle={() => toggleSelection(option._id)}
+              queryKey={MEETING_OPTIONS_QUERY_KEY}
+              value={option.value}
             />
           );
         })}

@@ -7,7 +7,6 @@ import { ParsedUrlQueryInput, stringify } from "querystring";
 import { FC } from "react";
 import { z } from "zod";
 
-import { AppointmentType } from "@calcom/features/coaches/types";
 import { getSession } from "@calcom/lib/auth";
 import { APP_NAME } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
@@ -31,7 +30,7 @@ import { UserGoals } from "@components/getting-started/steps-views/UserGoals";
 export type IOnboardingPageProps = inferSSRProps<typeof getServerSideProps>;
 export type IOnboardingComponentProps = {
   user: IOnboardingPageProps["user"];
-  nextStep: (queryParams?: ParsedUrlQueryInput) => void;
+  nextStep: () => void;
 };
 export type OnboardingUrl = typeof availableUrls[number];
 
@@ -64,18 +63,7 @@ const stepLinks: StepLink = {
     next: "lb_almost-done",
   },
   "lb_meeting-options": {
-    next: (params) => {
-      const inPerson =
-        [AppointmentType.OFFICE, AppointmentType.HOME].filter((meetingType) =>
-          (params.meetingOptions as string[])?.includes(meetingType)
-        ).length > 0;
-
-      if (inPerson) {
-        return "lb_where-do-you-live";
-      }
-
-      return "lb_price-range";
-    },
+    next: null,
   },
   "lb_price-range": {
     next: null,
@@ -117,9 +105,9 @@ const availableUrls = [
 const clientUrls: OnboardingUrl[] = [
   "lb_user-goals",
   "lb_meeting-options",
-  "lb_where-do-you-live",
-  "lb_meeting-range",
-  "lb_price-range",
+  // "lb_where-do-you-live",
+  // "lb_meeting-range",
+  // "lb_price-range",
 ];
 const coachUrls: OnboardingUrl[] = [
   "lb_user-profile",
@@ -252,7 +240,7 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
       }
 
       await utils.viewer.me.refetch();
-      router.push({ pathname: url, query: { ...router.query } });
+      router.push({ pathname: url, query: router.query });
     },
   });
 
@@ -275,19 +263,16 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
     );
   };
 
-  const goToNextStep = async (currentStepIndex: number, newParams?: ParsedUrlQueryInput) => {
+  const goToNextStep = async (currentStepIndex: number) => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars, unused-imports/no-unused-vars
     const { step, ...previousParams } = router.query;
     const currentStep = steps[currentStepIndex];
     const { next } = stepLinks[currentStep.url];
-    const allParams = { ...previousParams, ...newParams };
-
-    await router.push({ query: { ...router.query, ...newParams } }, undefined, { shallow: true });
 
     let nextStep: OnboardingUrl | null = null;
 
     if (typeof next === "function") {
-      nextStep = next(allParams);
+      nextStep = next(previousParams);
     }
 
     // Last step if both of them null
@@ -299,7 +284,7 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
       } else {
         router.push({
           pathname: "/search",
-          query: { ...allParams },
+          query: { ...previousParams },
         });
       }
       return;
@@ -307,7 +292,7 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
 
     router.push({
       pathname: `/getting-started/${nextStep ?? next}`,
-      query: allParams,
+      query: { ...previousParams },
     });
   };
 
@@ -345,7 +330,7 @@ const OnboardingPage = (props: IOnboardingPageProps) => {
               <Steps maxSteps={steps.length} currentStep={currentStepIndex + 1} navigateToStep={goToIndex} />
             </div>
             <StepCard>
-              <Component user={user} nextStep={(q) => goToNextStep(currentStepIndex, q)} />
+              <Component user={user} nextStep={() => goToNextStep(currentStepIndex)} />
             </StepCard>
             {headers.skipText && (
               <div className="flex w-full flex-row justify-center">

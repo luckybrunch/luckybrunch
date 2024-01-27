@@ -1,57 +1,51 @@
 import { ArrowRightIcon } from "@heroicons/react/solid";
-import { useRouter } from "next/router";
 import { IOnboardingComponentProps } from "pages/getting-started/[[...step]]";
 import { useForm } from "react-hook-form";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { Button, Form } from "@calcom/ui";
+import { Specialization } from "@calcom/prisma/client";
+import { trpc } from "@calcom/trpc";
+import { Button, Form, Loader } from "@calcom/ui";
 
-import { StepCheckbox, useCheckboxOptions } from "../components/StepCheckbox";
+import { StepCheckbox } from "../components/StepCheckbox";
 
-enum Goal {
-  CHANGE_WEIGHT = "change_weight",
-  PROMOTE_HEALTH = "promote_health",
-  IMPROVE_FITNESS = "improve_fitness",
-  ALLEVIATE_INTOLERANCES = "alleviate_intolerances",
-}
+const GOALS_QUERY_KEY = "goals";
 
 export const UserGoals = (props: IOnboardingComponentProps) => {
-  const { nextStep } = props;
+  const { data } = trpc.public.getSpecializations.useQuery();
+  if (!data) return <Loader />;
+  return <UserGoalsForm {...props} data={data} />;
+};
+
+const UserGoalsForm = (props: {
+  nextStep: IOnboardingComponentProps["nextStep"];
+  data: Specialization[];
+}) => {
+  const { nextStep, data } = props;
 
   const { t } = useLocale();
 
   const form = useForm();
-  const { query } = useRouter();
 
-  const { options, toggleSelection } = useCheckboxOptions(
-    (() => {
-      return [
-        { value: Goal.CHANGE_WEIGHT, title: "change weight" },
-        { value: Goal.PROMOTE_HEALTH, title: "promote health" },
-        { value: Goal.IMPROVE_FITNESS, title: "improve fitness" },
-        { value: Goal.ALLEVIATE_INTOLERANCES, title: "alleviate intolerances" },
-      ].map((o) => ({
-        ...o,
-        _isSelected: query.goals?.includes(o.value),
-      }));
-    })()
-  );
-
-  const onSubmit = async () => {
-    const params = { goals: options.filter((o) => o._isSelected).map((o) => o.value) };
-    nextStep(params);
-  };
+  const options = data.map(({ id, label }) => ({
+    value: String(id),
+    title: label,
+  }));
 
   return (
-    <Form form={form} handleSubmit={onSubmit}>
-      <div className="flex flex-wrap justify-center">
+    <Form
+      form={form}
+      handleSubmit={async () => {
+        nextStep();
+      }}>
+      <div className="grid grid-flow-row grid-cols-1 sm:grid-cols-2">
         {options.map((userGoal, index) => {
           return (
             <StepCheckbox
               key={index}
-              isActive={userGoal._isSelected}
               title={userGoal.title}
-              toggle={() => toggleSelection(userGoal._id)}
+              value={userGoal.value}
+              queryKey={GOALS_QUERY_KEY}
             />
           );
         })}
