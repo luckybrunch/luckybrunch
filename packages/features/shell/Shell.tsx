@@ -736,7 +736,7 @@ function SideBar() {
       <aside className="desktop-transparent top-0 hidden h-full max-h-screen w-14 flex-col overflow-y-auto overflow-x-hidden border-r border-neutral-200 bg-white md:sticky md:flex lg:w-56 lg:px-4">
         <div className="flex h-full flex-col justify-between py-3 lg:pt-6 ">
           <header className="items-center justify-between md:hidden lg:flex">
-            <Link href="/event-types" className="px-2">
+            <Link href="/" className="px-2">
               <Logo small />
             </Link>
             <div className="flex space-x-2 rtl:space-x-reverse">
@@ -878,7 +878,7 @@ function TopNav() {
       <nav
         style={isEmbed ? { display: "none" } : {}}
         className="sticky top-0 z-40 flex w-full items-center justify-between border-b border-gray-200 bg-gray-50 bg-opacity-50 py-1.5 px-4 backdrop-blur-lg sm:p-4 md:hidden">
-        <Link href="/event-types">
+        <Link href="/">
           <Logo />
         </Link>
         <div className="flex items-center gap-2 self-center">
