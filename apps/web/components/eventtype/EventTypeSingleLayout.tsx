@@ -38,7 +38,6 @@ import {
   FiSliders,
   FiRepeat,
   FiGrid,
-  FiZap,
   FiUsers,
   FiExternalLink,
   FiCode,
@@ -110,12 +109,6 @@ function getNavigation(props: {
       icon: FiGrid,
       //TODO: Handle proper translation with count handling
       info: `${installedAppsNumber} apps, ${enabledAppsNumber} ${t("active")}`,
-    },
-    {
-      name: "workflows",
-      href: `/event-types/${eventType.id}?tabName=workflows`,
-      icon: FiZap,
-      info: `${enabledWorkflowsNumber} ${t("active")}`,
     },
   ];
 }
