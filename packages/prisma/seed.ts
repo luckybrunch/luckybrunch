@@ -557,17 +557,17 @@ async function main() {
         length: 30,
       },
       {
-        title: "Beratungsstunde (Zeiteinheit Vorgabe Berater)",
+        title: "Beratungsstunde",
         slug: "beratungsstunde",
         length: 30,
       },
       {
-        title: "Ganzheitliche Ernähgrungscoaching (Zeiteinheit Vorgabe Berater)",
+        title: "Ganzheitliche Ernähgrungscoaching",
         slug: "ernaehrungscoaching",
         length: 30,
       },
       {
-        title: "Einkaufscoaching (Zeiteinheit Vorgabe Berater)",
+        title: "Einkaufscoaching",
         slug: "einkaufscoaching",
         length: 30,
       },
