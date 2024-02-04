@@ -18,7 +18,6 @@ import {
   SkeletonButton,
   SkeletonContainer,
   SkeletonText,
-  Switch,
   TextField,
   Editor,
 } from "@calcom/ui";
@@ -63,13 +62,13 @@ type FormValues = {
   appointmentTypes: string[];
   specializations: number[];
   address: Address;
-  isIdenticalBillingAddress: boolean;
-  billingAddress: { name: string } & Address;
-  billingDetails: {
-    accountHolder: string;
-    iban: string;
-    bic: string;
-  };
+  // isIdenticalBillingAddress: boolean;
+  // billingAddress: { name: string } & Address;
+  // billingDetails: {
+  //   accountHolder: string;
+  //   iban: string;
+  //   bic: string;
+  // };
 };
 
 const AppointmentTypes = {
@@ -113,27 +112,27 @@ const InformationPage = () => {
       </Shell>
     );
 
-  const isIdenticalBillingAddress = (() => {
-    // For backwards-compatibility reasons, we assume that when the billing details are not set,
-    // the user wants to use the same address as the work address.
-    if (!user.billingDetails) return true;
+  // const isIdenticalBillingAddress = (() => {
+  //   // For backwards-compatibility reasons, we assume that when the billing details are not set,
+  //   // the user wants to use the same address as the work address.
+  //   if (!user.billingDetails) return true;
 
-    const name =
-      user.coachProfileDraft?.companyName ||
-      ((user.coachProfileDraft?.firstName ?? "") + " " + (user.coachProfileDraft?.lastName ?? "")).trim();
-    if (
-      name === user.billingDetails?.name &&
-      user.coachProfileDraft?.addressLine1 === user.billingDetails?.addressLine1 &&
-      user.coachProfileDraft?.addressLine2 === user.billingDetails?.addressLine2 &&
-      user.coachProfileDraft?.zip === user.billingDetails?.zip &&
-      user.coachProfileDraft?.city === user.billingDetails?.city &&
-      user.coachProfileDraft?.country === user.billingDetails?.country
-    ) {
-      return true;
-    } else {
-      return false;
-    }
-  })();
+  //   const name =
+  //     user.coachProfileDraft?.companyName ||
+  //     ((user.coachProfileDraft?.firstName ?? "") + " " + (user.coachProfileDraft?.lastName ?? "")).trim();
+  //   if (
+  //     name === user.billingDetails?.name &&
+  //     user.coachProfileDraft?.addressLine1 === user.billingDetails?.addressLine1 &&
+  //     user.coachProfileDraft?.addressLine2 === user.billingDetails?.addressLine2 &&
+  //     user.coachProfileDraft?.zip === user.billingDetails?.zip &&
+  //     user.coachProfileDraft?.city === user.billingDetails?.city &&
+  //     user.coachProfileDraft?.country === user.billingDetails?.country
+  //   ) {
+  //     return true;
+  //   } else {
+  //     return false;
+  //   }
+  // })();
 
   const defaultValues: FormValues = {
     avatar: user.coachProfileDraft?.avatar ?? "",
@@ -153,20 +152,20 @@ const InformationPage = () => {
       city: user.coachProfileDraft?.city ?? "",
       country: user.coachProfileDraft?.country ?? "DE",
     },
-    isIdenticalBillingAddress,
-    billingAddress: {
-      name: user.billingDetails?.name ?? "",
-      addressLine1: user.billingDetails?.addressLine1 ?? "",
-      addressLine2: user.billingDetails?.addressLine2 ?? "",
-      zip: user.billingDetails?.zip ?? "",
-      city: user.billingDetails?.city ?? "",
-      country: user.billingDetails?.country ?? "DE",
-    },
-    billingDetails: {
-      accountHolder: user.billingDetails?.accountHolder ?? "",
-      iban: user.billingDetails?.iban ?? "",
-      bic: user.billingDetails?.bic ?? "",
-    },
+    // isIdenticalBillingAddress,
+    // billingAddress: {
+    //   name: user.billingDetails?.name ?? "",
+    //   addressLine1: user.billingDetails?.addressLine1 ?? "",
+    //   addressLine2: user.billingDetails?.addressLine2 ?? "",
+    //   zip: user.billingDetails?.zip ?? "",
+    //   city: user.billingDetails?.city ?? "",
+    //   country: user.billingDetails?.country ?? "DE",
+    // },
+    // billingDetails: {
+    //   accountHolder: user.billingDetails?.accountHolder ?? "",
+    //   iban: user.billingDetails?.iban ?? "",
+    //   bic: user.billingDetails?.bic ?? "",
+    // },
   };
 
   return (
@@ -179,9 +178,9 @@ const InformationPage = () => {
             const {
               appointmentTypes,
               address,
-              isIdenticalBillingAddress,
-              billingAddress,
-              billingDetails,
+              // isIdenticalBillingAddress,
+              // billingAddress,
+              // billingDetails,
               ...rest
             } = values;
 
@@ -191,18 +190,18 @@ const InformationPage = () => {
               appointmentTypes: appointmentTypes.join(","),
             };
 
-            if (isIdenticalBillingAddress) {
-              input.billingDetails = {
-                name: rest.companyName || (rest.firstName + " " + rest.lastName).trim(),
-                ...address,
-                ...billingDetails,
-              };
-            } else {
-              input.billingDetails = {
-                ...billingAddress,
-                ...billingDetails,
-              };
-            }
+            // if (isIdenticalBillingAddress) {
+            //   input.billingDetails = {
+            //     name: rest.companyName || (rest.firstName + " " + rest.lastName).trim(),
+            //     ...address,
+            //     ...billingDetails,
+            //   };
+            // } else {
+            //   input.billingDetails = {
+            //     ...billingAddress,
+            //     ...billingDetails,
+            //   };
+            // }
 
             mutation.mutate(input);
           }}
@@ -377,7 +376,7 @@ const ProfileForm = ({
         )}
       />
 
-      <div className="mt-8 mb-4">
+      {/* <div className="mt-8 mb-4">
         <h4 className="text-lg font-bold">{t("lb_billing_account_data_header")}</h4>
         <h6 className="text-sm text-gray-700">{t("lb_billing_account_data_description")}</h6>
       </div>
@@ -443,7 +442,7 @@ const ProfileForm = ({
             </>
           );
         }}
-      />
+      /> */}
 
       <div className="text-right">
         <Button disabled={isDisabled} color="primary" className="mt-8" type="submit">
