@@ -131,5 +131,5 @@ export type { Option as MultiSelectCheckboxesOptionType } from "./components/for
 export { default as ImageUploader } from "./components/image-uploader/ImageUploader";
 export type { ButtonColor } from "./components/button/Button";
 
-export { CoachProfileLayout, CoachProfileCard, Review } from "./components/coach-profile";
+export { CoachProfileLayout, CoachProfileCard, Rating, RatingInput } from "./components/coach-profile";
 export { TrafficLightBanner } from "./components/traffic-light-banner";

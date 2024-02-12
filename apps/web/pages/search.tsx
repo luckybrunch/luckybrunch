@@ -1,5 +1,4 @@
 import { DesktopComputerIcon } from "@heroicons/react/outline";
-import { Rating } from "@smastrom/react-rating";
 import MarkdownIt from "markdown-it";
 import { GetServerSidePropsContext } from "next/types";
 import { useState } from "react";
@@ -69,9 +68,6 @@ export default function Search() {
                           />
                         </>
                       ) : null}
-                      <div className="mt-2 flex items-center justify-center">
-                        <Rating style={{ maxWidth: 180 }} value={3} readOnly />
-                      </div>
                     </div>
                     <div>
                       <div className="flex border-t border-gray-200">

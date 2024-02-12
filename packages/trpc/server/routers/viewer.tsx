@@ -50,6 +50,7 @@ import { coachesRouter } from "./viewer/coaches";
 import { deploymentSetupRouter } from "./viewer/deploymentSetup";
 import { eventTypesRouter } from "./viewer/eventTypes";
 import { profileRouter } from "./viewer/profile";
+import { reviewsRouter } from "./viewer/reviews";
 import { slotsRouter } from "./viewer/slots";
 import { ssoRouter } from "./viewer/sso";
 import { viewerTeamsRouter } from "./viewer/teams";
@@ -1435,5 +1436,6 @@ export const viewerRouter = mergeRouters(
     clients: clientsRouter,
     coaches: coachesRouter,
     chat: chatRouter,
+    reviews: reviewsRouter,
   })
 );

@@ -234,6 +234,8 @@ model User {
 
   clientNotes    ClientNotes[]
   billingDetails BillingDetails?
+  coachReviews   Review[]        @relation(name: "coachReviews")
+  userReviews    Review[]        @relation(name: "userReviews")
   // LuckyBrunch - END
 
   @@map(name: "users")
@@ -782,4 +784,18 @@ model BillingDetails {
   bic           String?
 
   user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Review {
+  id          Int      @id @default(autoincrement())
+  createdAt   DateTime @default(now())
+  coachUserId Int
+  coach       User     @relation(name: "coachReviews", fields: [coachUserId], references: [id], onDelete: Cascade)
+  userId      Int
+  user        User     @relation(name: "userReviews", fields: [userId], references: [id], onDelete: Cascade)
+  rating      Int
+  comment     String?
+
+  @@unique([coachUserId, userId])
+  @@index([userId])
 }

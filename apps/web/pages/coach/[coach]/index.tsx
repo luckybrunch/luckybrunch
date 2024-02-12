@@ -6,8 +6,10 @@ import { HiCheckCircle, HiLocationMarker, HiAcademicCap } from "react-icons/hi";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import useTheme from "@calcom/lib/hooks/useTheme";
 import { trpc } from "@calcom/trpc/react";
-import { HeadSeo, Badge, Button, CoachProfileLayout, CoachProfileCard, Review } from "@calcom/ui";
+import { HeadSeo, Badge, Button, CoachProfileLayout, CoachProfileCard } from "@calcom/ui";
 import { FiCalendar } from "@calcom/ui/components/icon";
+
+import { Reviews } from "@components/coaches/Reviews";
 
 import { ssrInit } from "@server/lib/ssr";
 
@@ -111,9 +113,8 @@ export default function CoachProfile() {
         </div>
 
         {/* CONTAINER RIGHT SIDE */}
-        {/* REVIEW */}
         <div className="lg:col-span-1 lg:col-start-3">
-          <Review />
+          <Reviews coachUserId={coach.id} />
         </div>
       </CoachProfileLayout>
     </>
