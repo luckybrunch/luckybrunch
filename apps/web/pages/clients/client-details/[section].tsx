@@ -1,15 +1,12 @@
-import { Attendee, User } from "@prisma/client";
 import { GetStaticPaths, GetStaticProps } from "next";
 import { useRouter } from "next/router";
 import { z } from "zod";
 
-import Chat from "@calcom/features/chat/components/Chat";
+import { Chat, ChatNotAvailable } from "@calcom/features/chat";
 import ClientLayout from "@calcom/features/clients/layout/ClientLayout";
 import { trpc } from "@calcom/trpc/react";
 import { EmptyScreen, SkeletonLoader } from "@calcom/ui";
 import { FiDelete } from "@calcom/ui/components/icon";
-
-import useMeQuery from "@lib/hooks/useMeQuery";
 
 import ClientBookings from "@components/clients/ClientBookings";
 import Information from "@components/clients/Information";
@@ -35,48 +32,6 @@ type ClientDetailsProps = {
   section: ValidSectionEnum;
 };
 
-function SectionContent({
-  user,
-  section,
-  queryStatus,
-  errorMessage,
-}: {
-  queryStatus: "success" | "error" | "loading";
-  user?: Attendee | User | null;
-  errorMessage?: string;
-} & ClientDetailsProps) {
-  const { data: me } = useMeQuery();
-  const { data: chatCredentials } = trpc.viewer.chat.getCredentials.useQuery(
-    { userChatId: me?.id.toString() || "" },
-    {
-      enabled: !!me,
-    }
-  );
-
-  if (queryStatus === "success") {
-    return (
-      <>
-        {section === "information" && <Information user={user} />}
-        {section === "chat" && chatCredentials && (
-          <Chat chatCredentials={{ token: chatCredentials.token }} otherParty={user} />
-        )}
-        {section === "bookings" && <ClientBookings clientEmail={user?.email} />}
-        {section === "notes" && <Notes clientEmail={user?.email} />}
-      </>
-    );
-  }
-
-  return (
-    <div className="flex items-center justify-center pt-2 xl:pt-0">
-      <EmptyScreen
-        Icon={FiDelete}
-        headline="An error occurred"
-        description={errorMessage ?? "An error occurred while listing client information"}
-      />
-    </div>
-  );
-}
-
 export default function ClientDetails(props: ClientDetailsProps) {
   const router = useRouter();
   const { section } = props;
@@ -90,20 +45,32 @@ export default function ClientDetails(props: ClientDetailsProps) {
     { enabled: router.isReady && email.length !== 0 }
   );
 
-  const user = query.data;
+  if (query.isError) {
+    return (
+      <div className="flex items-center justify-center pt-2 xl:pt-0">
+        <EmptyScreen
+          Icon={FiDelete}
+          headline="Oh no!"
+          description={query.error?.message ?? "An error occurred while searching for your clients"}
+        />
+      </div>
+    );
+  }
 
-  if (query.status === "loading" || query.isPaused) {
+  const user = query.data;
+  if (!user) {
     return <SkeletonLoader />;
   }
 
   return (
-    <ClientLayout title={user?.name ?? ""} heading={user?.name ?? "N/A"} email={email}>
-      <SectionContent
-        user={user}
-        errorMessage={query.error?.message}
-        queryStatus={query.status}
-        section={section as ValidSectionEnum}
-      />
+    <ClientLayout title={user.name ?? ""} heading={user.name ?? "N/A"} email={email}>
+      {{
+        information: () => <Information user={user} />,
+        chat: () =>
+          typeof user.id !== "undefined" ? <Chat otherPartyId={user.id.toString()} /> : <ChatNotAvailable />,
+        bookings: () => <ClientBookings clientEmail={user?.email} />,
+        notes: () => <Notes clientEmail={user?.email} />,
+      }[section]()}
     </ClientLayout>
   );
 }

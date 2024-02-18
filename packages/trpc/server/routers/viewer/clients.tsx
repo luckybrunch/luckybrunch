@@ -1,4 +1,3 @@
-import { Attendee } from "@prisma/client";
 import { UserType } from "@prisma/client";
 import { PrismaClient } from "@prisma/client";
 import { z } from "zod";
@@ -8,34 +7,46 @@ import { TRPCError } from "@trpc/server";
 import { authedCoachProcedure, authedProcedure, router } from "../../trpc";
 
 const getClientListForCoach = async (prisma: PrismaClient, coachId: number) => {
-  const bookings = await prisma.booking.findMany({
+  const attendees = await prisma.attendee.findMany({
     where: {
-      userId: coachId,
+      booking: { userId: coachId },
     },
-    include: {
-      attendees: {
-        select: {
-          name: true,
-          email: true,
-        },
-      },
+    select: {
+      name: true,
+      email: true,
+    },
+    distinct: ["email"],
+  });
+
+  const users = await prisma.user.findMany({
+    where: {
+      email: { in: attendees.map((attendee) => attendee.email) },
+    },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      avatar: true,
     },
   });
 
-  const clients: Pick<Attendee, "name" | "email">[] = [];
+  const clients: Array<{
+    id: number | undefined;
+    name: string;
+    email: string;
+    avatar: string | undefined;
+  }> = [];
 
-  // Prevent duplicate records of attendees
-  bookings
-    .map((booking) => booking.attendees)
-    .flat()
-    .forEach((attendee) => {
-      // If the attendee is present in the unique client list, skip them
-      if (clients.findIndex((client) => client.email === attendee.email) !== -1) {
-        return;
-      }
+  for (const attendee of attendees) {
+    const user = users.find((user) => user.email === attendee.email);
 
-      clients.push(attendee);
+    clients.push({
+      id: user?.id,
+      name: user?.name ?? attendee.name,
+      email: attendee.email,
+      avatar: user?.avatar ?? undefined,
     });
+  }
 
   return clients;
 };
@@ -43,7 +54,6 @@ const getClientListForCoach = async (prisma: PrismaClient, coachId: number) => {
 export const clientsRouter = router({
   myClients: authedProcedure.query(async ({ ctx }) => {
     const { prisma, user } = ctx;
-
     return await getClientListForCoach(prisma, user.id);
   }),
   clientDetails: authedCoachProcedure
@@ -57,30 +67,16 @@ export const clientsRouter = router({
       const { email } = input;
 
       const clientList = await getClientListForCoach(prisma, user.id);
+      const client = clientList.find((client) => client.email === email);
 
-      if (clientList.findIndex((client) => client.email === email) === -1) {
+      if (!client) {
         throw new TRPCError({
           code: "NOT_FOUND",
           message: "Details for the specified client are not found",
         });
       }
 
-      let clientDetails;
-
-      clientDetails = await prisma.user.findUnique({
-        where: { email },
-      });
-
-      // Queried email may not be a user in the db yet i.e the user didn't complete the signup process
-      if (!clientDetails) {
-        clientDetails = await prisma.attendee.findFirst({
-          where: {
-            email,
-          },
-        });
-      }
-
-      return clientDetails;
+      return client;
     }),
   clientBookings: authedProcedure
     .input(
@@ -93,18 +89,18 @@ export const clientsRouter = router({
       const { clientEmail } = input;
 
       const bookings = await prisma.booking.findMany({
-        include: {
-          // TODO: Consider including this when the component for listing booking item is updated / changed
-          // currently it's a must include for listing using the <BookingListItem /> component
-          attendees: true,
-        },
         where: {
+          userId: ctx.user.id,
           attendees: {
             some: {
               email: clientEmail,
             },
           },
-          endTime: { gte: new Date() },
+        },
+        include: {
+          // TODO: Consider including this when the component for listing booking item is updated / changed
+          // currently it's a must include for listing using the <BookingListItem /> component
+          attendees: true,
         },
       });
 
@@ -184,8 +180,9 @@ export const clientsRouter = router({
           },
         },
       },
+      distinct: ["userId"],
     });
 
-    return bookings.map((booking) => booking.user).filter(Boolean);
+    return bookings.map((booking) => booking.user).filter((v): v is NonNullable<typeof v> => v !== null);
   }),
 });

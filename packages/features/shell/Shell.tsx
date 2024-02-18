@@ -8,7 +8,7 @@ import { Toaster } from "react-hot-toast";
 import dayjs from "@calcom/dayjs";
 import { useIsEmbed } from "@calcom/embed-core/embed-iframe";
 import UnconfirmedBookingBadge from "@calcom/features/bookings/UnconfirmedBookingBadge";
-import UnreadMessageBadge from "@calcom/features/chat/components/UnreadMessageBadge";
+import { UnreadMessagesBadge } from "@calcom/features/chat";
 import ReviewStatusBanner from "@calcom/features/coaches/components/ReviewStatusBanner";
 import ImpersonatingBanner from "@calcom/features/ee/impersonation/components/ImpersonatingBanner";
 import HelpMenuItem from "@calcom/features/ee/support/components/HelpMenuItem";
@@ -461,7 +461,7 @@ const navigation: ({ itemId: DashboardItem } & NavigationItemType)[] = [
     itemId: DashboardItem.CLIENTS,
     name: "lb_clients",
     href: "/clients",
-    badge: <UnreadMessageBadge />,
+    badge: <UnreadMessagesBadge />,
     icon: FiUsers,
   },
   {
@@ -501,7 +501,7 @@ const navigation: ({ itemId: DashboardItem } & NavigationItemType)[] = [
     itemId: DashboardItem.COACHES,
     name: "lb_coaches",
     href: "/coaches",
-    badge: <UnreadMessageBadge />,
+    badge: <UnreadMessagesBadge />,
     icon: FiUsers,
   },
 ];

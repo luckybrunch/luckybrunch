@@ -1,154 +1,108 @@
-import { UserType } from "@prisma/client";
-import { StreamChat, DefaultGenerics } from "stream-chat";
+import { StreamChat } from "stream-chat";
 import { z } from "zod";
 
-import { normalizeIdForChat } from "@calcom/features/chat/lib/generateChannelName";
+import { User } from "@calcom/prisma/client";
+
+import { TRPCError } from "@trpc/server";
 
 import { authedProcedure, router } from "../../trpc";
 
-const CUSTOM_SERVICE_COMMAND = "services";
+const SLASHCMD_SERVICE = "service";
+const CHANNEL_COACH_CUSTOMER = "coach_customer";
 
-const getChatClient = (() => {
-  let chatClient: StreamChat<DefaultGenerics> | null = null;
+async function createChatClient() {
+  if (
+    !process.env.STREAM_CHAT_API_KEY ||
+    !process.env.STREAM_CHAT_SECRET ||
+    !process.env.STREAM_CHAT_WEBHOOK_URL
+  ) {
+    throw new Error("Chat API key and secret are required");
+  }
+  const client = StreamChat.getInstance(process.env.STREAM_CHAT_API_KEY, process.env.STREAM_CHAT_SECRET);
 
-  return async () => {
-    if (chatClient != null) {
-      return chatClient;
-    }
-
-    chatClient = StreamChat.getInstance(
-      process.env.NEXT_PUBLIC_CHAT_API_KEY || "",
-      process.env.CHAT_SECRET || "",
-      {
-        allowServerSideConnect: true,
-      }
-    );
-
-    try {
-      await chatClient.updateAppSettings({
-        custom_action_handler_url: process.env.CHAT_WEBHOOK_URL,
-      });
-
-      const commandsListRes = await chatClient.listCommands();
-
-      if (commandsListRes.commands.findIndex((command) => command.name === CUSTOM_SERVICE_COMMAND) === -1) {
-        await chatClient.createCommand({
-          description: "Let coaches offer services through chat",
-          name: CUSTOM_SERVICE_COMMAND,
-        });
-      }
-
-      const channelTypesRes = await chatClient.listChannelTypes();
-      const fitChannel = channelTypesRes.channel_types["fit-channel"];
-
-      if (!fitChannel) {
-        await chatClient.createChannelType({
-          name: "fit-channel",
-          commands: [CUSTOM_SERVICE_COMMAND],
-          uploads: true,
-          read_events: true,
-          typing_events: true,
-          quotes: true,
-          replies: true,
-          url_enrichment: true,
-        });
-      }
-
-      console.log("Chat client set up");
-    } catch (e) {
-      console.log("An error was occurred setting up chat client", e);
-    }
-
-    return chatClient;
+  // Custom slash command
+  const { commands } = await client.listCommands();
+  const commandConfig = {
+    name: SLASHCMD_SERVICE,
+    description: "Sende einen Buchungslink für eine Deiner Terminarten",
+    set: "coach_commands_set",
   };
-})();
+  if (!commands.some((c) => c.name === SLASHCMD_SERVICE)) {
+    await client.createCommand(commandConfig);
+  } else {
+    await client.updateCommand(SLASHCMD_SERVICE, commandConfig);
+  }
+  // Channel type
+  const { channel_types } = await client.listChannelTypes();
+  if (!(CHANNEL_COACH_CUSTOMER in channel_types)) {
+    await client.createChannelType({
+      name: CHANNEL_COACH_CUSTOMER,
+      commands: [SLASHCMD_SERVICE],
+    });
+  }
+  // Webhook
+  await client.updateAppSettings({
+    custom_action_handler_url: `${process.env.STREAM_CHAT_WEBHOOK_URL}/api/chat/webhook?type={type}`,
+  });
+
+  return client;
+}
+
+let chatClient: Promise<StreamChat> | null = null;
+function getChatClient() {
+  if (!chatClient) {
+    chatClient = createChatClient();
+  }
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  return chatClient!;
+}
+
+function userToStreamUser(user: Pick<User, "id" | "name" | "userType">) {
+  return {
+    id: `${user.userType === "COACH" ? "coach" : "cus"}_${user.id.toString()}`,
+    name: user.name ?? undefined,
+  };
+}
 
 export const chatRouter = router({
+  chatIdentity: authedProcedure.query(async ({ ctx }) => {
+    const client = await getChatClient();
+    const apiKey = process.env.STREAM_CHAT_API_KEY;
+    if (!apiKey) {
+      throw new Error("Chat API key is required");
+    }
+    const user = userToStreamUser(ctx.user);
+    const token = client.createToken(user.id);
+    return { apiKey, user, token };
+  }),
+
   connectOtherParty: authedProcedure
-    .input(z.object({ otherPartyId: z.string(), name: z.string().optional() }))
-    .query(async ({ input }) => {
-      const normalizedId = normalizeIdForChat(input.otherPartyId);
-      const chatClient = await getChatClient();
-
-      try {
-        await chatClient.upsertUser({
-          id: normalizedId,
-          name: input.name ?? undefined,
-        });
-
-        return true;
-      } catch (err) {
-        return false;
-      }
-    }),
-  unreadCounts: authedProcedure.query(async ({ ctx }) => {
-    const userChatId = ctx.user.userType === UserType.COACH ? ctx.user.id.toString() : ctx.user.email;
-    const normalizedId = normalizeIdForChat(userChatId);
-
-    const chatClient = await getChatClient();
-    const token = chatClient.createToken(normalizedId);
-    const connection = await chatClient.connectUser({ id: normalizedId }, token);
-
-    if (!connection || !connection.me) {
-      return {
-        total: 0,
-        unreadChannels: {},
-      };
-    }
-
-    const channels = await chatClient.queryChannels({
-      members: {
-        $in: [normalizedId],
-      },
-    });
-
-    const unreadChannels: Record<string, number> = {};
-    let total = 0;
-
-    for (const channel of channels) {
-      if (!channel.id) {
-        continue;
-      }
-
-      const unreadCountPerChannel = channel.countUnread();
-      unreadChannels[channel.id] = unreadCountPerChannel;
-      total += unreadCountPerChannel;
-    }
-
-    await chatClient.disconnectUser();
-
-    return {
-      total,
-      unreadChannels,
-    };
-  }),
-  getCredentials: authedProcedure.input(z.object({ userChatId: z.string() })).query(async ({ input }) => {
-    const { userChatId } = input;
-    const chatClient = await getChatClient();
-
-    return {
-      token: chatClient.createToken(userChatId),
-    };
-  }),
-  getNameIfExists: authedProcedure
     .input(
       z.object({
-        id: z.number().optional(),
-        email: z.string().optional(),
+        otherPartyId: z.string().transform((id) => z.coerce.number().int().min(0).parse(id)),
       })
     )
-    .query(async ({ ctx, input }) => {
-      const { prisma } = ctx;
+    .query(async ({ input, ctx }) => {
+      const client = await getChatClient();
 
-      const user = await prisma.user.findFirst({
+      const otherParty = await ctx.prisma.user.findUnique({
         where: {
-          OR: [{ id: input.id }, { email: input.email }],
+          id: input.otherPartyId,
         },
         select: {
+          id: true,
           name: true,
+          userType: true,
         },
       });
 
-      return user?.name ?? undefined;
+      if (!otherParty) {
+        throw new TRPCError({ code: "NOT_FOUND", message: "User not found" });
+      }
+
+      const data = userToStreamUser(otherParty);
+      await client.upsertUser(data);
+
+      return data;
     }),
 });

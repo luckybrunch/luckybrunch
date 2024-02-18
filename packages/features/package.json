@@ -6,12 +6,15 @@
   "version": "1.0.0",
   "main": "index.ts",
   "dependencies": {
+    "@calcom/dayjs": "*",
+    "@calcom/lib": "*",
+    "@calcom/ui": "*",
     "@lexical/react": "^0.5.0",
+    "@tanstack/react-query": "^4.3.9",
     "dompurify": "^2.4.1",
     "lexical": "^0.5.0",
-    "zustand": "^4.1.4",
-    "@calcom/ui": "*",
-    "@calcom/lib": "*",
-    "@calcom/dayjs": "*"
+    "stream-chat": "^8.16.0",
+    "stream-chat-react": "^11.8.0",
+    "zustand": "^4.1.4"
   }
 }

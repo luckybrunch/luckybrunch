@@ -1,7 +1,7 @@
 import { useLocale } from "@calcom/lib/hooks/useLocale";
-import { Attendee, User } from "@calcom/prisma/client";
+import { User } from "@calcom/prisma/client";
 
-export default function Information({ user }: { user: User | Attendee | null | undefined }) {
+export default function Information({ user }: { user: Pick<User, "name" | "email"> }) {
   const { t } = useLocale();
 
   return (

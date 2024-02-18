@@ -119,8 +119,6 @@
     "rrule": "^2.7.1",
     "schema-dts": "^1.1.0",
     "short-uuid": "^4.2.0",
-    "stream-chat": "^8.8.0",
-    "stream-chat-react": "^10.8.1",
     "stripe": "^9.16.0",
     "superjson": "1.9.1",
     "tailwindcss-radix": "^2.6.0",
