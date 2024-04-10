@@ -17,6 +17,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     return;
   }
 
+  console.log("Syncing coaches with hubspot...");
+
   const users = await prisma.user.findMany({
     where: { userType: UserType.COACH },
     select: {
@@ -39,6 +41,8 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     },
   });
 
+  console.log(`Found ${users.length} coaches`);
+
   await hubspotClient.updateOrCreateUsers(
     users.map((user) => {
       return {
@@ -47,4 +51,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       };
     })
   );
+
+  console.log("Done.");
+  res.json({ ok: true });
 }
