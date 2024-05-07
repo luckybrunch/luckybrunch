@@ -51,12 +51,13 @@ export default class HubSpotService extends SyncServiceCore implements ISyncServ
       [hubspotProperties.zip]: data.coachProfileDraft?.zip ?? "",
       [hubspotProperties.city]: data.coachProfileDraft?.city ?? "",
       // Custom Fields
-      [hubspotProperties.contactGroup]: data.userType.toLowerCase(),
+      [hubspotProperties.contactGroup]: data.userType === "COACH" ? "Coach" : "Patient",
       [hubspotProperties.bio]: data.bio ?? "",
       [hubspotProperties.username]: data.username ?? "",
-      [hubspotProperties.appointmentTypes]: data.coachProfileDraft?.appointmentTypes ?? "",
+      [hubspotProperties.appointmentTypes]:
+        data.coachProfileDraft?.appointmentTypes?.split(",").join(";") ?? "",
       [hubspotProperties.specializations]:
-        data.coachProfileDraft?.specializations?.map((s) => s.label).join(",") ?? "",
+        data.coachProfileDraft?.specializations?.map((s) => s.label).join("\n") ?? "",
     };
     this.log.debug("sync:hubspot:contact:contactData", contactData);
     // Get HubSpot Contact ID
@@ -64,9 +65,9 @@ export default class HubSpotService extends SyncServiceCore implements ISyncServ
     this.log.debug("sync:hubspot:contact:contactId", contactId);
     // Update or Create Contact in HubSpot
     if (contactId) {
-      this.service.updateContact(contactId, contactData);
+      await this.service.updateContact(contactId, contactData);
     } else {
-      this.service.createContact(contactData);
+      await this.service.createContact(contactData);
     }
     this.log.debug("sync:hubspot:done");
   };
