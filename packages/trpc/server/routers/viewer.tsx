@@ -23,7 +23,6 @@ import { ErrorCode, verifyPassword } from "@calcom/lib/auth";
 import { symmetricDecrypt } from "@calcom/lib/crypto";
 import getPaymentAppData from "@calcom/lib/getPaymentAppData";
 import hasKeyInMetadata from "@calcom/lib/hasKeyInMetadata";
-import hubspotClient from "@calcom/lib/hubspot";
 import { deletePayment } from "@calcom/lib/payment/deletePayment";
 import { checkUsername } from "@calcom/lib/server/checkUsername";
 import { getTranslation } from "@calcom/lib/server/i18n";
@@ -264,9 +263,6 @@ const loggedInViewerRouter = router({
           id: ctx.user.id,
         },
       });
-
-      // Hubspot sync
-      await hubspotClient.deleteUser(ctx.user.email);
 
       // Sync Services
       syncServicesDeleteWebUser(deletedUser);
@@ -817,62 +813,6 @@ const loggedInViewerRouter = router({
               completedProfileInformations: true,
             },
           });
-      }
-
-      // Hubspot sync for coaches
-      if (user.coachProfileDraft) {
-        const coach = await prisma.user.findUnique({
-          where: { id: user.id },
-          select: {
-            email: true,
-            username: true,
-            billingDetails: true,
-            coachProfileDraft: {
-              select: {
-                bio: true,
-                companyName: true,
-                city: true,
-                addressLine1: true,
-                addressLine2: true,
-                appointmentTypes: true,
-                firstName: true,
-                lastName: true,
-                zip: true,
-                specializations: true,
-              },
-            },
-          },
-        });
-
-        if (coach && coach.coachProfileDraft) {
-          await hubspotClient.updateUser({
-            contactGroup: "coach",
-            email: coach.email,
-            username: coach.username,
-            bio: coach.coachProfileDraft.bio,
-            city: coach.coachProfileDraft.city,
-            companyName: coach.coachProfileDraft.companyName,
-            appointmentTypes: coach.coachProfileDraft.appointmentTypes,
-            firstName: coach.coachProfileDraft.firstName,
-            lastName: coach.coachProfileDraft.lastName,
-            zip: coach.coachProfileDraft.zip,
-            addressLine: coach.coachProfileDraft.addressLine1 + "\n" + coach.coachProfileDraft.addressLine2,
-            specializations: coach.coachProfileDraft.specializations,
-            accountHolder: coach.billingDetails?.accountHolder ?? "",
-            iban: coach.billingDetails?.iban ?? "",
-            bic: coach.billingDetails?.bic ?? "",
-            billingAddress: coach.billingDetails
-              ? [
-                  coach.billingDetails.name,
-                  coach.billingDetails.addressLine1,
-                  coach.billingDetails.addressLine2,
-                  coach.billingDetails.zip + " " + coach.billingDetails.city,
-                  coach.billingDetails.country,
-                  "",
-                ].join("\n")
-              : "",
-          });
-        }
       }
 
       // Sync Services
