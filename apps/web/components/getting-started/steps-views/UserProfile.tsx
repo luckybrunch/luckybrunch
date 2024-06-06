@@ -64,15 +64,6 @@ const UserProfile = (props: IUserProfileProps) => {
     },
   });
 
-  const mutation2 = trpc.viewer.profile.setCompletedProfileServices.useMutation({
-    onSuccess: () => {
-      console.log("success");
-    },
-    onError: () => {
-      throw Error;
-    },
-  });
-
   const onSubmit = (data: { bio: string }) => {
     const { bio } = data;
 
@@ -82,7 +73,6 @@ const UserProfile = (props: IUserProfileProps) => {
       bio,
       completedOnboarding: true,
     });
-    mutation2.mutate({ completedProfileServices: true });
   };
 
   async function updateProfileHandler(event: FormEvent<HTMLFormElement>) {

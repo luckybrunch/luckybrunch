@@ -1,5 +1,7 @@
 import z from "zod";
 
+import { Prisma } from "@calcom/prisma/client";
+
 import { authedCoachProcedure, authedProcedure, router } from "../../trpc";
 
 export const profileRouter = router({
@@ -41,6 +43,25 @@ export const profileRouter = router({
 
     return flags;
   }),
+
+  setOnboardingFlag: authedProcedure
+    .input(
+      z.object({
+        completedProfileInformations: z.literal(true).optional(),
+        completedProfileCertificates: z.literal(true).optional(),
+        completedProfileServices: z.literal(true).optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { prisma, user } = ctx;
+      const data: Prisma.UserUpdateInput = {};
+
+      if (input.completedProfileInformations) data.completedProfileInformations = true;
+      if (input.completedProfileCertificates) data.completedProfileCertificates = true;
+      if (input.completedProfileServices) data.completedProfileServices = true;
+
+      await prisma.user.update({ where: { id: user.id }, data });
+    }),
 
   getSpecializations: authedCoachProcedure.query(async ({ ctx }) => {
     const { prisma, user } = ctx;
@@ -100,24 +121,6 @@ export const profileRouter = router({
         where: { id: user.id },
         data: {
           completedProfileCertificates: true,
-        },
-      });
-    }),
-  setCompletedProfileServices: authedProcedure
-    .input(
-      z.object({
-        completedProfileServices: z.boolean(),
-      })
-    )
-    .mutation(async ({ ctx, input }) => {
-      const { prisma, user } = ctx;
-
-      const completedProfileServices = await prisma.user.update({
-        where: {
-          id: user.id,
-        },
-        data: {
-          completedProfileServices: input.completedProfileServices,
         },
       });
     }),

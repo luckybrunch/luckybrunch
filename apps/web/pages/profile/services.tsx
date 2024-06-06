@@ -600,7 +600,18 @@ const CTA = () => {
   return <CreateEventTypeButton canAddEvents={true} options={query.data.profiles} />;
 };
 
-// HERE THiS IS WHERE EVENTS ARE GETTING FETCHED
+const SetOnboardingFlagSideEffect = () => {
+  const { data } = trpc.viewer.profile.getOnboardingFlags.useQuery();
+  const { mutate } = trpc.viewer.profile.setOnboardingFlag.useMutation();
+  useEffect(() => {
+    if (data && !data.completedProfileServices) {
+      mutate({
+        completedProfileServices: true,
+      });
+    }
+  }, [data, mutate]);
+  return null;
+};
 
 const WithQuery = withQuery(trpc.viewer.eventTypes.getByViewer);
 
@@ -650,6 +661,7 @@ const ServicesPage = () => {
                 <CreateFirstEventTypeView />
               )}
 
+              <SetOnboardingFlagSideEffect />
               <EmbedDialog />
             </>
           )}

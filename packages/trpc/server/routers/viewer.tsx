@@ -680,16 +680,6 @@ const loggedInViewerRouter = router({
         data.name = `${stuff.firstName} ${stuff.lastName}`;
       }
 
-      if (specializations) {
-        data.coachProfileDraft = {
-          update: {
-            specializations: {
-              set: specializations.map((id) => ({ id })),
-            },
-          },
-        };
-      }
-
       if (user.coachProfileDraft) {
         data.coachProfileDraft = {
           update: {
@@ -701,6 +691,7 @@ const loggedInViewerRouter = router({
             addressLine2,
             companyName,
             appointmentTypes,
+            specializations: specializations ? { set: specializations.map((id) => ({ id })) } : undefined,
             zip,
             city,
             country,
@@ -732,9 +723,8 @@ const loggedInViewerRouter = router({
         data.avatar = image;
 
         if (data.coachProfileDraft) {
-          data.coachProfileDraft.update = {
-            avatar: image,
-          };
+          data.coachProfileDraft.update ??= {};
+          data.coachProfileDraft.update.avatar = image;
         }
       }
       const userToUpdate = await prisma.user.findUnique({

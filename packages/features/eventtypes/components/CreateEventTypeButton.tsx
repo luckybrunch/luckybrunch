@@ -86,7 +86,6 @@ const querySchema = z.object({
 const CreateEventTypeDialog = () => {
   const { t } = useLocale();
   const router = useRouter();
-  const mutation = trpc.viewer.profile.setCompletedProfileServices.useMutation();
 
   const {
     data: { teamId, eventPage: pageSlug, ...defaultValues },
@@ -101,7 +100,6 @@ const CreateEventTypeDialog = () => {
 
   const createMutation = trpc.viewer.eventTypes.create.useMutation({
     onSuccess: async ({ eventType }) => {
-      mutation.mutate({ completedProfileServices: true });
       await router.replace("/event-types/" + eventType.id);
       showToast(t("event_type_created_successfully", { eventTypeTitle: eventType.title }), "success");
     },
