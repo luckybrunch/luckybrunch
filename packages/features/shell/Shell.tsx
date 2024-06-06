@@ -65,8 +65,14 @@ export const ONBOARDING_NEXT_REDIRECT = {
   },
 } as const;
 
-export const shouldShowOnboarding = (user: Pick<User, "createdDate" | "completedOnboarding">) => {
-  return !user.completedOnboarding && dayjs(user.createdDate).isAfter(ONBOARDING_INTRODUCED_AT);
+export const shouldShowOnboarding = (
+  user: Pick<User, "createdDate" | "completedOnboarding" | "userType">
+) => {
+  return (
+    user.userType === "COACH" &&
+    !user.completedOnboarding &&
+    dayjs(user.createdDate).isAfter(ONBOARDING_INTRODUCED_AT)
+  );
 };
 
 function useRedirectToLoginIfUnauthenticated(isPublic = false) {
