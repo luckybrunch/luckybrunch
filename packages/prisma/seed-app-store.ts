@@ -7,8 +7,13 @@ import prisma from ".";
 
 dotEnv.config({ path: "../../.env.appStore" });
 
+// prettier-ignore
 // eslint-disable-next-line prettier/prettier
-const enabledApps = ["jitsi", "qr_code", "google-calendar", "google-meet", "stripe"];
+const enabledApps = [
+  "google-calendar",
+  "google-meet",
+  "stripe",
+];
 
 export const seededForm = {
   id: "948ae412-d995-4865-875a-48302588de03",
