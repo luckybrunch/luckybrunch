@@ -1,5 +1,6 @@
 import { ArrowRightIcon } from "@heroicons/react/solid";
 import { useRouter } from "next/router";
+import { IOnboardingComponentProps } from "pages/getting-started/[[...step]]";
 import { useForm } from "react-hook-form";
 
 import { Schedule } from "@calcom/features/schedules";
@@ -9,13 +10,8 @@ import { trpc, TRPCClientErrorLike } from "@calcom/trpc/react";
 import { AppRouter } from "@calcom/trpc/server/routers/_app";
 import { Button, Form } from "@calcom/ui";
 
-interface ISetupAvailabilityProps {
-  nextStep: () => void;
-  defaultScheduleId?: number | null;
-}
-
-const SetupAvailability = (props: ISetupAvailabilityProps) => {
-  const { defaultScheduleId } = props;
+const SetupAvailability = (props: IOnboardingComponentProps) => {
+  const defaultScheduleId = props.user?.defaultScheduleId;
 
   const { t } = useLocale();
   const { nextStep } = props;
@@ -51,7 +47,7 @@ const SetupAvailability = (props: ISetupAvailabilityProps) => {
     <Form
       className="w-full bg-white text-black dark:bg-opacity-5 dark:text-white"
       form={availabilityForm}
-      handleSubmit={async (values) => {
+      handleSubmit={async (values): Promise<void> => {
         try {
           if (defaultScheduleId) {
             await updateSchedule.mutate({
