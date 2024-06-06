@@ -12,6 +12,8 @@ import {
   isEmpty,
 } from "@calcom/features/coaches/lib/getDiffMetadata";
 import { AppointmentType } from "@calcom/features/coaches/types";
+import { baseEventTypeSelect } from "@calcom/prisma/selects";
+import { EventTypeMetaDataSchema } from "@calcom/prisma/zod-utils";
 
 import { TRPCError } from "@trpc/server";
 
@@ -169,6 +171,60 @@ export const coachesRouter = router({
     }
 
     return user;
+  }),
+
+  publicCoachServices: publicProcedure.input(z.string()).query(async ({ ctx, input }) => {
+    const { prisma } = ctx;
+    const user = await prisma.user.findUnique({
+      where: { username: input },
+      select: { id: true, coachProfileId: true },
+    });
+    if (!user || !user.coachProfileId) {
+      throw new TRPCError({ code: "NOT_FOUND", message: "Coach not found" });
+    }
+
+    const eventTypesWithHidden = (
+      await prisma.eventType.findMany({
+        where: {
+          AND: [
+            {
+              teamId: null,
+            },
+            {
+              OR: [
+                {
+                  userId: user.id,
+                },
+                {
+                  users: {
+                    some: {
+                      id: user.id,
+                    },
+                  },
+                },
+              ],
+            },
+          ],
+        },
+        orderBy: [
+          {
+            position: "desc",
+          },
+          {
+            id: "asc",
+          },
+        ],
+        select: {
+          ...baseEventTypeSelect,
+          metadata: true,
+        },
+      })
+    ).map((eventType) => ({
+      ...eventType,
+      metadata: EventTypeMetaDataSchema.parse(eventType.metadata || {}),
+    }));
+
+    return eventTypesWithHidden.filter((evt) => !evt.hidden);
   }),
 
   getSignedUrl: authedCoachProcedure.query(async () => {

@@ -1,13 +1,17 @@
 import MarkdownIt from "markdown-it";
 import { GetServerSidePropsContext } from "next";
+import Link from "next/link";
 import { useRouter } from "next/router";
 import { HiCheckCircle, HiLocationMarker, HiAcademicCap } from "react-icons/hi";
 
+import { EventTypeDescriptionLazy as EventTypeDescription } from "@calcom/features/eventtypes/components";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import useTheme from "@calcom/lib/hooks/useTheme";
 import { trpc } from "@calcom/trpc/react";
 import { HeadSeo, Badge, Button, CoachProfileLayout, CoachProfileCard } from "@calcom/ui";
-import { FiCalendar } from "@calcom/ui/components/icon";
+import { FiArrowRight, FiCalendar } from "@calcom/ui/components/icon";
+
+import { withQuery } from "@lib/QueryCell";
 
 import { Reviews } from "@components/coaches/Reviews";
 
@@ -20,12 +24,17 @@ export default function CoachProfile() {
   const { t } = useLocale();
   const router = useRouter();
 
+  const query = { ...router.query };
+  delete query.user; // So it doesn't display in the Link (and make tests fail)
+
   const { data: coach, error } = trpc.viewer.coaches.publicCoachProfile.useQuery(
     router.query.coach as string,
     {
       enabled: !!router.query.coach,
     }
   );
+
+  const ServicesQuery = withQuery(trpc.viewer.coaches.publicCoachServices, router.query.coach as string);
 
   if (error) {
     return <div>{error.message}</div>;
@@ -47,7 +56,7 @@ export default function CoachProfile() {
         subheader="Health Enthusiast" /* TODO: implement short-bio field */
         avatarUrl={coach.avatar}
         button={
-          <Button href={`/${coach.username}`} color="primary" StartIcon={FiCalendar}>
+          <Button href="#services" color="primary" StartIcon={FiCalendar}>
             {t("lb_make_appointment")}
           </Button>
         }>
@@ -109,6 +118,43 @@ export default function CoachProfile() {
                 ))}
               </div>
             </dl>
+          </CoachProfileCard>
+
+          {/* SERVICE */}
+          <CoachProfileCard
+            paddingless
+            headerId="services"
+            header={t("lb_services_page_title")}
+            headerIcon={<HiAcademicCap className="text-brand-500" />}>
+            <ServicesQuery
+              success={({ data: eventTypes }) => (
+                <>
+                  {eventTypes.map((type) => (
+                    <div
+                      key={type.id}
+                      className="dark:bg-darkgray-100 dark:hover:bg-darkgray-200 dark:border-darkgray-300 group relative flex flex-row-reverse items-center border-b border-gray-200 bg-white first:rounded-t-md last:rounded-b-md last:border-b-0 hover:bg-gray-50">
+                      <FiArrowRight className="pointer-events-none mx-4 h-4 w-4 shrink-0 text-black opacity-0 transition-opacity group-hover:opacity-100 dark:text-white" />
+                      {/* Don't prefetch till the time we drop the amount of javascript in [user][type] page which is impacting score for [user] page */}
+                      <Link
+                        prefetch={false}
+                        href={{
+                          pathname: `/${coach.username}/${type.slug}`,
+                          query,
+                        }}
+                        className="block w-full p-5"
+                        data-testid="event-type-link">
+                        <div className="flex flex-wrap items-center">
+                          <h2 className="dark:text-darkgray-700 pr-2 text-sm font-semibold text-gray-700">
+                            {type.title}
+                          </h2>
+                        </div>
+                        <EventTypeDescription eventType={type} />
+                      </Link>
+                    </div>
+                  ))}
+                </>
+              )}
+            />
           </CoachProfileCard>
         </div>
 

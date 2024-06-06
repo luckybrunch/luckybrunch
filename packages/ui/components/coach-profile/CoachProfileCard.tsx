@@ -1,14 +1,17 @@
+import { classNames } from "@calcom/lib";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { FiEye } from "@calcom/ui/components/icon";
 
 type CoachProfileCard = {
   children: React.ReactNode;
   header: string;
+  headerId?: string;
   subheader?: string;
   sectionTitle?: string;
   button?: React.ReactNode;
   viewMore?: boolean;
   headerIcon: React.ReactNode;
+  paddingless?: boolean;
 };
 
 export function CoachProfileCard(props: CoachProfileCard) {
@@ -21,13 +24,15 @@ export function CoachProfileCard(props: CoachProfileCard) {
           <div>
             <div className="flex items-center gap-1">
               {headerIcon}
-              <h2 className="text-md text-brand-600 font-bold leading-6">{header}</h2>
+              <h2 id={props.headerId} className="text-md text-brand-600 font-bold leading-6">
+                {header}
+              </h2>
             </div>
             <p className="mt-1 max-w-2xl text-sm text-gray-500">{subheader}</p>
           </div>
           {button}
         </div>
-        <div className="border-y border-gray-200 px-4 py-5 sm:px-6">
+        <div className={classNames("border-y border-gray-200", props.paddingless || "px-4 py-5 sm:px-6")}>
           <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
             <div className="sm:col-span-2">
               <h3 className="mb-2 text-sm font-bold text-gray-700">{sectionTitle}</h3>
