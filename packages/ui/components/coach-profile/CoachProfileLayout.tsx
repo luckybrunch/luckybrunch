@@ -2,7 +2,6 @@ import Link from "next/link";
 
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 
-import { Button } from "../button";
 import { Logo } from "../logo";
 
 type CoachProfileCard = {
@@ -28,10 +27,10 @@ export function CoachProfileLayout(props: CoachProfileCard) {
               </Link>
             </div>
             <div className="flex items-center gap-4">
-              <p className="text-brand-600 text-sm font-bold">Don&apos;t have an account yet? </p>
+              {/* <p className="text-brand-600 text-sm font-bold">Don&apos;t have an account yet? </p>
               <Button href="/signup/client" color="secondary">
                 {t("register")}
-              </Button>
+              </Button> */}
             </div>
           </div>
         </div>

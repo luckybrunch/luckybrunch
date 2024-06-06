@@ -53,8 +53,8 @@ export default function CoachProfile() {
 
       <CoachProfileLayout
         header={fullName}
-        subheader="Health Enthusiast" /* TODO: implement short-bio field */
-        avatarUrl={coach.avatar}
+        subheader=""
+        avatarUrl={coach.coachProfile.avatar}
         button={
           <Button href="#services" color="primary" StartIcon={FiCalendar}>
             {t("lb_make_appointment")}
@@ -65,9 +65,7 @@ export default function CoachProfile() {
           {/*ABOUT*/}
           <CoachProfileCard
             header={t("lb_verified_coach")}
-            subheader={t("lb_on_lb_since", {
-              date: coach.emailVerified?.toDateString(),
-            })}
+            subheader={t("lb_on_lb_since", { date: coach.createdDate })}
             headerIcon={<HiCheckCircle className="text-brand-500" />}
             sectionTitle="About">
             {!isBioEmpty && (
@@ -133,7 +131,9 @@ export default function CoachProfile() {
                     <div
                       key={type.id}
                       className="dark:bg-darkgray-100 dark:hover:bg-darkgray-200 dark:border-darkgray-300 group relative flex flex-row-reverse items-center border-b border-gray-200 bg-white first:rounded-t-md last:rounded-b-md last:border-b-0 hover:bg-gray-50">
-                      <FiArrowRight className="pointer-events-none mx-4 h-4 w-4 shrink-0 text-black opacity-0 transition-opacity group-hover:opacity-100 dark:text-white" />
+                      <div className="pointer-events-none absolute right-4 top-0 bottom-0 flex items-center">
+                        <FiArrowRight className="h-4 w-4 text-black opacity-0 transition-opacity group-hover:opacity-100 dark:text-white" />
+                      </div>
                       {/* Don't prefetch till the time we drop the amount of javascript in [user][type] page which is impacting score for [user] page */}
                       <Link
                         prefetch={false}

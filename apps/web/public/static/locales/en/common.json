@@ -1709,7 +1709,7 @@
   "lb_free": "Free",
   "lb_you_have_unread_messages": "You have unread messages",
   "lb_choose_appointment": "Choose one of the offered appointments and a suitable time",
-  "lb_on_lb_since": "On LuckyBrunch since {{date}}",
+  "lb_on_lb_since": "On LuckyBrunch since {{date, datetime}}",
   "lb_meet_coach": "You can meet this Coach here",
   "lb_reviews": "Reviews",
   "lb_review_one": "{{count}} review",

@@ -132,6 +132,7 @@ export const coachesRouter = router({
       id: true,
       username: true,
       emailVerified: true,
+      createdDate: true,
       avatar: true,
       coachProfile: {
         select: {
@@ -139,6 +140,7 @@ export const coachesRouter = router({
           firstName: true,
           lastName: true,
           bio: true,
+          avatar: true,
           addressLine1: true,
           zip: true,
           city: true,
