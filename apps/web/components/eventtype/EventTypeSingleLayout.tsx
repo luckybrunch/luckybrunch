@@ -37,13 +37,13 @@ import {
   FiClock,
   FiSliders,
   FiRepeat,
-  FiGrid,
   FiUsers,
   FiExternalLink,
   FiCode,
   FiTrash,
   FiMoreHorizontal,
   FiLoader,
+  FiDollarSign,
 } from "@calcom/ui/components/icon";
 
 import { EmbedButton, EmbedDialog } from "@components/Embed";
@@ -104,11 +104,10 @@ function getNavigation(props: {
       info: `recurring_event_tab_description`,
     },
     {
-      name: "apps",
+      name: "lb_payment",
       href: `/event-types/${eventType.id}?tabName=apps`,
-      icon: FiGrid,
-      //TODO: Handle proper translation with count handling
-      info: `${installedAppsNumber} apps, ${enabledAppsNumber} ${t("active")}`,
+      icon: FiDollarSign,
+      info: `lb_payment_desc`,
     },
   ];
 }
