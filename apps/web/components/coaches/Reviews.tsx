@@ -56,7 +56,7 @@ export function Reviews({ coachUserId }: { coachUserId: number }) {
               <div className="flex items-center">
                 <Rating rating={data.rating} size="lg" />
                 <span className="ml-2 text-sm text-gray-500">
-                  {data.rating.toFixed(1)} ({data.reviewCount} {t("lb_reviews")})
+                  {data.rating.toFixed(1)} ({t("lb_review", { count: data.reviewCount })})
                 </span>
               </div>
             ) : (
@@ -101,7 +101,7 @@ export function Reviews({ coachUserId }: { coachUserId: number }) {
                     "flex-1 py-6 text-sm text-gray-500",
                     reviewIdx === 0 ? "" : "border-t border-gray-200"
                   )}>
-                  <h3 className="font-medium text-gray-900">{review.user.name}</h3>
+                  <h3 className="font-medium text-gray-900">{review.user.firstName}</h3>
                   <p>
                     <time dateTime={review.createdAt.toISOString().split("T")[0]}>
                       {dateFormat.format(review.createdAt)}

@@ -5,5 +5,5 @@ export const reviewSelect = Prisma.validator<Prisma.ReviewSelect>()({
   createdAt: true,
   rating: true,
   comment: true,
-  user: { select: { name: true } },
+  user: { select: { firstName: true } },
 });
