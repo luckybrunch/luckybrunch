@@ -7,18 +7,11 @@ import { HiCheckCircle, HiEye, HiExclamationCircle } from "react-icons/hi";
 
 import { withProfileDiffList } from "@calcom/features/coaches/lib/withProfileDiff";
 import Shell from "@calcom/features/shell/Shell";
+import { classNames } from "@calcom/lib";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import prisma from "@calcom/prisma";
 import { trpc } from "@calcom/trpc/react";
-import {
-  Button,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemTitle,
-  SkeletonLoader,
-  TrafficLightBanner,
-} from "@calcom/ui";
+import { Button, List, ListItem, ListItemTitle, SkeletonLoader, TrafficLightBanner } from "@calcom/ui";
 import { FiCheck, FiClock, FiEye, FiFile, FiInfo, FiPlus, FiRotateCcw } from "@calcom/ui/components/icon";
 
 import { withQuery } from "@lib/QueryCell";
@@ -44,14 +37,14 @@ function UnpublishedDashboard() {
       {
         title: t("lb_complete_your_info"),
         description: () => (
-          <ListItemText component="div">
-            <p>{`${t("lb_add_following_parameters_for_review")}:`}</p>
-            <ul className="ml-5 list-disc">
+          <>
+            <p className="text-sm text-gray-500">{`${t("lb_add_following_parameters_for_review")}:`}</p>
+            <ul className="ml-5 list-disc text-sm text-gray-500">
               <li>{t("lb_name_and_bio")}</li>
               <li>{t("lb_profile_image")}</li>
               <li>{t("lb_specializations")}</li>
             </ul>
-          </ListItemText>
+          </>
         ),
         icon: () => <FiInfo />,
         href: "/profile/information",
@@ -75,46 +68,32 @@ function UnpublishedDashboard() {
   }, [data]);
 
   const renderItem = ({ title, description, icon, href, isDone }: Item) => (
-    <ListItem rounded={false} className="flex-col border-0 md:border-0" key={title}>
-      <div className="flex w-full items-center justify-between gap-8">
+    <ListItem
+      rounded={false}
+      className="flex flex-row flex-wrap items-center gap-4 border-0 md:border-0"
+      key={title}>
+      <div
+        className={classNames(
+          "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+          isDone ? "bg-gray-100 text-gray-400" : "bg-brand-100 text-brand-500"
+        )}>
+        {icon()}
+      </div>
+      <div className={classNames("flex flex-col text-sm text-gray-500", isDone ? "opacity-60" : "")}>
+        <ListItemTitle component="h3" className={isDone ? "text-gray-500" : "text-neutral-900"}>
+          {title}
+        </ListItemTitle>
+        {typeof description === "string" ? <p>{description}</p> : description()}
+      </div>
+      <div className="ml-auto shrink-0">
         {isDone ? (
-          <>
-            <div className="ml-2 flex h-10 w-10 items-center justify-center rounded-full bg-gray-100 text-gray-400">
-              {icon()}
-            </div>
-            <div className="flex-grow pl-2 opacity-60">
-              <ListItemTitle component="h3" className="mb-1 space-x-2 text-sm font-medium text-gray-500">
-                {title}
-              </ListItemTitle>
-              {typeof description === "string" ? (
-                <ListItemText component="p">{description}</ListItemText>
-              ) : (
-                description()
-              )}
-            </div>
-            <Button color="secondary" StartIcon={FiCheck} disabled>
-              {t("done")}
-            </Button>
-          </>
+          <Button color="secondary" StartIcon={FiCheck} disabled>
+            {t("done")}
+          </Button>
         ) : (
-          <>
-            <div className="bg-brand-100 text-brand-500 ml-2 flex h-10 w-10 items-center justify-center rounded-full">
-              {icon()}
-            </div>
-            <div className="flex-grow pl-2">
-              <ListItemTitle component="h3" className="mb-1 space-x-2 text-sm font-medium text-neutral-900">
-                {title}
-              </ListItemTitle>
-              {typeof description === "string" ? (
-                <ListItemText component="p">{description}</ListItemText>
-              ) : (
-                description()
-              )}
-            </div>
-            <Button color="secondary" StartIcon={FiPlus} href={href}>
-              {t("add")}
-            </Button>
-          </>
+          <Button color="secondary" StartIcon={FiPlus} href={href}>
+            {t("add")}
+          </Button>
         )}
       </div>
     </ListItem>
@@ -163,7 +142,7 @@ function UnpublishedDashboard() {
           <p className="text-gray-500">{`${t("lb_complete_elements_to_submit_for_review")}`}</p>
         </div>
       </div>
-      <div className="w-full sm:mx-0 xl:mt-0">
+      <div className="mx-4 sm:mx-0">
         {undoneSteps.length > 0 && <List roundContainer>{undoneSteps.map(renderItem)}</List>}
         {doneSteps.length > 0 && undoneSteps.length > 0 && <div className="h-6" />}
         {doneSteps.length > 0 && <List roundContainer>{doneSteps.map(renderItem)}</List>}
