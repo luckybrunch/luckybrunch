@@ -23,16 +23,12 @@ import {
 import {
   FiUser,
   FiKey,
-  FiCreditCard,
-  FiTerminal,
-  FiUsers,
   FiLock,
   FiArrowLeft,
   FiChevronDown,
   FiChevronRight,
   FiPlus,
   FiMenu,
-  FiExternalLink,
 } from "@calcom/ui/components/icon";
 
 const tabs: VerticalTabItemProps[] = [
@@ -56,34 +52,34 @@ const tabs: VerticalTabItemProps[] = [
     icon: FiKey,
     children: [
       { name: "password", href: "/settings/security/password" },
-      { name: "2fa_auth", href: "/settings/security/two-factor-auth" },
-      { name: "impersonation", href: "/settings/security/impersonation" },
+      // { name: "2fa_auth", href: "/settings/security/two-factor-auth" },
+      // { name: "impersonation", href: "/settings/security/impersonation" },
     ],
   },
-  {
-    name: "billing",
-    href: "/settings/billing",
-    icon: FiCreditCard,
-    children: [{ name: "manage_billing", href: "/settings/billing" }],
-  },
-  {
-    name: "developer",
-    href: "/settings/developer",
-    icon: FiTerminal,
-    children: [
-      //
-      { name: "webhooks", href: "/settings/developer/webhooks" },
-      { name: "api_keys", href: "/settings/developer/api-keys" },
-      // TODO: Add profile level for embeds
-      // { name: "embeds", href: "/v2/settings/developer/embeds" },
-    ],
-  },
-  {
-    name: "teams",
-    href: "/settings/teams",
-    icon: FiUsers,
-    children: [],
-  },
+  // {
+  //   name: "billing",
+  //   href: "/settings/billing",
+  //   icon: FiCreditCard,
+  //   children: [{ name: "manage_billing", href: "/settings/billing" }],
+  // },
+  // {
+  //   name: "developer",
+  //   href: "/settings/developer",
+  //   icon: FiTerminal,
+  //   children: [
+  //     //
+  //     { name: "webhooks", href: "/settings/developer/webhooks" },
+  //     { name: "api_keys", href: "/settings/developer/api-keys" },
+  //     // TODO: Add profile level for embeds
+  //     // { name: "embeds", href: "/v2/settings/developer/embeds" },
+  //   ],
+  // },
+  // {
+  //   name: "teams",
+  //   href: "/settings/teams",
+  //   icon: FiUsers,
+  //   children: [],
+  // },
   {
     name: "admin",
     href: "/settings/admin",
@@ -93,17 +89,17 @@ const tabs: VerticalTabItemProps[] = [
       { name: "license", href: "/auth/setup?step=1" },
       { name: "impersonation", href: "/settings/admin/impersonation" },
       { name: "apps", href: "/settings/admin/apps/calendar" },
-      { name: "users", href: "https://console.cal.com" },
+      // { name: "users", href: "https://console.cal.com" },
     ],
   },
 ];
 
-tabs.find((tab) => {
-  // Add "SAML SSO" to the tab
-  if (tab.name === "security" && !HOSTED_CAL_FEATURES) {
-    tab.children?.push({ name: "saml_config", href: "/settings/security/sso" });
-  }
-});
+// tabs.find((tab) => {
+//   // Add "SAML SSO" to the tab
+//   if (tab.name === "security" && !HOSTED_CAL_FEATURES) {
+//     tab.children?.push({ name: "saml_config", href: "/settings/security/sso" });
+//   }
+// });
 
 // The following keys are assigned to admin only
 const adminRequiredKeys = ["admin"];
