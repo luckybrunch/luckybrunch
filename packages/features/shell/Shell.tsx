@@ -52,6 +52,7 @@ import {
   FiArrowLeft,
   FiTrello,
   FiUser,
+  FiCompass,
 } from "@calcom/ui/components/icon";
 
 /* TODO: Migate this */
@@ -501,7 +502,7 @@ const navigation: ({ itemId: DashboardItem } & NavigationItemType)[] = [
     itemId: DashboardItem.DISCOVER,
     name: "lb_discover",
     href: "/search",
-    icon: FiSettings,
+    icon: FiCompass,
   },
   {
     itemId: DashboardItem.COACHES,
