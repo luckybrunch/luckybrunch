@@ -11,14 +11,17 @@ import {
   getFieldDiffMetadata,
   isEmpty,
 } from "@calcom/features/coaches/lib/getDiffMetadata";
-import { AppointmentType } from "@calcom/features/coaches/types";
+import { User } from "@calcom/prisma/client";
 import { baseEventTypeSelect } from "@calcom/prisma/selects";
 import { EventTypeMetaDataSchema } from "@calcom/prisma/zod-utils";
 
 import { TRPCError } from "@trpc/server";
 
 import { router, publicProcedure, authedCoachProcedure } from "../../trpc";
-import { UserType } from ".prisma/client";
+
+type Prettify<T> = {
+  [K in keyof T]: T[K];
+} & unknown;
 
 export const coachesRouter = router({
   search: publicProcedure
@@ -26,11 +29,8 @@ export const coachesRouter = router({
       z
         .object({
           filters: z.object({
-            goals: z.string().array().optional(),
-            maxDistance: z.number().optional(),
-            maxPrice: z.number().optional(),
+            goals: z.array(z.string().transform((v) => z.coerce.number().parse(v))).optional(),
             meetingOptions: z.string().array().optional(),
-            city: z.string().optional(),
           }),
         })
         .optional()
@@ -38,90 +38,31 @@ export const coachesRouter = router({
     .query(async ({ ctx, input }) => {
       const { prisma } = ctx;
 
-      const userSelect = Prisma.validator<Prisma.UserSelect>()({
-        id: true,
-        username: true,
-        avatar: true,
-        coachProfile: {
-          select: {
-            id: true,
-            firstName: true,
-            lastName: true,
-            bio: true,
-            specializations: {
-              select: {
-                id: true,
-                icon: true,
-                label: true,
-              },
-            },
-          },
-        },
-      });
+      const goals = input?.filters?.goals ?? [];
+      const meetingOptions = input?.filters?.meetingOptions ?? [];
 
-      const baseFilters: Prisma.UserWhereInput = {
-        userType: UserType.COACH,
-        coachProfileId: { not: null },
-      };
+      type Result = Prettify<
+        { uid: User["id"] } & Pick<User, "username"> &
+          Pick<Coach, "id" | "avatar" | "firstName" | "lastName" | "bio">
+      >;
 
-      // TODO: Received but ignored filters: maxDistance, maxPrice, goals
-      const coachFilters: Prisma.CoachWhereInput = {};
-      const hasFilters = Object.keys(input?.filters ?? {}).length > 0;
+      const search = (goals: Array<number>, meetingOptions: Array<string>) => prisma.$queryRaw<Array<Result>>`
+        select "users"."id" as uid, "users"."username", "Coach"."id", "Coach"."avatar", "Coach"."firstName", "Coach"."lastName", "Coach"."bio"
+        from "users"
+        inner join "Coach" on "users"."coachProfileId" = "Coach"."id"
+        where "users"."userType" = 'COACH' and "users"."coachProfileId" is not null
+        and
+          case when ${goals.length} > 0 then "Coach"."id" in (select "A" from "_CoachToSpecialization" where "B" = ANY(${goals})) else true end
+        and
+          case when ${meetingOptions.length} > 0 then string_to_array("Coach"."appointmentTypes", ',') && ${meetingOptions} else true end
+      `;
 
-      if (input?.filters.city) {
-        coachFilters.city = input.filters.city.toLowerCase();
-      }
-
-      if (input?.filters?.meetingOptions) {
-        coachFilters.OR = [];
-
-        const { meetingOptions } = input.filters;
-        if (meetingOptions.includes(AppointmentType.OFFICE)) {
-          coachFilters.OR.push({
-            appointmentTypes: { contains: AppointmentType.OFFICE },
-          });
-        }
-
-        if (meetingOptions.includes(AppointmentType.HOME)) {
-          coachFilters.OR.push({
-            appointmentTypes: { contains: AppointmentType.HOME },
-          });
-        }
-
-        if (meetingOptions.includes(AppointmentType.ONLINE)) {
-          coachFilters.OR.push({
-            appointmentTypes: { contains: AppointmentType.ONLINE },
-          });
-        }
-      }
-
-      const matchedCoaches = await prisma.user.findMany({
-        where: {
-          ...baseFilters,
-          coachProfile: coachFilters,
-        },
-        select: userSelect,
-      });
-
-      if (hasFilters && matchedCoaches.length > 0) {
-        return {
-          matched: true,
-          list: matchedCoaches,
-        };
-      }
-
-      const publishedCoaches = !hasFilters
-        ? matchedCoaches
-        : await prisma.user.findMany({
-            where: {
-              ...baseFilters,
-            },
-            select: userSelect,
-          });
+      const matches = await search(goals, meetingOptions);
+      const extraResults = matches.length === 0 ? await search([], []) : [];
 
       return {
-        matched: !hasFilters,
-        list: publishedCoaches,
+        hasMatches: matches.length > 0,
+        results: matches.length > 0 ? matches : extraResults,
       };
     }),
 

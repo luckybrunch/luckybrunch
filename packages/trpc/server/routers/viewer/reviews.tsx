@@ -27,6 +27,32 @@ async function canUserReviewCoach(prisma: PrismaClient, coachUserId: number, use
 }
 
 export const reviewsRouter = router({
+  getRating: publicProcedure
+    .input(
+      z.object({
+        coachUserId: z.number(),
+      })
+    )
+    .query(async ({ input, ctx }) => {
+      const { coachUserId } = input;
+      const { prisma } = ctx;
+
+      const res = await prisma.review.aggregate({
+        _avg: {
+          rating: true,
+        },
+        _count: {
+          _all: true,
+        },
+        where: { coachUserId },
+      });
+
+      const rating = res._avg.rating ?? 0;
+      const reviewCount = res._count._all;
+
+      return { rating, reviewCount };
+    }),
+
   getReviews: publicProcedure
     .input(
       z.object({

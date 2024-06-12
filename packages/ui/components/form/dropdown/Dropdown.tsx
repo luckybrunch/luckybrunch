@@ -70,13 +70,19 @@ export const DropdownMenuGroup = DropdownMenuPrimitive.Group;
 
 type DropdownMenuCheckboxItemProps = ComponentProps<typeof DropdownMenuPrimitive["CheckboxItem"]>;
 export const DropdownMenuCheckboxItem = forwardRef<HTMLDivElement, DropdownMenuCheckboxItemProps>(
-  ({ children, ...props }, forwardedRef) => {
+  ({ className, children, ...props }, forwardedRef) => {
     return (
-      <DropdownMenuPrimitive.CheckboxItem {...props} ref={forwardedRef}>
-        {children}
-        <DropdownMenuPrimitive.ItemIndicator>
-          <CheckCircleIcon />
-        </DropdownMenuPrimitive.ItemIndicator>
+      <DropdownMenuPrimitive.CheckboxItem
+        {...props}
+        className={classNames(
+          `radix-highlighted:bg-gray-100 radix-highlighted:text-gray-900 group mx-1 flex cursor-default select-none items-center rounded-[inherit] text-sm text-gray-700 focus:outline-none`,
+          className
+        )}
+        ref={forwardedRef}>
+        <div className="flex p-2.5">
+          <div className="form-checkbox group-radix-state-checked:form-checkbox-checked text-brand-500 h-4 w-4 rounded border border-gray-300" />
+        </div>
+        <div className="ltr:mr-2 rtl:ml-2">{children}</div>
       </DropdownMenuPrimitive.CheckboxItem>
     );
   }

@@ -42,7 +42,7 @@ export function TrafficLightBanner({
 
   return (
     <div
-      className={`mb-2 flex h-auto w-full items-center justify-between space-x-2 rounded-md border p-4 text-sm rtl:space-x-reverse ${bannerColor}`}>
+      className={`mb-2 flex h-auto w-full flex-wrap items-center justify-between space-x-2 rounded-md border p-4 text-sm rtl:space-x-reverse ${bannerColor}`}>
       <div className="my-1 flex flex-col gap-3">
         <div className="mb-1 flex items-center gap-2">
           {icon}
