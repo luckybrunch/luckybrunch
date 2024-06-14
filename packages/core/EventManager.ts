@@ -4,18 +4,11 @@ import { v5 as uuidv5 } from "uuid";
 import { z } from "zod";
 
 import { FAKE_DAILY_CREDENTIAL } from "@calcom/app-store/dailyvideo/lib/VideoApiAdapter";
-import { getEventLocationTypeFromApp } from "@calcom/app-store/locations";
-import { MeetLocationType } from "@calcom/app-store/locations";
+import { getEventLocationTypeFromApp, MeetLocationType } from "@calcom/app-store/locations";
 import getApps from "@calcom/app-store/utils";
 import prisma from "@calcom/prisma";
-import { Attendee } from "@calcom/prisma/client";
 import { createdEventSchema } from "@calcom/prisma/zod-utils";
-import type {
-  AdditionalInformation,
-  CalendarEvent,
-  NewCalendarEventType,
-  Person,
-} from "@calcom/types/Calendar";
+import type { AdditionalInformation, CalendarEvent, NewCalendarEventType } from "@calcom/types/Calendar";
 import { CredentialPayload, CredentialWithAppName } from "@calcom/types/Credential";
 import type { Event } from "@calcom/types/Event";
 import type {
@@ -101,12 +94,12 @@ export default class EventManager {
    */
   public async create(event: CalendarEvent): Promise<CreateUpdateResult> {
     const evt = processLocation(event);
-    // Fallback to cal video if no location is set
-    if (!evt.location) evt["location"] = "integrations:daily";
+    // Fallback to empty location if no location is set
+    if (!evt.location) evt["location"] = "";
 
-    // Fallback to Cal Video if Google Meet is selected w/o a Google Cal
+    // Fallback to empty location if Google Meet is selected w/o a Google Cal
     if (evt.location === MeetLocationType && evt.destinationCalendar?.integration !== "google_calendar") {
-      evt["location"] = "integrations:daily";
+      evt["location"] = "";
     }
     const isDedicated = evt.location ? isDedicatedIntegration(evt.location) : null;
 

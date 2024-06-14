@@ -52,6 +52,10 @@ export enum DefaultEventLocationTypeEnum {
    */
   InPerson = "inPerson",
   /**
+   * Coach Office Address
+   */
+  CoachOffice = "coachOffice",
+  /**
    * Booker Phone
    */
   Phone = "phone",
@@ -62,26 +66,15 @@ export enum DefaultEventLocationTypeEnum {
   Link = "link",
 }
 
+export const DefaultLocationType = DefaultEventLocationTypeEnum.CoachOffice;
+
 export const defaultLocations: DefaultEventLocationType[] = [
   {
     default: true,
-    type: DefaultEventLocationTypeEnum.AttendeeInPerson,
-    label: "attendeeInPerson",
-    variable: "address",
-    organizerInputType: null,
-    messageForOrganizer: "Cal will ask your invitee to enter an address before scheduling.",
-    attendeeInputType: "attendeeAddress",
-    attendeeInputPlaceholder: "enter_address",
-    defaultValueVariable: "attendeeAddress",
-    iconUrl: "/map-pin.svg",
-    category: "in person",
-  },
-  {
-    default: true,
-    type: DefaultEventLocationTypeEnum.InPerson,
+    type: DefaultEventLocationTypeEnum.CoachOffice,
     label: "inPerson",
-    organizerInputType: "text",
-    messageForOrganizer: "Provide an Address or Place",
+    organizerInputType: null,
+    messageForOrganizer: "",
     // HACK:
     variable: "locationAddress",
     defaultValueVariable: "address",
@@ -90,41 +83,54 @@ export const defaultLocations: DefaultEventLocationType[] = [
   },
   {
     default: true,
+    type: DefaultEventLocationTypeEnum.AttendeeInPerson,
+    label: "attendeeInPerson",
+    variable: "address",
+    organizerInputType: null,
+    messageForOrganizer: "Während der Buchung wird die Adresse des Teilnehmers abgefragt.",
+    attendeeInputType: "attendeeAddress",
+    attendeeInputPlaceholder: "enter_address",
+    defaultValueVariable: "attendeeAddress",
+    iconUrl: "/map-pin.svg",
+    category: "in person",
+  },
+  {
+    default: true,
     type: DefaultEventLocationTypeEnum.Link,
-    label: "Link",
+    label: "link",
     organizerInputType: "text",
     variable: "locationLink",
-    messageForOrganizer: "Provide a Meeting Link",
+    messageForOrganizer: "Meeting Link",
     defaultValueVariable: "link",
     iconUrl: "/link.svg",
     category: "other",
   },
-  {
-    default: true,
-    type: DefaultEventLocationTypeEnum.Phone,
-    label: "Attendee Phone Number",
-    variable: "phone",
-    organizerInputType: null,
-    attendeeInputType: "phone",
-    attendeeInputPlaceholder: `enter_phone_number`,
-    defaultValueVariable: "phone",
-    messageForOrganizer: "Cal will ask your invitee to enter a phone number before scheduling.",
-    // This isn't inputType phone because organizer doesn't need to provide it.
-    // inputType: "phone"
-    iconUrl: "/phone.svg",
-    category: "phone",
-  },
-  {
-    default: true,
-    type: DefaultEventLocationTypeEnum.UserPhone,
-    label: "Organizer Phone Number",
-    messageForOrganizer: "Provide your phone number",
-    organizerInputType: "phone",
-    variable: "locationPhoneNumber",
-    defaultValueVariable: "hostPhoneNumber",
-    iconUrl: "/phone.svg",
-    category: "phone",
-  },
+  // {
+  //   default: true,
+  //   type: DefaultEventLocationTypeEnum.Phone,
+  //   label: "Attendee Phone Number",
+  //   variable: "phone",
+  //   organizerInputType: null,
+  //   attendeeInputType: "phone",
+  //   attendeeInputPlaceholder: `enter_phone_number`,
+  //   defaultValueVariable: "phone",
+  //   messageForOrganizer: "Cal will ask your invitee to enter a phone number before scheduling.",
+  //   // This isn't inputType phone because organizer doesn't need to provide it.
+  //   // inputType: "phone"
+  //   iconUrl: "/phone.svg",
+  //   category: "phone",
+  // },
+  // {
+  //   default: true,
+  //   type: DefaultEventLocationTypeEnum.UserPhone,
+  //   label: "Organizer Phone Number",
+  //   messageForOrganizer: "Provide your phone number",
+  //   organizerInputType: "phone",
+  //   variable: "locationPhoneNumber",
+  //   defaultValueVariable: "hostPhoneNumber",
+  //   iconUrl: "/phone.svg",
+  //   category: "phone",
+  // },
 ];
 
 export type LocationObject = {

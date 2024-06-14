@@ -195,7 +195,7 @@ export default function Success(props: SuccessProps) {
   const location: ReturnType<typeof getEventLocationValue> = props.bookingInfo.location
     ? props.bookingInfo.location
     : // If there is no location set then we default to Cal Video
-      "integrations:daily";
+      "Praxisadresse";
 
   const locationVideoCallUrl: string | undefined = bookingMetadataSchema.parse(
     props?.bookingInfo?.metadata || {}

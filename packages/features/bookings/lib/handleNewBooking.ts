@@ -15,8 +15,13 @@ import short from "short-uuid";
 import { v5 as uuidv5 } from "uuid";
 import z from "zod";
 
+import { getCoachOfficeAddress } from "@calcom/app-store/coachOfficeAddress";
 import { metadata as GoogleMeetMetadata } from "@calcom/app-store/googlevideo/_metadata";
-import { getLocationValueForDB, LocationObject } from "@calcom/app-store/locations";
+import {
+  DefaultEventLocationTypeEnum,
+  getLocationValueForDB,
+  LocationObject,
+} from "@calcom/app-store/locations";
 import { MeetLocationType } from "@calcom/app-store/locations";
 import { handleEthSignature } from "@calcom/app-store/rainbow/utils/ethereum";
 import { EventTypeAppsList, getAppFromSlug, getEventTypeAppData } from "@calcom/app-store/utils";
@@ -575,7 +580,10 @@ async function handler(req: NextApiRequest & { userId?: number | undefined }) {
       language: { translate: tOrganizer, locale: organizerUser.locale ?? "en" },
     },
     attendees: attendeesList,
-    location: bookingLocation, // Will be processed by the EventManager later.
+    location:
+      !bookingLocation || bookingLocation === DefaultEventLocationTypeEnum.CoachOffice
+        ? await getCoachOfficeAddress(organizerUser.id)
+        : bookingLocation, // Will be processed by the EventManager later.
     /** For team events & dynamic collective events, we will need to handle each member destinationCalendar eventually */
     destinationCalendar: eventType.destinationCalendar || organizerUser.destinationCalendar,
     hideCalendarNotes: eventType.hideCalendarNotes,

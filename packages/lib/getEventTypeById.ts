@@ -249,7 +249,7 @@ export default async function getEventTypeById({
     eventType.users.push(fallbackUser);
   }
   const currentUser = eventType.users.find((u) => u.id === userId);
-  const t = await getTranslation(currentUser?.locale ?? "en", "common");
+  const t = await getTranslation(currentUser?.locale ?? "de", "common");
   const integrations = await getEnabledApps(credentials);
   const locationOptions = getLocationGroupedOptions(integrations, t);
 

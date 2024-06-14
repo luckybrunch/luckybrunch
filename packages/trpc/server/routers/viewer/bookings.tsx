@@ -18,7 +18,7 @@ import { z } from "zod";
 
 import appStore from "@calcom/app-store";
 import { getCalendar } from "@calcom/app-store/_utils/getCalendar";
-import { DailyLocationType } from "@calcom/app-store/locations";
+import { DefaultLocationType } from "@calcom/app-store/locations";
 import { scheduleTrigger } from "@calcom/app-store/zapier/lib/nodeScheduler";
 import { cancelScheduledJobs } from "@calcom/app-store/zapier/lib/nodeScheduler";
 import EventManager from "@calcom/core/EventManager";
@@ -624,7 +624,7 @@ export const bookingsRouter = router({
   editLocation: bookingsProcedure
     .input(
       commonBookingSchema.extend({
-        newLocation: z.string().transform((val) => val || DailyLocationType),
+        newLocation: z.string().transform((val) => val || DefaultLocationType),
       })
     )
 

@@ -5,7 +5,7 @@ import _ from "lodash";
 import { z } from "zod";
 
 import getAppKeysFromSlug from "@calcom/app-store/_utils/getAppKeysFromSlug";
-import { DailyLocationType } from "@calcom/app-store/locations";
+import { DefaultLocationType } from "@calcom/app-store/locations";
 import { stripeDataSchema } from "@calcom/app-store/stripepayment/lib/server";
 import getApps from "@calcom/app-store/utils";
 import { validateBookingLimitOrder } from "@calcom/lib";
@@ -415,20 +415,19 @@ export const eventTypesRouter = router({
 
     let locations: { type: string; link?: string }[] = [];
 
-    // If no locations are passed in and the user has a daily api key then default to daily
-    if (
-      (typeof rest?.locations === "undefined" || rest.locations?.length === 0) &&
-      typeof appKeys.api_key === "string"
-    ) {
-      locations = [{ type: DailyLocationType }];
+    if (typeof rest?.locations === "undefined" || rest.locations?.length === 0) {
+      locations = [{ type: DefaultLocationType }];
     }
 
     // If its defaulting to daily no point handling compute as its done
     if (defaultConferencingData && defaultConferencingData.appSlug !== "daily-video") {
       const credentials = ctx.user.credentials;
       const foundApp = getApps(credentials).filter((app) => app.slug === defaultConferencingData.appSlug)[0]; // There is only one possible install here so index [0] is the one we are looking for ;
-      const locationType = foundApp?.locationOption?.value ?? DailyLocationType; // Default to Daily if no location type is found
-      locations = [{ type: locationType, link: defaultConferencingData.appLink }];
+      const locationType = foundApp?.locationOption?.value;
+      // Default to default location if no location type is found
+      locations = locationType
+        ? [{ type: locationType, link: defaultConferencingData.appLink }]
+        : [{ type: DefaultLocationType }];
     }
 
     const data: Prisma.EventTypeCreateInput = {

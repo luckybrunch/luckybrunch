@@ -158,7 +158,7 @@ export const EventSetupTab = (
       return true;
     });
 
-    const defaultValue = getDefaultLocationValue(locationOptions, "integrations:daily");
+    const defaultValue = getDefaultLocationValue(locationOptions, LocationType.CoachOffice);
 
     return (
       <div className="w-full">

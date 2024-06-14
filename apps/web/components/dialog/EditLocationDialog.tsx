@@ -247,7 +247,7 @@ export const EditLocationDialog = (props: ISetLocationDialog) => {
                 let details = {};
                 if (newLocation === LocationType.InPerson) {
                   details = {
-                    address: values.locationAddress,
+                    address: values.locationAddress || "",
                   };
                 }
                 const eventLocationType = getEventLocationType(newLocation);
