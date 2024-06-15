@@ -38,7 +38,7 @@ export const ProfileDiffList = ({ diffList }: { diffList: FieldDiffMetada[] }) =
           <p className="font-semibold">{t("lb_profile_changes")}</p>
           <p className="text-gray-500">{`${t("lb_recent_profile_changes")}`}</p>
         </div>
-        <div className="flex w-full xl:w-[22%] xl:justify-end">
+        <div className="flex">
           <Button
             disabled={user?.coachProfileDraft?.reviewStatus !== ReviewStatus.DRAFT}
             loading={requestReviewMutation.isLoading}

@@ -12,7 +12,7 @@ import { useLocale } from "@calcom/lib/hooks/useLocale";
 import prisma from "@calcom/prisma";
 import { trpc } from "@calcom/trpc/react";
 import { Button, List, ListItem, ListItemTitle, SkeletonLoader, TrafficLightBanner } from "@calcom/ui";
-import { FiCheck, FiClock, FiEye, FiFile, FiInfo, FiPlus, FiRotateCcw } from "@calcom/ui/components/icon";
+import { FiCheck, FiClock, FiEye, FiFile, FiInfo, FiPlus } from "@calcom/ui/components/icon";
 
 import { withQuery } from "@lib/QueryCell";
 
@@ -118,11 +118,6 @@ function UnpublishedDashboard() {
           title={t("lb_banner_review_title")}
           text={t("lb_banner_review_text")}
           icon={<HiEye className="text-lg" />}
-          buttonRaw={
-            <Button color="secondary" href="#" StartIcon={FiRotateCcw}>
-              {t("withdraw")}
-            </Button>
-          }
         />
       ) : null}
       {user?.coachProfileDraft?.rejectionReason && (
@@ -163,11 +158,6 @@ function InReview() {
         title={t("lb_banner_review_title")}
         text={t("lb_banner_review_text")}
         icon={<HiEye className="text-lg" />}
-        buttonRaw={
-          <Button color="secondary" href="#" StartIcon={FiRotateCcw}>
-            {t("withdraw")}
-          </Button>
-        }
       />
     </>
   );
@@ -204,11 +194,6 @@ function Published() {
           title={t("lb_banner_review_title")}
           text={t("lb_banner_review_text")}
           icon={<HiEye className="text-lg" />}
-          buttonRaw={
-            <Button color="secondary" href="#" StartIcon={FiRotateCcw}>
-              {t("withdraw")}
-            </Button>
-          }
         />
       ) : null}
       {user?.coachProfileDraft?.rejectionReason && (
