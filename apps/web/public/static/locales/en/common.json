@@ -1753,7 +1753,8 @@
   "lb_clients": "Clients",
   "lb_discover": "Discover",
   "lb_profile": "Profile",
-  "lb_chat_with_your_coaches": "Chat with your coaches",
+  "lb_chat": "Chat",
+  "lb_chat_with_your_coaches": "Chat with your experts",
   "lb_coach_list_empty_title": "No coaches were found",
   "lb_coach_list_empty_description": "Currently, you haven't booked any meetings with a coach, when you do, your coaches will be listed here.",
   "lb_coach_list_empty_action": "Search for a Coach",
@@ -1779,5 +1780,13 @@
   "lb_almost_done_paragraph_5": "Grab the veggies, preheat the oven and.... GO!",
   "lb_payment": "Payment",
   "lb_payment_desc": "Require payment for the service",
+  "lb_signup_title": "Why you should join LuckyBrunch",
+  "lb_signup_description": "LuckyBrunch is a platform that brings together experts in the field of health and nutrition with people who need support in their recovery or who are taking preventive care of their health. Everything is possible here, from selecting an expert to organising consultations and administrative support.",
+  "lb_signup_coach_disambiguation": "I am an expert",
+  "lb_signup_coach_role": "Sign up as an expert",
+  "lb_signup_client_disambiguation": "I am searching for an expert",
+  "lb_signup_client_role": "Sign up as an user",
+  "lb_terms": "Please read our <1>General Terms and Conditions</1> carefully and accept them in order to proceed.",
+  "lb_accept_terms": "I accept the general terms and conditions",
   "LB_ADD_NEW_STRINGS_ABOVE_THIS_LINE_TO_PREVENT_MERGE_CONFLICTS": "↑↑↑↑↑↑↑↑↑↑↑↑↑ Add your new strings above here ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
 }

@@ -13,7 +13,7 @@ import ReviewStatusBanner from "@calcom/features/coaches/components/ReviewStatus
 import ImpersonatingBanner from "@calcom/features/ee/impersonation/components/ImpersonatingBanner";
 import HelpMenuItem from "@calcom/features/ee/support/components/HelpMenuItem";
 import { TeamsUpgradeBanner } from "@calcom/features/ee/teams/components";
-import { KBarContent, KBarRoot, KBarTrigger } from "@calcom/features/kbar/Kbar";
+import { KBarContent, KBarRoot } from "@calcom/features/kbar/Kbar";
 import TimezoneChangeDialog from "@calcom/features/settings/TimezoneChangeDialog";
 import AdminPasswordBanner from "@calcom/features/users/components/AdminPasswordBanner";
 import CustomBranding from "@calcom/lib/CustomBranding";
@@ -569,9 +569,7 @@ const Navigation = () => {
       {desktopNavigationItems.map((item) => (
         <NavigationItem key={item.name} item={item} />
       ))}
-      <div className="mt-0.5 text-gray-500 lg:hidden">
-        <KBarTrigger />
-      </div>
+      <div className="mt-0.5 text-gray-500 lg:hidden">{/* <KBarTrigger /> */}</div>
     </nav>
   );
 };
@@ -759,14 +757,14 @@ function SideBar() {
                 className="desktop-only group flex text-sm font-medium text-gray-500 hover:text-gray-900">
                 <FiArrowRight className="h-4 w-4 flex-shrink-0 text-gray-500 group-hover:text-gray-900" />
               </button>
-              <KBarTrigger />
+              {/* <KBarTrigger /> */}
             </div>
           </header>
 
           <hr className="desktop-only absolute -left-3 -right-3 mt-4 block w-full border-gray-200" />
 
           {/* logo icon for tablet */}
-          <Link href="/event-types" className="text-center md:inline lg:hidden">
+          <Link href="/" className="text-center md:inline lg:hidden">
             <Logo small icon />
           </Link>
 
@@ -890,7 +888,7 @@ function TopNav() {
         </Link>
         <div className="flex items-center gap-2 self-center">
           <span className="group flex items-center rounded-full text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 lg:hidden">
-            <KBarTrigger />
+            {/* <KBarTrigger /> */}
           </span>
           <button className="rounded-full p-1 text-gray-400 hover:bg-gray-50 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2">
             <span className="sr-only">{t("settings")}</span>

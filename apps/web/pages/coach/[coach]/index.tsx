@@ -111,7 +111,13 @@ export default function CoachProfile() {
                 <dt className="mb-2 text-sm font-bold text-gray-700">{t("lb_meet_coach")}</dt>
                 {coach.coachProfile.appointmentTypes?.split(",").map((item) => (
                   <Badge key={item} className="mr-2 mb-2 text-sm text-gray-800" variant="lb_green">
-                    {item}
+                    {
+                      {
+                        online: t("lb_appointmenttype_online"),
+                        office: t("lb_appointmenttype_office"),
+                        home: t("lb_appointmenttype_home"),
+                      }[item]
+                    }
                   </Badge>
                 ))}
               </div>

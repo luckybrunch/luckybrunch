@@ -7,21 +7,17 @@ import { HeadSeo } from "@calcom/ui";
 const personas = [
   {
     key: 1,
-    name: "I am a nutritionist",
-    role: "Sign up as coach",
+    name: "lb_signup_coach_disambiguation",
+    role: "lb_signup_coach_role",
     imageUrl: "/coach.jpg",
     websiteUrl: `${WEBSITE_URL}/signup/coach`,
-    twitterUrl: "#",
-    linkedinUrl: "#",
   },
   {
     key: 2,
-    name: "I am searching for a coach",
-    role: "Sign up as client",
+    name: "lb_signup_client_disambiguation",
+    role: "lb_signup_client_role",
     imageUrl: "/user.jpg",
     websiteUrl: `${WEBSITE_URL}/signup/client`,
-    twitterUrl: "#",
-    linkedinUrl: "#",
   },
 ];
 
@@ -38,33 +34,24 @@ export default function RoleSelection() {
         <HeadSeo title={t("sign_up")} description={t("sign_up")} />
         <div className="mx-auto max-w-2xl lg:mx-0">
           <h2 className="font-cal text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
-            Why you should join LuckyBrunch…
+            {t("lb_signup_title")}
           </h2>
-          <p className="mt-4 font-sans text-lg text-gray-600 md:mt-6">
-            LuckyBrunch is a platform where nutritionists and people seeking support with a healthy diet get
-            together.{" "}
-            <span className="hidden md:inline">
-              Book and organize appointments, communicate with you coach or clients and help build a healthy
-              community!
-            </span>
-          </p>
+          <p className="mt-4 font-sans text-lg text-gray-600 md:mt-6">{t("lb_signup_description")}</p>
         </div>
         <ul
           role="list"
           className=" mx-auto mt-8 grid max-w-3xl grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2 md:mt-16 lg:mx-0 lg:grid-cols-2">
           {personas.map((persona) => (
             <Link
-              href={persona.websiteUrl}
               key={persona.key}
+              href={persona.websiteUrl}
               className="rounded-md border border-gray-200 bg-white p-4 drop-shadow dark:bg-black sm:p-8">
-              <li key={persona.name}>
+              <li>
                 <img className="aspect-[3/2] w-full rounded-md object-cover" src={persona.imageUrl} alt="" />
                 <h3 className="mt-2 font-sans text-lg font-semibold leading-8 tracking-tight text-gray-900 sm:mt-8">
-                  {persona.name}
+                  {t(persona.name)}
                 </h3>
-                <p className="font-sans font-sans text-base text-sm font-normal text-gray-500">
-                  {persona.role}
-                </p>
+                <p className="font-sans text-sm font-normal text-gray-500">{t(persona.role)}</p>
               </li>
             </Link>
           ))}

@@ -1,5 +1,6 @@
 import type { GetServerSidePropsContext } from "next";
 import { signIn } from "next-auth/react";
+import { Trans } from "next-i18next";
 import { useRouter } from "next/router";
 import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 
@@ -9,6 +10,8 @@ import { collectPageParameters, telemetryEventTypes, useTelemetry } from "@calco
 import prisma from "@calcom/prisma";
 import { inferSSRProps } from "@calcom/types/inferSSRProps";
 import { Alert, Form, Button, EmailField, HeadSeo, PasswordField, TextField } from "@calcom/ui";
+
+import CheckboxField from "@components/ui/form/CheckboxField";
 
 import { asStringOrNull } from "../../lib/asStringOrNull";
 import { IS_GOOGLE_LOGIN_ENABLED } from "../../server/lib/constants";
@@ -20,6 +23,7 @@ type FormValues = {
   password: string;
   passwordcheck: string;
   apiError: string;
+  acceptTerms: boolean;
 };
 
 export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof getServerSideProps>) {
@@ -112,6 +116,21 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
                         value === methods.watch("password") || (t("error_password_mismatch") as string),
                     })}
                   />
+
+                  <p className="pt-4 text-sm">
+                    <Trans i18nKey="lb_terms">
+                      Please read our
+                      <a
+                        href="https://luckybrunch.de/agb"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-blue-800 underline">
+                        General Terms and Conditions
+                      </a>
+                      carefully and accept them in order to proceed.
+                    </Trans>
+                  </p>
+                  <CheckboxField description={t("lb_accept_terms")} required {...register("acceptTerms")} />
                 </div>
                 <div className="flex space-x-2 rtl:space-x-reverse">
                   <Button type="submit" loading={isSubmitting} className="w-7/12 justify-center">
