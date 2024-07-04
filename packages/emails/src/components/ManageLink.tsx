@@ -40,7 +40,7 @@ export function ManageLink(props: { calEvent: CalendarEvent; attendee: Person })
             </>
           )}
           <a href={getCancelLink(props.calEvent)} style={{ color: "#374151", marginLeft: "5px" }}>
-            <>{t("cancel")}</>
+            <>{t("cancel_event")}</>
           </a>
         </p>
       </div>
