@@ -344,7 +344,7 @@ function UserDropdown({ small }: { small?: boolean }) {
                     <DropdownItem
                       target="_blank"
                       rel="noopener noreferrer"
-                      href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/${user.username}`}
+                      href={`${process.env.NEXT_PUBLIC_WEBSITE_URL}/coach/${user.username}`}
                       StartIcon={FiExternalLink}>
                       {t("view_public_page")}
                     </DropdownItem>
@@ -357,7 +357,7 @@ function UserDropdown({ small }: { small?: boolean }) {
                       onClick={(e) => {
                         e.preventDefault();
                         navigator.clipboard.writeText(
-                          `${process.env.NEXT_PUBLIC_WEBSITE_URL}/${user.username}`
+                          `${process.env.NEXT_PUBLIC_WEBSITE_URL}/coach/${user.username}`
                         );
                         showToast(t("link_copied"), "success");
                       }}>
