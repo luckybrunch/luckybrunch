@@ -7,6 +7,7 @@ import { FormProvider, SubmitHandler, useForm } from "react-hook-form";
 import { WEBAPP_URL } from "@calcom/lib/constants";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import { collectPageParameters, telemetryEventTypes, useTelemetry } from "@calcom/lib/telemetry";
+import { sessionStorage } from "@calcom/lib/webstorage";
 import prisma from "@calcom/prisma";
 import { inferSSRProps } from "@calcom/types/inferSSRProps";
 import { Alert, Form, Button, EmailField, HeadSeo, PasswordField, TextField } from "@calcom/ui";
@@ -62,9 +63,10 @@ export default function Signup({ prepopulateFormValues }: inferSSRProps<typeof g
       .then(handleErrors)
       .then(async () => {
         telemetry.event(telemetryEventTypes.signup, collectPageParameters());
+        const callbackUrl = sessionStorage.getItem("lb_callback");
         await signIn<"credentials">("credentials", {
           ...data,
-          callbackUrl: `${WEBAPP_URL}/search`,
+          callbackUrl: callbackUrl ? `${WEBAPP_URL}${callbackUrl}` : `${WEBAPP_URL}/search`,
         });
       })
       .catch((err) => {

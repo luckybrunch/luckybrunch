@@ -1,4 +1,6 @@
 import { GetServerSidePropsContext } from "next";
+import { useRouter } from "next/router";
+import { useEffect } from "react";
 
 import { LocationObject, privacyFilteredLocations } from "@calcom/app-store/locations";
 import { getAppFromSlug } from "@calcom/app-store/utils";
@@ -10,6 +12,7 @@ import {
   getUsernameList,
 } from "@calcom/lib/defaultEvents";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
+import { sessionStorage } from "@calcom/lib/webstorage";
 import { bookEventTypeSelect } from "@calcom/prisma";
 import prisma from "@calcom/prisma";
 import {
@@ -17,6 +20,7 @@ import {
   EventTypeMetaDataSchema,
   userMetadata as userMetadataSchema,
 } from "@calcom/prisma/zod-utils";
+import { trpc } from "@calcom/trpc/react";
 
 import { asStringOrNull, asStringOrThrow } from "@lib/asStringOrNull";
 import getBooking, { GetBookingType } from "@lib/getBooking";
@@ -29,6 +33,15 @@ import { ssrInit } from "@server/lib/ssr";
 export type BookPageProps = inferSSRProps<typeof getServerSideProps>;
 
 export default function Book(props: BookPageProps) {
+  const router = useRouter();
+  const { data: session, isLoading } = trpc.viewer.public.session.useQuery();
+  useEffect(() => {
+    if (!isLoading && !session) {
+      sessionStorage.setItem("lb_callback", router.asPath);
+      router.push("/signup/client");
+    }
+  }, [router, session, isLoading]);
+
   const { t } = useLocale();
   return props.away ? (
     <div className="h-screen dark:bg-gray-900">
@@ -69,6 +82,10 @@ Book.isThemeSupported = true;
 
 export async function getServerSideProps(context: GetServerSidePropsContext) {
   const ssr = await ssrInit(context);
+
+  // preload "viewer.public.session" to immediately redirect to /signup/client if not logged in
+  await ssr.viewer.public.session.fetch();
+
   const usernameList = getUsernameList(asStringOrThrow(context.query.user as string));
   const eventTypeSlug = context.query.slug as string;
   const recurringEventCountQuery = asStringOrNull(context.query.count);
