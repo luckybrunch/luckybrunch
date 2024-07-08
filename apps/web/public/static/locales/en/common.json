@@ -420,6 +420,8 @@
   "please_try_again": "Please try again.",
   "super_secure_new_password": "Your super secure new password",
   "new_password": "New Password",
+  "new_password_2": "New Password (Confirmation)",
+  "invalid_password_confirmation": "Passwords do not match",
   "your_old_password": "Your old password",
   "current_password": "Current Password",
   "change_password": "Change Password",

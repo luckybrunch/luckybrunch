@@ -15,6 +15,7 @@ import { ssrInit } from "@server/lib/ssr";
 type ChangePasswordSessionFormValues = {
   oldPassword: string;
   newPassword: string;
+  newPasswordConfirmation: string;
   sessionTimeout?: number;
   apiError: string;
 };
@@ -59,6 +60,7 @@ const PasswordView = () => {
       showToast(t("password_has_been_changed"), "success");
       formMethods.resetField("oldPassword");
       formMethods.resetField("newPassword");
+      formMethods.resetField("newPasswordConfirmation");
 
       if (data?.user.role === "INACTIVE_ADMIN") {
         /*
@@ -84,6 +86,7 @@ const PasswordView = () => {
     defaultValues: {
       oldPassword: "",
       newPassword: "",
+      newPasswordConfirmation: "",
       sessionTimeout: metadata?.sessionTimeout,
     },
   });
@@ -135,10 +138,15 @@ const PasswordView = () => {
             </div>
           )}
 
-          <div className="max-w-[38rem] sm:grid sm:grid-cols-2 sm:gap-x-4">
+          <div className="grid max-w-[38rem] gap-y-2 sm:grid-cols-2 sm:gap-x-4">
             <div>
-              <PasswordField {...formMethods.register("oldPassword")} label={t("old_password")} />
+              <PasswordField
+                {...formMethods.register("oldPassword")}
+                label={t("old_password")}
+                autoComplete="current-password"
+              />
             </div>
+            <div />
             <div>
               <PasswordField
                 {...formMethods.register("newPassword", {
@@ -152,6 +160,17 @@ const PasswordView = () => {
                   },
                 })}
                 label={t("new_password")}
+                autoCapitalize="new-password"
+              />
+            </div>
+            <div>
+              <PasswordField
+                {...formMethods.register("newPasswordConfirmation", {
+                  validate: (value) =>
+                    value === formMethods.getValues("newPassword") || t("invalid_password_confirmation"),
+                })}
+                label={t("new_password_2")}
+                autoCapitalize="new-password"
               />
             </div>
           </div>
