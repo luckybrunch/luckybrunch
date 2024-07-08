@@ -1790,5 +1790,8 @@
   "lb_signup_client_role": "Sign up as an user",
   "lb_terms": "Please read our <1>General Terms and Conditions</1> carefully and accept them in order to proceed.",
   "lb_accept_terms": "I accept the general terms and conditions",
+  "lb_no_conferencing": "No conferencing app installed",
+  "lb_connect_googlevideo": "Connect Google Meet",
+  "lb_connect_googlecalendar": "Connect Google Calendar",
   "LB_ADD_NEW_STRINGS_ABOVE_THIS_LINE_TO_PREVENT_MERGE_CONFLICTS": "↑↑↑↑↑↑↑↑↑↑↑↑↑ Add your new strings above here ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
 }

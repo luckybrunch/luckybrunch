@@ -1,5 +1,6 @@
 import { useState } from "react";
 
+import InstallAppButton from "@calcom/app-store/googlevideo/components/InstallAppButton";
 import { EventLocationType, getEventLocationTypeFromApp } from "@calcom/app-store/locations";
 import { AppSetDefaultLinkDailog } from "@calcom/features/apps/components/AppSetDefaultLinkDialog";
 import { getLayout } from "@calcom/features/settings/layouts/SettingsLayout";
@@ -21,8 +22,9 @@ import {
   showToast,
   SkeletonContainer,
   SkeletonText,
+  EmptyScreen,
 } from "@calcom/ui";
-import { FiAlertCircle, FiMoreHorizontal, FiTrash, FiVideo } from "@calcom/ui/components/icon";
+import { FiAlertCircle, FiCalendar, FiMoreHorizontal, FiTrash, FiVideo } from "@calcom/ui/components/icon";
 
 import AppListCard from "@components/AppListCard";
 
@@ -83,6 +85,16 @@ const ConferencingLayout = () => {
   return (
     <div className="w-full bg-white sm:mx-0 xl:mt-0">
       <Meta title={t("conferencing")} description={t("conferencing_description")} />
+      {apps?.items.length === 0 ? (
+        <EmptyScreen
+          Icon={FiCalendar}
+          headline={t("lb_no_conferencing")}
+          description={t("no_calendar_installed_description")}
+          buttonRaw={
+            <InstallAppButton render={(props) => <Button {...props}>{t("lb_connect_googlevideo")}</Button>} />
+          }
+        />
+      ) : null}
       <List>
         {apps?.items &&
           apps.items

@@ -1790,5 +1790,8 @@
   "lb_signup_client_role": "Als Klient anmelden",
   "lb_terms": "Bitte lies unsere <1>Allgemeinen Geschäftsbedingungen</1> sorgfältig durch und akzeptiere sie, um fortzufahren.",
   "lb_accept_terms": "Ich akzeptiere die Allgemeinen Geschäftsbedingungen",
+  "lb_no_conferencing": "Keine Videokonferenz-App installiert",
+  "lb_connect_googlevideo": "Verbinde Google Meet",
+  "lb_connect_googlecalendar": "Verbinde Google Calendar",
   "LB_ADD_NEW_STRINGS_ABOVE_THIS_LINE_TO_PREVENT_MERGE_CONFLICTS": "↑↑↑↑↑↑↑↑↑↑↑↑↑ Add your new strings above here ↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑↑"
 }

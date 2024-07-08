@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { Fragment } from "react";
 
+import InstallAppButton from "@calcom/app-store/googlecalendar/components/InstallAppButton";
 import DisconnectIntegration from "@calcom/features/apps/components/DisconnectIntegration";
 import DestinationCalendarSelector from "@calcom/features/calendars/DestinationCalendarSelector";
 import { getLayout } from "@calcom/features/settings/layouts/SettingsLayout";
@@ -200,8 +201,11 @@ const CalendarsView = () => {
               Icon={FiCalendar}
               headline={t("no_calendar_installed")}
               description={t("no_calendar_installed_description")}
-              buttonText={t("add_a_calendar")}
-              buttonOnClick={() => router.push("/apps/categories/calendar")}
+              buttonRaw={
+                <InstallAppButton
+                  render={(props) => <Button {...props}>{t("lb_connect_googlecalendar")}</Button>}
+                />
+              }
             />
           );
         }}
