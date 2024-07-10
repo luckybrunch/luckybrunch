@@ -257,9 +257,9 @@ const ProfileForm = ({
               <div className="ltr:ml-4 rtl:mr-4">
                 {/* button color is already set inside component */}
                 <ImageUploader
-                  target="avatar"
+                  target={t("profile_picture")}
                   id="avatar-upload"
-                  buttonMsg={t("choose_a_file")}
+                  buttonMsg={t("change_avatar")}
                   handleAvatarChange={(newAvatar) => {
                     formMethods.setValue("avatar", newAvatar, { shouldDirty: true });
                   }}

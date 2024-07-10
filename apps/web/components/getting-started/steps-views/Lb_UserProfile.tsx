@@ -160,7 +160,7 @@ const Lb_UserProfile = (props: IOnboardingComponentProps) => {
         />
         <div className="flex items-center px-4">
           <ImageUploader
-            target="avatar"
+            target={t("profile_picture")}
             id="avatar-upload"
             buttonMsg={t("add_profile_photo")}
             handleAvatarChange={(newAvatar) => {

@@ -129,7 +129,7 @@ export default function ImageUploader({
         <div className="mb-4">
           <div className="cropper mt-6 flex flex-col items-center justify-center p-8">
             {!result && (
-              <div className="flex h-20 max-h-20 w-20 items-center justify-start rounded-full bg-gray-50">
+              <div className="flex h-20 max-h-20 w-20 items-center justify-start rounded-full bg-gray-200">
                 {!imageSrc && (
                   <p className="w-full text-center text-sm text-white sm:text-xs">
                     {t("no_target", { target })}
@@ -151,7 +151,7 @@ export default function ImageUploader({
                 className="pointer-events-none absolute mt-4 opacity-0"
                 accept="image/*"
               />
-              {t("choose_a_file")}
+              {t("change_avatar")}
             </label>
           </div>
         </div>

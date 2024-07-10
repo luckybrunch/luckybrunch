@@ -347,7 +347,7 @@ const ProfileForm = ({
               <Avatar alt="" imageSrc={value} gravatarFallbackMd5={emailMd5} size="lg" />
               <div className="ltr:ml-4 rtl:mr-4">
                 <ImageUploader
-                  target="avatar"
+                  target={t("profile_picture")}
                   id="avatar-upload"
                   buttonMsg={t("change_avatar")}
                   handleAvatarChange={(newAvatar) => {
