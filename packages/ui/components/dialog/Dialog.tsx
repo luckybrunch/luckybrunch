@@ -154,7 +154,7 @@ export function DialogClose(
     <DialogPrimitive.Close asChild {...props.dialogCloseProps}>
       {/* This will require the i18n string passed in */}
       <Button color={props.color || "minimal"} {...props}>
-        {props.children ? props.children : t("Close")}
+        {props.children ? props.children : t("close")}
       </Button>
     </DialogPrimitive.Close>
   );
