@@ -67,7 +67,7 @@ export default function CoachProfile() {
             header={t("lb_verified_coach")}
             subheader={t("lb_on_lb_since", { date: coach.createdDate })}
             headerIcon={<HiCheckCircle className="text-brand-500" />}
-            sectionTitle="About">
+            sectionTitle={t("about")}>
             {!isBioEmpty && (
               <>
                 <div

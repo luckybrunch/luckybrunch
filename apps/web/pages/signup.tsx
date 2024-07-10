@@ -36,7 +36,9 @@ export default function RoleSelection() {
           <h2 className="font-cal text-3xl font-bold tracking-tight text-gray-900 sm:text-4xl">
             {t("lb_signup_title")}
           </h2>
-          <p className="mt-4 font-sans text-lg text-gray-600 md:mt-6">{t("lb_signup_description")}</p>
+          <p className="mt-4 font-sans text-base text-gray-600 md:mt-6 md:text-lg">
+            {t("lb_signup_description")}
+          </p>
         </div>
         <ul
           role="list"
