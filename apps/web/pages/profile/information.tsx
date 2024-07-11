@@ -5,6 +5,7 @@ import { AppointmentType } from "@calcom/features/coaches/types";
 import Shell from "@calcom/features/shell/Shell";
 import { useLocale } from "@calcom/lib/hooks/useLocale";
 import turndown from "@calcom/lib/turndownService";
+import { Specialization } from "@calcom/prisma/client";
 import { RouterInputs, trpc } from "@calcom/trpc/react";
 import {
   Avatar,
@@ -21,6 +22,7 @@ import {
   TextField,
   Editor,
 } from "@calcom/ui";
+import { FiX } from "@calcom/ui/components/icon";
 
 import { TabLayoutForMdAndLess } from "../../components/profile/TabLayoutForMdAndLess";
 
@@ -233,11 +235,6 @@ const ProfileForm = ({
   const isDisabled = isSubmitting || !isDirty;
 
   const { data: specializations } = trpc.public.getSpecializations.useQuery();
-  const specializationsOptions =
-    specializations?.map((item) => ({
-      label: item.label,
-      value: String(item.id),
-    })) ?? [];
 
   const appointmentTypeOptions = Object.entries(AppointmentTypes).map(([value, label]) => ({
     value,
@@ -317,30 +314,17 @@ const ProfileForm = ({
         <Controller
           name="specializations"
           control={formMethods.control}
-          render={({ field: { value } }) => (
+          render={({ field: { value, onChange, onBlur } }) => (
             <>
               <Label className="mt-8 text-gray-900">
                 <>{t("lb_specializations_label")}</>
               </Label>
 
-              <Select
-                isMulti
-                placeholder={t("select")}
-                options={specializationsOptions}
-                value={value.map((v) => specializationsOptions.find((o) => o.value === String(v)))}
-                onChange={(value) => {
-                  if (value)
-                    formMethods.setValue(
-                      "specializations",
-                      value
-                        .map((v) => v?.value ?? "")
-                        .map(Number)
-                        .filter(Boolean),
-                      {
-                        shouldDirty: true,
-                      }
-                    );
-                }}
+              <SpecializationsInput
+                options={specializations ?? []}
+                value={value}
+                onValueChange={onChange}
+                onBlur={onBlur}
               />
             </>
           )}
@@ -479,6 +463,68 @@ function AddressFields({
           <TextField label={t("lb_city")} {...city} />
         </div>
       </div>
+    </>
+  );
+}
+
+function SpecializationsInput({
+  options,
+  value,
+  onValueChange,
+  onBlur,
+}: {
+  options: Specialization[];
+  value: Specialization["id"][];
+  onValueChange: (value: Specialization["id"][]) => void;
+  onBlur?: () => void;
+}) {
+  const { t } = useLocale();
+
+  type Option = { label: string; value: string };
+  const specializationsOptions =
+    options
+      .filter(({ id }) => !value.includes(id))
+      .map((item) => ({
+        label: item.label,
+        value: String(item.id),
+      })) ?? [];
+
+  return (
+    <>
+      <div className="divide-y-gray-200 mb-3 divide-y border-t border-b border-gray-200">
+        {value.map((v) => {
+          const item = options.find((o) => o.id === v);
+          if (!item) return null;
+
+          return (
+            <div key={item.id} className="flex flex-row items-center py-2 px-1.5 text-sm">
+              {item.label}
+              <button
+                type="button"
+                className="ml-auto shrink-0 rounded-md p-1.5 text-gray-400 hover:bg-gray-200 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-black focus:ring-offset-2"
+                onClick={() => {
+                  onValueChange(value.filter((id) => id !== v));
+                  onBlur?.();
+                }}>
+                <span className="sr-only">{t("remove")}</span>
+                <FiX className="h-4 w-4" aria-hidden="true" />
+              </button>
+            </div>
+          );
+        })}
+      </div>
+      <Select
+        placeholder={t("lb_add_specialization")}
+        options={specializationsOptions}
+        value={[] as Option[]}
+        onChange={(v) => {
+          const newValue = v ? Number(v.value) : undefined;
+          if (newValue !== undefined && !value.includes(newValue)) {
+            onValueChange([...value, newValue]);
+          }
+        }}
+        onBlur={onBlur}
+      />
     </>
   );
 }
