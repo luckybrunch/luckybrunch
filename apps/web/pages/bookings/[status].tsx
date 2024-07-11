@@ -31,6 +31,13 @@ type RecurringInfo = {
 
 const validStatuses = ["upcoming", "recurring", "past", "cancelled", "unconfirmed"] as const;
 
+const statusAdjectiveByStatus: Record<BookingListingStatus, string> = {
+  upcoming: "upcoming_adjective",
+  recurring: "recurring_adjective",
+  past: "past_adjective",
+  cancelled: "cancelled_adjective",
+  unconfirmed: "unconfirmed_adjective",
+};
 const descriptionByStatus: Record<BookingListingStatus, string> = {
   upcoming: "upcoming_bookings",
   recurring: "recurring_bookings",
@@ -179,9 +186,9 @@ export default function Bookings() {
           <div className="flex items-center justify-center pt-2 xl:pt-0">
             <EmptyScreen
               Icon={FiCalendar}
-              headline={t("no_status_bookings_yet", { status: t(status).toLowerCase() })}
+              headline={t("no_status_bookings_yet", { status: t(statusAdjectiveByStatus[status]) })}
               description={t("no_status_bookings_yet_description", {
-                status: t(status).toLowerCase(),
+                status: t(statusAdjectiveByStatus[status]),
                 description: t(descriptionByStatus[status]),
               })}
             />
